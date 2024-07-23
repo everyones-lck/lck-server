@@ -1,0 +1,66 @@
+package com.lckback.lckforall.match.model;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.lckback.lckforall.base.model.BaseEntity;
+import com.lckback.lckforall.player.model.Player;
+import com.lckback.lckforall.team.model.Team;
+import com.lckback.lckforall.vote.model.MatchPogVote;
+import com.lckback.lckforall.vote.model.MatchVote;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Builder
+@Entity
+@Table(name = "MATCHES")
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Match extends BaseEntity {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	@Column(nullable = false)
+	private LocalDateTime matchDate;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "POG_PLAYER_ID", nullable = false)
+	private Player pogPlayer;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "TEAM_ID1", nullable = false)
+	private Team team1;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "TEAM_ID2", nullable = false)
+	private Team team2;
+
+	@OneToMany(mappedBy = "match")
+	private List<Set> sets = new ArrayList<>();
+
+	@OneToMany(mappedBy = "match")
+	private List<MatchPogVote> matchPogVotes = new ArrayList<>();
+
+	@OneToMany(mappedBy = "match")
+	private List<MatchVote> matchVotes = new ArrayList<>();
+}
