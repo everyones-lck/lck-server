@@ -1,0 +1,76 @@
+name: Continuous Integration
+
+on:
+  push:
+    # develop, prod를 제외한 모든 브랜치에 push 이벤트 시 동작
+    branches-ignore:
+      - develop
+      - prod
+  # develop 브랜치에 대해 pr 이벤트 시 동작
+  pull_request:
+    branches: ["develop"]
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  Build:
+    name: Build & Delivery
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ACTION_TOKEN }}
+          submodules: true
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v3
+
+      - name: Prepare environment
+        run: |
+          mkdir -p src/main/resources/privates
+          cp -r ./config/* src/main/resources/privates/
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
+
+      - name: Test with Gradle
+        run: SPRING_PROFILES_ACTIVE=test ./gradlew test
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2.15.1
+        if: always()
+        with:
+          files: '**/build/test-results/test/TEST-*.xml'
+
+      - name: Set Version
+        id: set_current_date
+        run: echo "version=$(date '+%Y-%m-%d-%H-%M-%S')" >> $GITHUB_OUTPUT
+
+      - name: Docker Image Build
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/lck-for-all:${{ steps.set_current_date.outputs.version }} .
+          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/lck-for-all:${{ steps.set_current_date.outputs.version }} ${{ secrets.DOCKERHUB_USERNAME }}/lck-for-all:latest
+
+      - name: Docker Login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Docker Hub Push
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/lck-for-all:${{ steps.set_current_date.outputs.version }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/lck-for-all:latest
