@@ -83,7 +83,7 @@ public class Team extends BaseEntity {
 	private List<Match> allMatches = new ArrayList<>();
 
 	@PostLoad
-	public void sumAllMatches() {
+	private void sumAllMatches() {
 		allMatches.addAll(matches1);
 		allMatches.addAll(matches2);
 	}
