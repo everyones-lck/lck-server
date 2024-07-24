@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.geo.Point;
-
 import com.lckback.lckforall.base.model.BaseEntity;
 import com.lckback.lckforall.user.model.User;
 
@@ -24,10 +22,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @Builder
 @Entity
 @Table(name = "VIEWING_PARTY")
@@ -46,7 +42,10 @@ public class ViewingParty extends BaseEntity {
 	private LocalDateTime date;
 
 	@Column(nullable = false)
-	private Point location;
+	private Double latitude;
+
+	@Column(nullable = false)
+	private Double longitude;
 
 	@Column(nullable = false)
 	private Integer price;
