@@ -1,11 +1,6 @@
 name: Continuous Integration
 
 on:
-#  push:
-#    # develop, prod를 제외한 모든 브랜치에 push 이벤트 시 동작
-#    branches-ignore:
-#      - develop
-#      - prod
   # develop 브랜치에 대해 pr 이벤트 시 동작
   pull_request:
     branches:
