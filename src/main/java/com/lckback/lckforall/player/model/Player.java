@@ -1,9 +1,11 @@
 package com.lckback.lckforall.player.model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.lckback.lckforall.base.model.BaseEntity;
+import com.lckback.lckforall.base.type.PlayerPosition;
 import com.lckback.lckforall.base.type.PlayerRole;
 import com.lckback.lckforall.match.model.Match;
 import com.lckback.lckforall.match.model.Set;
@@ -42,6 +44,12 @@ public class Player extends BaseEntity {
 	@Column(nullable = false, length = 20)
 	private String name;
 
+	@Column(nullable = false, length = 20)
+	private String realName;
+
+	@Column(nullable = false)
+	private LocalDate birth;
+
 	@Column(nullable = false, length = 100)
 	private String ProfileImageUrl;
 
@@ -49,9 +57,12 @@ public class Player extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private PlayerRole role;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "TEAM_ID", nullable = false)
-	private Team team;
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private PlayerPosition position;
+
+	@OneToMany(mappedBy = "player")
+	private List<SeasonTeamPlayer> seasonTeamPlayers = new ArrayList<>();
 
 	@OneToMany(mappedBy = "player")
 	private List<SetPogVote> setPogVotes = new ArrayList<>();
