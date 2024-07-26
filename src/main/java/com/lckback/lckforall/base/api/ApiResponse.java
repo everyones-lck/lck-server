@@ -1,5 +1,7 @@
 package com.lckback.lckforall.base.api;
 
+import com.lckback.lckforall.base.api.error.ErrorCode;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,6 +30,10 @@ public class ApiResponse<T> {
 
     public static ApiResponse<?> createSuccessWithNoContent() {
         return new ApiResponse<>(SUCCESS_STATUS, SUCCESS_MESSAGE, null);
+    }
+
+    public static ApiResponse<?> createFail(ErrorCode errorCode) {
+        return new ApiResponse<>(FAIL_STATUS, errorCode.getMessage(), null);
     }
 
     public static ApiResponse<?> createFail(String message) {
