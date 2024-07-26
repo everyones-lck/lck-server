@@ -6,7 +6,6 @@ import java.util.List;
 import com.lckback.lckforall.base.model.BaseEntity;
 import com.lckback.lckforall.match.model.Match;
 import com.lckback.lckforall.match.model.Set;
-import com.lckback.lckforall.player.model.Player;
 import com.lckback.lckforall.user.model.User;
 import com.lckback.lckforall.vote.model.MatchVote;
 
