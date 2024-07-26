@@ -41,11 +41,8 @@ public class Team extends BaseEntity {
 	@Column(nullable = false, length = 100)
 	private String teamLogoUrl;
 
-	@Column(nullable = false, length = 100)
-	private String season;
-
-	@Column(nullable = false)
-	private Integer winningPoint;
+	@OneToMany(mappedBy = "team")
+	private List<SeasonTeam> seasonTeams = new ArrayList<>();
 
 	@OneToMany(mappedBy = "team")
 	private List<User> users = new ArrayList<>();
