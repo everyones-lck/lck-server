@@ -61,4 +61,8 @@ public class Match extends BaseEntity {
 
 	@OneToMany(mappedBy = "match")
 	private List<MatchVote> matchVotes = new ArrayList<>();
+
+	public void testSetMatchVotes(List<MatchVote> votes){ //test를 위한 함수
+		matchVotes = votes;
+	}
 }
