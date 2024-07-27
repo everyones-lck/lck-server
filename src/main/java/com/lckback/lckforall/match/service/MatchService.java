@@ -1,5 +1,9 @@
 package com.lckback.lckforall.match.service;
 
+import com.lckback.lckforall.base.api.error.CommonErrorCode;
+import com.lckback.lckforall.base.api.error.MatchErrorCode;
+import com.lckback.lckforall.base.api.error.VoteErrorCode;
+import com.lckback.lckforall.base.api.exception.RestApiException;
 import com.lckback.lckforall.match.dto.MatchDto;
 import com.lckback.lckforall.match.model.Match;
 import com.lckback.lckforall.match.repository.MatchRepository;
@@ -19,7 +23,7 @@ public class MatchService {
     public List<MatchDto.TodayMatchResponse> todayMatchInfo(){
         List<Match> todayMatches = matchRepository.findMatchesByDate(LocalDateTime.now());
         if(todayMatches.isEmpty()){
-            //예외 처리
+            throw new RestApiException(MatchErrorCode.THERE_IS_NO_MATCH_TODAY);
         }
         return todayMatches.stream()
                 .map(match -> new MatchDto.TodayMatchResponse(match.getId(), match.getMatchDate(),
@@ -31,7 +35,7 @@ public class MatchService {
     }
     public Double calculateMatchVoteResult(List<MatchVote> votes,Long teamId){
         if(votes.isEmpty()){
-            //예외처리
+            throw new RestApiException(VoteErrorCode.THERE_IS_NO_VOTE);
         }
         int teamVotes = 0;
         int totalVotes = votes.size();

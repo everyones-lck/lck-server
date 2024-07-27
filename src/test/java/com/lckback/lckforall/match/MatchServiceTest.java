@@ -94,10 +94,10 @@ public class MatchServiceTest {
         MatchVote matchVote4 = new MatchVote(4L, match2, user2, team2);
         List<MatchVote> matchVotes1 = new ArrayList<>();
         List<MatchVote> matchVotes2 = new ArrayList<>();
-        matchVotes1.add(matchVote1);
-        matchVotes1.add(matchVote2);
-        matchVotes2.add(matchVote3);
-        matchVotes2.add(matchVote4);
+//        matchVotes1.add(matchVote1);
+//        matchVotes1.add(matchVote2);
+//        matchVotes2.add(matchVote3);
+//        matchVotes2.add(matchVote4);
         match1.testSetMatchVotes(matchVotes1);
         match2.testSetMatchVotes(matchVotes2);
 
