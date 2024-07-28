@@ -2,7 +2,7 @@ package com.lckback.lckforall.match;
 
 import com.lckback.lckforall.base.type.UserRole;
 import com.lckback.lckforall.base.type.UserStatus;
-import com.lckback.lckforall.match.dto.MatchDto;
+import com.lckback.lckforall.match.dto.MatchInfoDto;
 import com.lckback.lckforall.match.model.Match;
 import com.lckback.lckforall.match.repository.MatchRepository;
 import com.lckback.lckforall.match.service.MatchService;
@@ -15,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,10 +103,10 @@ public class MatchServiceTest {
         when(matchRepository.findMatchesByDate(LocalDateTime.now())).thenReturn(matchList);// Mock의 동작 정의
 
         // When
-        List<MatchDto.TodayMatchResponse> matchInfo = matchService.todayMatchInfo();
+        List<MatchInfoDto.TodayMatchResponse> matchInfo = matchService.todayMatchInfo();
 
         // Then
-        for (MatchDto.TodayMatchResponse response : matchInfo) {
+        for (MatchInfoDto.TodayMatchResponse response : matchInfo) {
             System.out.println(response.getMatchDate());
             System.out.println(response.getTeam2VoteRate());
         }

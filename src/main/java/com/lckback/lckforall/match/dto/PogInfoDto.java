@@ -1,12 +1,9 @@
 package com.lckback.lckforall.match.dto;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-public class PogDto {
+public class PogInfoDto {
     @Getter
     @AllArgsConstructor
     public static class MatchPogResponse {

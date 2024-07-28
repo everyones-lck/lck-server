@@ -3,7 +3,7 @@ package com.lckback.lckforall.match.service;
 import com.lckback.lckforall.base.api.error.MatchErrorCode;
 import com.lckback.lckforall.base.api.error.PlayerErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
-import com.lckback.lckforall.match.dto.PogDto;
+import com.lckback.lckforall.match.dto.PogInfoDto;
 import com.lckback.lckforall.match.model.Match;
 import com.lckback.lckforall.match.repository.MatchRepository;
 import com.lckback.lckforall.player.model.Player;
@@ -24,7 +24,7 @@ public class PogService {
 
     private final PlayerRepository playerRepository;
 
-    public PogDto.MatchPogResponse matchPog(PogDto.PogServiceDto dto) { // match의 pog 정보를 리턴
+    public PogInfoDto.MatchPogResponse matchPog(PogInfoDto.PogServiceDto dto) { // match의 pog 정보를 리턴
         Match match = matchRepository.findById(dto.getMatchId())
                 .orElseThrow(() -> new RestApiException(MatchErrorCode.THERE_IS_NO_SUCH_MATCH));
         List<MatchPogVote> voteResult = match.getMatchPogVotes();
@@ -32,7 +32,7 @@ public class PogService {
         Player winner = playerRepository.findById(winnerId)
                 .orElseThrow(() -> new RestApiException(PlayerErrorCode.THERE_IS_NO_SUCH_PLAYER));
 
-        return PogDto.MatchPogResponse.create(winnerId,winner.getName(),winner.getProfileImageUrl());
+        return PogInfoDto.MatchPogResponse.create(winnerId,winner.getName(),winner.getProfileImageUrl());
     }
 
     public Long findMatchPog(List<MatchPogVote> votes){ // 투표 결과를 계산하는 함수

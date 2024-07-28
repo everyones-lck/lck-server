@@ -3,7 +3,7 @@ package com.lckback.lckforall.match;
 import com.lckback.lckforall.base.type.PlayerRole;
 import com.lckback.lckforall.base.type.UserRole;
 import com.lckback.lckforall.base.type.UserStatus;
-import com.lckback.lckforall.match.dto.PogDto;
+import com.lckback.lckforall.match.dto.PogInfoDto;
 import com.lckback.lckforall.match.model.Match;
 import com.lckback.lckforall.match.repository.MatchRepository;
 import com.lckback.lckforall.match.service.PogService;
@@ -128,8 +128,8 @@ public class PogServiceTest {
         when(matchRepository.findById(1L)).thenReturn(Optional.ofNullable(match1)); // 1번 match에 대해 정의
 
         // When
-        PogDto.PogServiceDto dto = new PogDto.PogServiceDto(1L);
-        PogDto.MatchPogResponse response = pogService.matchPog(dto);
+        PogInfoDto.PogServiceDto dto = new PogInfoDto.PogServiceDto(1L);
+        PogInfoDto.MatchPogResponse response = pogService.matchPog(dto);
 
         // Then
         assertEquals(2L, response.getId()); // 결과 검증

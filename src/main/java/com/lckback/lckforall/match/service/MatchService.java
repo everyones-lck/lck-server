@@ -1,6 +1,6 @@
 package com.lckback.lckforall.match.service;
 
-import com.lckback.lckforall.match.dto.MatchDto;
+import com.lckback.lckforall.match.dto.MatchInfoDto;
 import com.lckback.lckforall.match.model.Match;
 import com.lckback.lckforall.match.repository.MatchRepository;
 import com.lckback.lckforall.vote.model.MatchVote;
@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MatchService {
     private final MatchRepository matchRepository;
-    public List<MatchDto.TodayMatchResponse> todayMatchInfo(){ // today match의 정보를 List 형식으로 리턴
+    public List<MatchInfoDto.TodayMatchResponse> todayMatchInfo(){ // today match의 정보를 List 형식으로 리턴
         List<Match> todayMatches = matchRepository.findMatchesByDate(LocalDateTime.now());
         return todayMatches.stream()
-                .map(match -> new MatchDto.TodayMatchResponse(match.getId(), match.getMatchDate(),
+                .map(match -> new MatchInfoDto.TodayMatchResponse(match.getId(), match.getMatchDate(),
                         match.getTeam1().getTeamName(),match.getTeam1().getTeamLogoUrl(),
                         match.getTeam2().getTeamName(),match.getTeam2().getTeamLogoUrl(),
                         calculateMatchVoteResult(match.getMatchVotes(),match.getTeam1().getId()), // team1
