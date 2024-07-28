@@ -7,6 +7,7 @@ import com.lckback.lckforall.match.service.MatchService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +22,7 @@ public class MatchController {
 
     private final MatchService matchService;
 
-    @PostMapping("/info")
+    @GetMapping("/info")
     public ApiResponse<List<MatchDto.TodayMatchResponse>> getTodayMatches() { // 오늘 경기정보 반환
 
         return ApiResponse.createSuccess(matchService.todayMatchInfo());
