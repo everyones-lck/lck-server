@@ -6,13 +6,19 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
-public class AboutMatchControllerDto {
+public class FindMatchesByDateDto {
 
 	@Getter
 	@Builder
 	public static class Response {
 		private List<MatchDetail> matchDetailList;
 		private Integer listSize;
+	}
+
+	@Getter
+	@Builder
+	public static class Parameter {
+		private LocalDate searchDate;
 	}
 
 	@Getter
