@@ -19,11 +19,11 @@ public class AboutLckMatchController {
 	private final AboutLckMatchService aboutLckMatchService;
 
 	@GetMapping("/")
-	public ApiResponse<FindMatchesByDateDto.Response> aboutLckMatchByDate(
+	public ApiResponse<FindMatchesByDateDto.Response> findMatchInformationByDate(
 		@RequestParam("searchDate") LocalDate searchDate) {
 		FindMatchesByDateDto.Parameter param = FindMatchesByDateDto.Parameter.builder().searchDate(searchDate).build();
 
-		FindMatchesByDateDto.Response response = aboutLckMatchService.aboutMatchesByDate(param);
+		FindMatchesByDateDto.Response response = aboutLckMatchService.findMatchInformationByDate(param);
 
 		return ApiResponse.createSuccess(response);
 	}

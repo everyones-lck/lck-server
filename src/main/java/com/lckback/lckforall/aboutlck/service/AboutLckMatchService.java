@@ -21,7 +21,7 @@ public class AboutLckMatchService {
 
 	private final MatchRepository matchRepository;
 
-	public FindMatchesByDateDto.Response aboutMatchesByDate(FindMatchesByDateDto.Parameter param) {
+	public FindMatchesByDateDto.Response findMatchInformationByDate(FindMatchesByDateDto.Parameter param) {
 		LocalDate searchDate = param.getSearchDate();
 		LocalDateTime start = searchDate.atStartOfDay();
 		LocalDateTime end = searchDate.atTime(23, 59, 59);
