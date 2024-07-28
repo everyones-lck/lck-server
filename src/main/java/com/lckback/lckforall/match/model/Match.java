@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.annotations.DynamicInsert;
-
 import com.lckback.lckforall.base.model.BaseEntity;
 import com.lckback.lckforall.base.type.MatchResult;
 import com.lckback.lckforall.player.model.Player;
@@ -35,7 +33,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "MATCHES")
-@DynamicInsert
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Match extends BaseEntity {
