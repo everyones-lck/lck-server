@@ -1,17 +1,11 @@
 package com.lckback.lckforall.match.service;
 
-import com.lckback.lckforall.base.api.error.CommonErrorCode;
-import com.lckback.lckforall.base.api.error.MatchErrorCode;
-import com.lckback.lckforall.base.api.error.VoteErrorCode;
-import com.lckback.lckforall.base.api.exception.RestApiException;
 import com.lckback.lckforall.match.dto.MatchDto;
 import com.lckback.lckforall.match.model.Match;
 import com.lckback.lckforall.match.repository.MatchRepository;
 import com.lckback.lckforall.vote.model.MatchVote;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,9 +16,6 @@ public class MatchService {
     private final MatchRepository matchRepository;
     public List<MatchDto.TodayMatchResponse> todayMatchInfo(){ // today match의 정보를 List 형식으로 리턴
         List<Match> todayMatches = matchRepository.findMatchesByDate(LocalDateTime.now());
-        if(todayMatches.isEmpty()){
-            throw new RestApiException(MatchErrorCode.THERE_IS_NO_MATCH_TODAY);
-        }
         return todayMatches.stream()
                 .map(match -> new MatchDto.TodayMatchResponse(match.getId(), match.getMatchDate(),
                         match.getTeam1().getTeamName(),match.getTeam1().getTeamLogoUrl(),
@@ -34,9 +25,7 @@ public class MatchService {
                 .collect(Collectors.toList());
     }
     public Double calculateMatchVoteResult(List<MatchVote> votes,Long teamId){ // 해당 팀의 승부 예측결과 %단위로 리턴
-        if(votes.isEmpty()){
-            throw new RestApiException(VoteErrorCode.THERE_IS_NO_VOTE);
-        }
+
         int teamVotes = 0;
         int totalVotes = votes.size();
 

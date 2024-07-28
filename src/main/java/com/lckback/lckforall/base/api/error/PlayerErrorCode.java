@@ -6,9 +6,8 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum VoteErrorCode implements ErrorCode{
-
-    THERE_IS_NO_VOTE(HttpStatus.NOT_FOUND, "아직 투표 결과가 없습니다");
+public enum PlayerErrorCode implements ErrorCode{
+    THERE_IS_NO_SUCH_PLAYER(HttpStatus.NOT_FOUND, "해당 선수는 존재하지 않습니다");
 
     private final HttpStatus httpStatus;
     private final String message;

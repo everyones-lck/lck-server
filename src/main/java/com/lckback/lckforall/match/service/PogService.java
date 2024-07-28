@@ -1,6 +1,8 @@
 package com.lckback.lckforall.match.service;
 
-import com.lckback.lckforall.match.dto.MatchDto;
+import com.lckback.lckforall.base.api.error.MatchErrorCode;
+import com.lckback.lckforall.base.api.error.PlayerErrorCode;
+import com.lckback.lckforall.base.api.exception.RestApiException;
 import com.lckback.lckforall.match.dto.PogDto;
 import com.lckback.lckforall.match.model.Match;
 import com.lckback.lckforall.match.repository.MatchRepository;
@@ -23,10 +25,12 @@ public class PogService {
     private final PlayerRepository playerRepository;
 
     public PogDto.MatchPogResponse matchPog(PogDto.PogServiceDto dto) { // match의 pog 정보를 리턴
-        Match match = matchRepository.findById(dto.getMatchId()).get();
+        Match match = matchRepository.findById(dto.getMatchId())
+                .orElseThrow(() -> new RestApiException(MatchErrorCode.THERE_IS_NO_SUCH_MATCH));
         List<MatchPogVote> voteResult = match.getMatchPogVotes();
         Long winnerId = findMatchPog(voteResult);
-        Player winner = playerRepository.findById(winnerId).get();
+        Player winner = playerRepository.findById(winnerId)
+                .orElseThrow(() -> new RestApiException(PlayerErrorCode.THERE_IS_NO_SUCH_PLAYER));
 
         return PogDto.MatchPogResponse.create(winnerId,winner.getName(),winner.getProfileImageUrl());
     }
