@@ -23,7 +23,7 @@ public class MatchController {
 
     @PostMapping("/info")
     public ApiResponse<List<MatchDto.TodayMatchResponse>> getTodayMatches() { // 오늘 경기정보 반환
-        List<MatchDto.TodayMatchResponse> response = matchService.todayMatchInfo();
-        return ApiResponse.createSuccess(response);
+
+        return ApiResponse.createSuccess(matchService.todayMatchInfo());
     }
 }

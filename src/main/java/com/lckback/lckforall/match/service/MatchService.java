@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MatchService {
     private final MatchRepository matchRepository;
-    public List<MatchDto.TodayMatchResponse> todayMatchInfo(){
+    public List<MatchDto.TodayMatchResponse> todayMatchInfo(){ // today match의 정보를 List 형식으로 리턴
         List<Match> todayMatches = matchRepository.findMatchesByDate(LocalDateTime.now());
         if(todayMatches.isEmpty()){
             throw new RestApiException(MatchErrorCode.THERE_IS_NO_MATCH_TODAY);
@@ -33,7 +33,7 @@ public class MatchService {
                         calculateMatchVoteResult(match.getMatchVotes(),match.getTeam2().getId()))) // team2
                 .collect(Collectors.toList());
     }
-    public Double calculateMatchVoteResult(List<MatchVote> votes,Long teamId){
+    public Double calculateMatchVoteResult(List<MatchVote> votes,Long teamId){ // 해당 팀의 승부 예측결과 %단위로 리턴
         if(votes.isEmpty()){
             throw new RestApiException(VoteErrorCode.THERE_IS_NO_VOTE);
         }

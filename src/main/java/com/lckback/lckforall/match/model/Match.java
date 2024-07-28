@@ -65,4 +65,8 @@ public class Match extends BaseEntity {
 	public void testSetMatchVotes(List<MatchVote> votes){ //test를 위한 함수
 		matchVotes = votes;
 	}
+
+	public void testSetPogVote(List<MatchPogVote> votes){ //test를 위한 함수
+		matchPogVotes = votes;
+	}
 }
