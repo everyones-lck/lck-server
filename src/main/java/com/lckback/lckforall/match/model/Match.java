@@ -42,6 +42,9 @@ public class Match extends BaseEntity {
 	@Column(nullable = false)
 	private LocalDateTime matchDate;
 
+	@Column(nullable = false)
+	private Boolean votable;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "POG_PLAYER_ID", nullable = false)
 	private Player pogPlayer;
