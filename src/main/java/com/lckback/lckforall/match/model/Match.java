@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.lckback.lckforall.base.model.BaseEntity;
+import com.lckback.lckforall.base.type.MatchResult;
 import com.lckback.lckforall.player.model.Player;
 import com.lckback.lckforall.team.model.Season;
 import com.lckback.lckforall.team.model.Team;
@@ -13,6 +14,8 @@ import com.lckback.lckforall.vote.model.MatchVote;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -41,6 +44,13 @@ public class Match extends BaseEntity {
 
 	@Column(nullable = false)
 	private LocalDateTime matchDate;
+
+	@Column(nullable = false)
+	private Integer matchNumber;
+
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private MatchResult matchResult;
 
 	@Column(nullable = false)
 	private Boolean votable;
