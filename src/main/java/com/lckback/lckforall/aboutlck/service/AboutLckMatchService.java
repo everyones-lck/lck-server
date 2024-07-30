@@ -2,6 +2,7 @@ package com.lckback.lckforall.aboutlck.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class AboutLckMatchService {
 
 	public FindMatchesByDateDto.Response findMatchInformationByDate(FindMatchesByDateDto.Parameter param) {
 		LocalDate searchDate = param.getSearchDate();
-		LocalDateTime start = searchDate.atStartOfDay();
+		LocalDateTime start = LocalDateTime.of(searchDate.minusDays(1), LocalTime.of(0, 0, 0));
 		LocalDateTime end = searchDate.atTime(23, 59, 59);
 		List<Match> matches = matchRepository.findMatchesByMatchDateBetween(start, end);
 		return AboutMatchConverter.convertToAboutMatchResponse(matches);

@@ -26,7 +26,7 @@ public class AboutMatchConverter {
 				.matchFinished(matchResult != MatchResult.NOT_FINISHED)
 				.matchNumber(match.getMatchNumber())
 				.matchDate(match.getMatchDate().toLocalDate())
-				.season(match.getTeam1().getSeason())
+				.season(match.getSeason().getName())
 				.build();
 		}).toList();
 	}
