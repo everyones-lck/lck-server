@@ -28,5 +28,7 @@ public class MatchInfoDto {
         private Double team1VoteRate;
 
         private Double team2VoteRate;
+
+        private String seasonInfo;
     }
 }
