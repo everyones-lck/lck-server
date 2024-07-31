@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,7 +21,10 @@ public class MatchService {
 	private final MatchRepository matchRepository;
 
 	public List<MatchInfoDto.TodayMatchResponse> todayMatchInfo() { // today match의 정보를 List 형식으로 리턴
-		List<Match> todayMatches = matchRepository.findMatchesByDate(LocalDateTime.now());
+		LocalDate todayDate = LocalDate.now();
+		LocalDateTime start = LocalDateTime.of(todayDate.minusDays(1), LocalTime.of(0, 0, 0));
+		LocalDateTime end = todayDate.atTime(23, 59, 59);
+		List<Match> todayMatches = matchRepository.findMatchesByMatchDateBetween(start, end);
 		return todayMatches.stream()
 			.map(match -> new MatchInfoDto.TodayMatchResponse(match.getId(), match.getMatchDate(),
 				match.getTeam1().getTeamName(), match.getTeam1().getTeamLogoUrl(),
