@@ -46,6 +46,9 @@ public class Set extends BaseEntity {
 	@Column(nullable = false)
 	private LocalDateTime endDate;
 
+	@Column(nullable = false)
+	private Boolean votable;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "MATCH_ID", nullable = false)
 	private Match match;
