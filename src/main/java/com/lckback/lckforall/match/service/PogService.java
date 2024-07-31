@@ -42,6 +42,7 @@ public class PogService {
 		Long winnerId = findMatchPog(voteResult);
 		Player winner = playerRepository.findById(winnerId)
 			.orElseThrow(() -> new RestApiException(PlayerErrorCode.THERE_IS_NO_SUCH_PLAYER));
+		match.savePogPlayer(winner); // pog player 저장
 
 		return PogInfoDto.PogResponse.create(winnerId, winner.getName(), winner.getProfileImageUrl(),
 			match.getSeason().getName(), match.getMatchNumber(), match.getMatchDate());
@@ -64,6 +65,7 @@ public class PogService {
 		Long winnerId = findSetPog(voteResult);
 		Player winner = playerRepository.findById(winnerId)
 			.orElseThrow(() -> new RestApiException(PlayerErrorCode.THERE_IS_NO_SUCH_PLAYER));
+		nowSet.savePogPlayer(winner);// pog player 저장
 
 		return PogInfoDto.PogResponse.create(winnerId, winner.getName(), winner.getProfileImageUrl(),
 			match.getSeason().getName(), match.getMatchNumber(), match.getMatchDate());

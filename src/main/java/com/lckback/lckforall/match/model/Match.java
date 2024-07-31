@@ -80,6 +80,10 @@ public class Match extends BaseEntity {
 	@OneToMany(mappedBy = "match")
 	private List<MatchVote> matchVotes = new ArrayList<>();
 
+	public void savePogPlayer(Player player){
+		pogPlayer = player;
+	}
+
 	public void testSetMatchVotes(List<MatchVote> votes) {//test를 위한 함수(삭제 에정)
 		matchVotes = votes;
 	}

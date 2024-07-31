@@ -68,6 +68,10 @@ public class Set extends BaseEntity {
 	@OneToMany(mappedBy = "set")
 	private List<SetPogVote> setPogVotes = new ArrayList<>();
 
+	public void savePogPlayer(Player player){
+		pogPlayer = player;
+	}
+
 	public void setVoteList(List<SetPogVote> voteList) {//test를 위한 함수(삭제 에정)
 		setPogVotes = voteList;
 	}
