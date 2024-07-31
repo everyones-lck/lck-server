@@ -26,7 +26,8 @@ public class MatchService {
 				match.getTeam2().getTeamName(), match.getTeam2().getTeamLogoUrl(),
 				calculateMatchVoteResult(match.getMatchVotes(), match.getTeam1().getId()), // team1
 				calculateMatchVoteResult(match.getMatchVotes(), match.getTeam2().getId()),
-				match.getSeason().getName())) // team2
+				match.getSeason().getName(),
+				match.getMatchNumber())) // team2
 			.collect(Collectors.toList());
 	}
 
@@ -45,25 +46,5 @@ public class MatchService {
 		// 득표율 계산
 		return (totalVotes > 0) ? (teamVotes / (double)totalVotes) * 100 : 0.0;
 	}
-    /*  선수 pog 득표율 계산 때 사용
-        // 팀별 투표 수와 전체 투표 수 집계
-        Map<Long, Integer> teamVoteCounts = new HashMap<>();
-        int totalVotes = votes.size();
 
-        for (MatchVote vote : votes) {
-            Long teamId = vote.getTeam().getId();
-            teamVoteCounts.put(teamId, teamVoteCounts.getOrDefault(teamId, 0) + 1);
-        }
-
-        // 팀별 득표율 계산
-        Map<Long, Double> teamVotePercentages = new HashMap<>();
-        for (Map.Entry<Long, Integer> entry : teamVoteCounts.entrySet()) {
-            Long teamId = entry.getKey();
-            int teamVotes = entry.getValue();
-            double percentage = (totalVotes > 0) ? (teamVotes / (double) totalVotes) * 100 : 0.0;
-            teamVotePercentages.put(teamId, percentage);
-        }
-        return teamVotePercentages;
-
-    */
 }

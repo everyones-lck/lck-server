@@ -1,20 +1,28 @@
 package com.lckback.lckforall.match.dto;
 
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 public class PogInfoDto {
     @Getter
     @AllArgsConstructor
-    public static class MatchPogResponse {
+    public static class PogResponse {
         private Long id;
 
         private String name;
 
         private String profileImageUrl;
 
-        public static MatchPogResponse create(Long pogId, String name, String profileImageUrl){
-            return new MatchPogResponse(pogId,name,profileImageUrl);
+        private String seasonInfo;
+
+        private Integer matchNumber;
+
+        private LocalDateTime matchDate;
+
+        public static PogResponse create(Long pogId, String name, String profileImageUrl,String seasonInfo, Integer matchNumber, LocalDateTime matchDate){
+            return new PogResponse(pogId,name,profileImageUrl,seasonInfo,matchNumber,matchDate);
         }
     }
     @Getter

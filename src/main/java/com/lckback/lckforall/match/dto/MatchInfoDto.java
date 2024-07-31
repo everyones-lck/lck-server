@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 public class MatchInfoDto {
-    @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -25,10 +24,12 @@ public class MatchInfoDto {
 
         private String team2LogoUrl;
 
-        private Double team1VoteRate;
+        private Double team1VoteRate; // 승부 예측 결과 1팀의 득표 비율
 
         private Double team2VoteRate;
 
-        private String seasonInfo;
+        private String seasonInfo; // ex) 2024 spring
+
+        private Integer matchNumber; // ex) 1st match, 2nd match
     }
 }

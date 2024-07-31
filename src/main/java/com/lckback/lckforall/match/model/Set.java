@@ -38,7 +38,7 @@ public class Set extends BaseEntity {
 	private Long id;
 
 	@Column(nullable = false)
-	private Integer matchIndex;
+	private Integer setIndex;
 
 	@Column(nullable = false)
 	private LocalDateTime startDate;
@@ -67,4 +67,8 @@ public class Set extends BaseEntity {
 
 	@OneToMany(mappedBy = "set")
 	private List<SetPogVote> setPogVotes = new ArrayList<>();
+
+	public void setVoteList(List<SetPogVote> voteList) {//test를 위한 함수(삭제 에정)
+		setPogVotes = voteList;
+	}
 }

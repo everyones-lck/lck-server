@@ -80,11 +80,19 @@ public class Match extends BaseEntity {
 	@OneToMany(mappedBy = "match")
 	private List<MatchVote> matchVotes = new ArrayList<>();
 
-	public void testSetMatchVotes(List<MatchVote> votes){ //test를 위한 함수
+	public void testSetMatchVotes(List<MatchVote> votes) {//test를 위한 함수(삭제 에정)
 		matchVotes = votes;
 	}
 
-	public void testSetPogVote(List<MatchPogVote> votes){ //test를 위한 함수
+	public void testSetPogVote(List<MatchPogVote> votes) {//test를 위한 함수(삭제 에정)
 		matchPogVotes = votes;
+	}
+
+	public void setSets(List<Set> sets) {//test를 위한 함수(삭제 에정)
+		this.sets = sets;
+	}
+
+	public void setSeason(Season season) {//test를 위한 함수(삭제 에정)
+		this.season = season;
 	}
 }
