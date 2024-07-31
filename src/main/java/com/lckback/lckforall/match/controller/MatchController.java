@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "Match", description = "Today's Match 관련 api")
 @RestController
-@RequestMapping("/api/match")
+@RequestMapping("/match")
 public class MatchController {
 
     private final MatchService matchService;
 
-    @GetMapping("/info")
+    @GetMapping("/today/info")
     public ResponseEntity<?> getTodayMatches() { // 오늘 경기정보 반환
 
         return ResponseEntity.ok()

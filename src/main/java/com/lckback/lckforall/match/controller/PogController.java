@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "POG", description = "POG 관련 api")
 @RestController
-@RequestMapping("/api/pog")
+@RequestMapping("/pog")
 public class PogController {
 
 	private final PogService pogService;
