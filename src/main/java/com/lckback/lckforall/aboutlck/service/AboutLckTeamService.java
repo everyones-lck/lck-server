@@ -1,7 +1,5 @@
 package com.lckback.lckforall.aboutlck.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -17,12 +15,10 @@ import com.lckback.lckforall.aboutlck.dto.FindTeamRatingHistoryDto;
 import com.lckback.lckforall.aboutlck.dto.FindTeamRatingBySeasonDto;
 import com.lckback.lckforall.aboutlck.dto.FindTeamWinningHistoryDto;
 import com.lckback.lckforall.aboutlck.repository.SeasonRepository;
-import com.lckback.lckforall.aboutlck.repository.SeasonTeamPlayerRepository;
 import com.lckback.lckforall.aboutlck.repository.SeasonTeamRepository;
 import com.lckback.lckforall.aboutlck.repository.TeamRepository;
 import com.lckback.lckforall.base.api.error.CommonErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
-import com.lckback.lckforall.player.model.SeasonTeamPlayer;
 import com.lckback.lckforall.team.model.Season;
 import com.lckback.lckforall.team.model.SeasonTeam;
 import com.lckback.lckforall.team.model.Team;
@@ -37,7 +33,6 @@ public class AboutLckTeamService {
 	private final TeamRepository teamRepository;
 	private final SeasonRepository seasonRepository;
 	private final SeasonTeamRepository seasonTeamRepository;
-	private final SeasonTeamPlayerRepository seasonTeamPlayerRepository;
 
 	public FindTeamRatingBySeasonDto.Response findTeamRatingBySeason(FindTeamRatingBySeasonDto.Parameter param) {
 		Season season = seasonRepository.findByName(param.getSeasonName())
