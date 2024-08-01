@@ -31,7 +31,7 @@ public class FindTeamPlayerHistoryConverter {
 
 		return FindTeamPlayerHistoryDto.SeasonDetail.builder()
 			.players(playerDetailList)
-			.playerDetailSize(playerDetailList.size())
+			.numberOfPlayerDetail(playerDetailList.size())
 			.seasonName(seasonTeam.getSeason().getName())
 			.build();
 	}

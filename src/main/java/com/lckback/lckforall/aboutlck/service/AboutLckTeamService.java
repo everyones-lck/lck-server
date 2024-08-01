@@ -34,6 +34,7 @@ public class AboutLckTeamService {
 	private final SeasonRepository seasonRepository;
 	private final SeasonTeamRepository seasonTeamRepository;
 
+	// 에러코드 구체화 필요
 	public FindTeamRatingBySeasonDto.Response findTeamRatingBySeason(FindTeamRatingBySeasonDto.Parameter param) {
 		Season season = seasonRepository.findByName(param.getSeasonName())
 			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
@@ -44,6 +45,7 @@ public class AboutLckTeamService {
 		return FindTeamRatingBySeasonConverter.convertToResponse(seasonTeamList);
 	}
 
+	// 에러코드 구체화 필요
 	public FindTeamWinningHistoryDto.Response findTeamWinningHistory(FindTeamWinningHistoryDto.Parameter param) {
 		Team team = teamRepository.findById(param.getTeamId())
 			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
@@ -57,6 +59,7 @@ public class AboutLckTeamService {
 		return FindTeamWinningHistoryConverter.convertToResponse(seasonTeams);
 	}
 
+	// 에러코드 구체화 필요
 	public FindTeamRatingHistoryDto.Response findTeamRatingHistory(FindTeamRatingHistoryDto.Parameter param) {
 		Team team = teamRepository.findById(param.getTeamId())
 			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
@@ -68,6 +71,7 @@ public class AboutLckTeamService {
 		return FindTeamRatingHistoryConverter.convertToResponse(seasonTeams);
 	}
 
+	// 에러코드 구체화 필요
 	public FindTeamPlayerHistoryDto.Response findTeamPlayerHistory(FindTeamPlayerHistoryDto.Parameter param) {
 		Team team = teamRepository.findById(param.getTeamId())
 			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
