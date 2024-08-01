@@ -25,7 +25,7 @@ public class PogController {
 	private final PogService pogService;
 
 	@PostMapping("/match")
-	public ResponseEntity<?> matchPog( // match의 pog 투표 결과 선정된 player를 반환
+	public ResponseEntity<?> getMatchPog( // match의 pog 투표 결과 선정된 player를 반환
 		@RequestBody PogInfoDto.MatchPogRequest request) {
 
 		return ResponseEntity.ok()
@@ -33,11 +33,11 @@ public class PogController {
 	}
 
 	@PostMapping("/set")
-	public ResponseEntity<?> setPog( // match의 pog 투표 결과 선정된 player를 반환
+	public ResponseEntity<?> getSetPog( // match의 pog 투표 결과 선정된 player를 반환
 		@RequestParam("set") Integer setIndex,
 		@RequestBody PogInfoDto.MatchPogRequest request) {
 
 		return ResponseEntity.ok()
-			.body(ApiResponse.createSuccess(pogService.setPog(request.toDto(),setIndex)));
+			.body(ApiResponse.createSuccess(pogService.setPog(request.toDto(), setIndex)));
 	}
 }

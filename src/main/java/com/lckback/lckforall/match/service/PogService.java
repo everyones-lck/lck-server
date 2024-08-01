@@ -54,7 +54,7 @@ public class PogService {
 		Match match = matchRepository.findById(dto.getMatchId())
 			.orElseThrow(() -> new RestApiException(MatchErrorCode.THERE_IS_NO_SUCH_MATCH));
 		List<Set> sets = match.getSets();
-		Set nowSet = sets.get(setIndex-1); // 해당 세트 탐색
+		Set nowSet = sets.get(setIndex - 1); // 해당 세트 탐색
 		if (!nowSet.getSetIndex().equals(setIndex))
 			throw new RestApiException(SetErrorCode.WRONG_SET);
 		if (nowSet.getPogPlayer() != null) { // set table에 pogPlayer값이 존재한다면 원래 있던 값 리턴

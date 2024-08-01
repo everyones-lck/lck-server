@@ -11,6 +11,6 @@ import java.util.List;
 
 @Repository("match")
 public interface MatchRepository extends JpaRepository<Match, Long> {
-    @EntityGraph(attributePaths = {"team1", "team2"})
-    List<Match> findMatchesByMatchDateBetween(LocalDateTime start, LocalDateTime end);
+	@EntityGraph(attributePaths = {"team1", "team2"})
+	List<Match> findMatchesByMatchDateBetween(LocalDateTime start, LocalDateTime end);
 }

@@ -68,7 +68,7 @@ public class Set extends BaseEntity {
 	@OneToMany(mappedBy = "set")
 	private List<SetPogVote> setPogVotes = new ArrayList<>();
 
-	public void savePogPlayer(Player player){
+	public void savePogPlayer(Player player) {
 		pogPlayer = player;
 	}
 

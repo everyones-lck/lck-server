@@ -80,7 +80,7 @@ public class Match extends BaseEntity {
 	@OneToMany(mappedBy = "match")
 	private List<MatchVote> matchVotes = new ArrayList<>();
 
-	public void savePogPlayer(Player player){
+	public void savePogPlayer(Player player) {
 		pogPlayer = player;
 	}
 
