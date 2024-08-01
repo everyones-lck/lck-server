@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum SetErrorCode implements ErrorCode {
-	WRONG_SET(HttpStatus.NOT_FOUND, "잘못된 세트 접근입니다");
+	NOT_EXIST_SET(HttpStatus.NOT_FOUND, "해당 세트는 존재하지 않습니다");
 
 	private final HttpStatus httpStatus;
 	private final String message;
