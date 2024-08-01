@@ -33,7 +33,7 @@ public class FindTeamPlayerHistoryDto {
 	@Builder
 	public static class SeasonDetail {
 		private List<PlayerDetail> players;
-		private Integer listSize;
+		private Integer playerDetailSize;
 		private String seasonName;
 	}
 
