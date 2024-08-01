@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 
 import com.lckback.lckforall.aboutlck.dto.FindTeamPlayerHistoryDto;
 import com.lckback.lckforall.player.model.Player;
-import com.lckback.lckforall.player.model.SeasonTeamPlayer;
 import com.lckback.lckforall.team.model.SeasonTeam;
 
 public class FindTeamPlayerHistoryConverter {
@@ -32,7 +31,7 @@ public class FindTeamPlayerHistoryConverter {
 
 		return FindTeamPlayerHistoryDto.SeasonDetail.builder()
 			.players(playerDetailList)
-			.listSize(playerDetailList.size())
+			.playerDetailSize(playerDetailList.size())
 			.seasonName(seasonTeam.getSeason().getName())
 			.build();
 	}
