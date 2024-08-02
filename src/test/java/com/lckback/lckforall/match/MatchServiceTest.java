@@ -97,7 +97,7 @@ public class MatchServiceTest {
 		match1.testSetMatchVotes(matchVotes1);
 		match2.testSetMatchVotes(matchVotes2);
 
-		when(matchRepository.findMatchesByDate(LocalDateTime.now())).thenReturn(matchList);// Mock의 동작 정의
+		// when(matchRepository.findMatchesByDate(LocalDateTime.now())).thenReturn(matchList);// Mock의 동작 정의
 
 		// When
 		List<MatchInfoDto.TodayMatchResponse> matchInfo = matchService.todayMatchInfo();

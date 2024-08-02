@@ -1,7 +1,5 @@
 package com.lckback.lckforall.match.controller;
 
-import java.time.LocalDate;
-
 import com.lckback.lckforall.base.api.ApiResponse;
 import com.lckback.lckforall.match.dto.PogInfoDto;
 import com.lckback.lckforall.match.service.PogService;
@@ -29,7 +27,7 @@ public class PogController {
 		@RequestBody PogInfoDto.MatchPogRequest request) {
 
 		return ResponseEntity.ok()
-			.body(ApiResponse.createSuccess(pogService.matchPog(request.toDto())));
+			.body(ApiResponse.createSuccess(pogService.findMatchPog(request.toDto())));
 	}
 
 	@PostMapping("/set")
@@ -38,6 +36,6 @@ public class PogController {
 		@RequestBody PogInfoDto.MatchPogRequest request) {
 
 		return ResponseEntity.ok()
-			.body(ApiResponse.createSuccess(pogService.setPog(request.toDto(), setIndex)));
+			.body(ApiResponse.createSuccess(pogService.findSetPog(request.toDto(), setIndex)));
 	}
 }

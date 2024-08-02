@@ -149,14 +149,14 @@ public class PogServiceTest {
 		match1.testSetPogVote(voteList);
 		match1.setSets(sets);
 		match1.setSeason(season);
-		//player2가 match pog인 경우
+		//player1가 match pog인 경우
 		when(playerRepository.findById(1L)).thenReturn(Optional.ofNullable(player1));// Mock의 동작 정의
 		when(matchRepository.findById(1L)).thenReturn(Optional.ofNullable(match1)); // 1번 match에 대해 정의
 
 		// When
 		PogInfoDto.PogServiceDto dto = new PogInfoDto.PogServiceDto(1L);
 		// PogInfoDto.PogResponse matchPogResponse = pogService.matchPog(dto); // match pog
-		PogInfoDto.PogResponse setPogResponse = pogService.setPog(dto, 1); // set pog
+		PogInfoDto.PogResponse setPogResponse = pogService.findSetPog(dto, 1); // set pog
 
 		// Then
 		// assertEquals(2L, matchPogResponse.getId()); // match pog 결과 검증

@@ -4,6 +4,7 @@ import com.lckback.lckforall.base.api.error.MatchErrorCode;
 import com.lckback.lckforall.base.api.error.PlayerErrorCode;
 import com.lckback.lckforall.base.api.error.SetErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
+import com.lckback.lckforall.base.model.BaseVote;
 import com.lckback.lckforall.match.dto.PogInfoDto;
 import com.lckback.lckforall.match.model.Match;
 import com.lckback.lckforall.match.model.Set;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 @Service
 @Transactional(readOnly = true)
@@ -31,7 +33,7 @@ public class PogService {
 
 	private final PlayerRepository playerRepository;
 
-	public PogInfoDto.PogResponse matchPog(PogInfoDto.PogServiceDto dto) { // match의 pog 정보를 리턴
+	public PogInfoDto.PogResponse findMatchPog(PogInfoDto.PogServiceDto dto) { // match의 pog 정보를 리턴
 		Match match = matchRepository.findById(dto.getMatchId())
 			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
 		if (match.getPogPlayer() != null) { // match table에 pogPlayer값이 존재한다면 원래 있던 값 리턴
@@ -41,7 +43,7 @@ public class PogService {
 		}
 		// match table에 pogPlayer값이 존재하지 않는다면 pogPlayer 계산
 		List<MatchPogVote> voteResult = match.getMatchPogVotes();
-		Long winnerId = findMatchPog(voteResult);
+		Long winnerId = getMatchPog(voteResult);
 		Player winner = playerRepository.findById(winnerId)
 			.orElseThrow(() -> new RestApiException(PlayerErrorCode.NOT_EXIST_PLAYER));
 		match.savePogPlayer(winner); // pog player 저장
@@ -50,7 +52,7 @@ public class PogService {
 			match.getSeason().getName(), match.getMatchNumber(), match.getMatchDate());
 	}
 
-	public PogInfoDto.PogResponse setPog(PogInfoDto.PogServiceDto dto, Integer setIndex) { // set의 pog 정보를 리턴
+	public PogInfoDto.PogResponse findSetPog(PogInfoDto.PogServiceDto dto, Integer setIndex) { // set의 pog 정보를 리턴
 		Match match = matchRepository.findById(dto.getMatchId())
 			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
 		List<Set> sets = match.getSets();
@@ -64,7 +66,7 @@ public class PogService {
 		}
 		// set table에 pogPlayer값이 존재하지 않는다면 pogPlayer 계산
 		List<SetPogVote> voteResult = nowSet.getSetPogVotes();
-		Long winnerId = findSetPog(voteResult);
+		Long winnerId = getSetPog(voteResult);
 		Player winner = playerRepository.findById(winnerId)
 			.orElseThrow(() -> new RestApiException(PlayerErrorCode.NOT_EXIST_PLAYER));
 		nowSet.savePogPlayer(winner);// pog player 저장
@@ -73,14 +75,14 @@ public class PogService {
 			match.getSeason().getName(), match.getMatchNumber(), match.getMatchDate());
 	}
 
-	public Long findSetPog(List<SetPogVote> votes) { // 투표 결과를 계산하는 함수
+	public <T extends BaseVote> Long findWinner(List<T> votes, Function<T, Long> getPlayerId) {
 		Map<Long, Integer> playerVoteCounts = new HashMap<>();
 
-		for (SetPogVote vote : votes) {
-			Long playerId = vote.getPlayer().getId();
-			playerVoteCounts.put(playerId, playerVoteCounts.getOrDefault(playerId, 0) + 1); // 투표 결과 반영
+		for (T vote : votes) {
+			Long playerId = getPlayerId.apply(vote);
+			playerVoteCounts.put(playerId, playerVoteCounts.getOrDefault(playerId, 0) + 1);
 		}
-		// 1등 플레이어 찾기
+
 		Long winnerId = null;
 		int maxVotes = 0;
 
@@ -88,40 +90,20 @@ public class PogService {
 			Long playerId = entry.getKey();
 			int voteCount = entry.getValue();
 
-			// 최대 투표 수를 가진 플레이어 찾기
 			if (voteCount > maxVotes) {
 				maxVotes = voteCount;
 				winnerId = playerId;
 			}
 		}
 
-		return winnerId; // 1등 플레이어의 ID 반환
-
+		return winnerId;
 	}
 
-	public Long findMatchPog(List<MatchPogVote> votes) { // 투표 결과를 계산하는 함수
-		Map<Long, Integer> playerVoteCounts = new HashMap<>();
+	public Long getSetPog(List<SetPogVote> votes) {
+		return findWinner(votes, SetPogVote::getPlayerId);
+	}
 
-		for (MatchPogVote vote : votes) {
-			Long playerId = vote.getPlayer().getId();
-			playerVoteCounts.put(playerId, playerVoteCounts.getOrDefault(playerId, 0) + 1); // 투표 결과 반영
-		}
-		// 1등 플레이어 찾기
-		Long winnerId = null;
-		int maxVotes = 0;
-
-		for (Map.Entry<Long, Integer> entry : playerVoteCounts.entrySet()) {
-			Long playerId = entry.getKey();
-			int voteCount = entry.getValue();
-
-			// 최대 투표 수를 가진 플레이어 찾기
-			if (voteCount > maxVotes) {
-				maxVotes = voteCount;
-				winnerId = playerId;
-			}
-		}
-
-		return winnerId; // 1등 플레이어의 ID 반환
-
+	public Long getMatchPog(List<MatchPogVote> votes) {
+		return findWinner(votes, MatchPogVote::getPlayerId);
 	}
 }
