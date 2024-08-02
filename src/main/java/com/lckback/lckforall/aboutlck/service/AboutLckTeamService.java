@@ -2,6 +2,7 @@ package com.lckback.lckforall.aboutlck.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +35,6 @@ public class AboutLckTeamService {
 	private final SeasonRepository seasonRepository;
 	private final SeasonTeamRepository seasonTeamRepository;
 
-	// 에러코드 구체화 필요
 	public FindTeamRatingBySeasonDto.Response findTeamRatingBySeason(FindTeamRatingBySeasonDto.Parameter param) {
 		Season season = seasonRepository.findByName(param.getSeasonName())
 			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
@@ -45,13 +45,11 @@ public class AboutLckTeamService {
 		return FindTeamRatingBySeasonConverter.convertToResponse(seasonTeamList);
 	}
 
-	// 에러코드 구체화 필요
-	public FindTeamWinningHistoryDto.Response findTeamWinningHistory(FindTeamWinningHistoryDto.Parameter param) {
-		Team team = teamRepository.findById(param.getTeamId())
-			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
-		PageRequest pageRequest = PageRequest.of(param.getPageable().getPageNumber(), param.getPageable().getPageSize(),
-			Sort.by("season.name").descending());
+	public FindTeamWinningHistoryDto.Response findTeamWinningHistory(FindTeamWinningHistoryDto.Parameter param) {
+		Team team = findTeamByTeamId(param.getTeamId());
+
+		PageRequest pageRequest = createPageRequestSortBySeasonName(param.getPageable());
 
 		Page<SeasonTeam> seasonTeams = seasonTeamRepository.findAllByTeamAndRating(team, 1,
 			pageRequest);
@@ -59,27 +57,31 @@ public class AboutLckTeamService {
 		return FindTeamWinningHistoryConverter.convertToResponse(seasonTeams);
 	}
 
-	// 에러코드 구체화 필요
 	public FindTeamRatingHistoryDto.Response findTeamRatingHistory(FindTeamRatingHistoryDto.Parameter param) {
-		Team team = teamRepository.findById(param.getTeamId())
-			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+		Team team = findTeamByTeamId(param.getTeamId());
 
-		PageRequest pageRequest = PageRequest.of(param.getPageable().getPageNumber(), param.getPageable().getPageSize(),
-			Sort.by("season.name").descending());
+		PageRequest pageRequest = createPageRequestSortBySeasonName(param.getPageable());
 		Page<SeasonTeam> seasonTeams = seasonTeamRepository.findAllByTeam(team, pageRequest);
 
 		return FindTeamRatingHistoryConverter.convertToResponse(seasonTeams);
 	}
 
-	// 에러코드 구체화 필요
 	public FindTeamPlayerHistoryDto.Response findTeamPlayerHistory(FindTeamPlayerHistoryDto.Parameter param) {
-		Team team = teamRepository.findById(param.getTeamId())
-			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+		Team team = findTeamByTeamId(param.getTeamId());
 
-		PageRequest pageRequest = PageRequest.of(param.getPageable().getPageNumber(), param.getPageable().getPageSize(),
-			Sort.by("season.name").descending());
+		PageRequest pageRequest = createPageRequestSortBySeasonName(param.getPageable());
 		Page<SeasonTeam> seasonTeams = seasonTeamRepository.findAllByTeam(team, pageRequest);
 
 		return FindTeamPlayerHistoryConverter.convertToResponse(seasonTeams);
+	}
+
+	// 에러코드 구체화 필요
+	private Team findTeamByTeamId(Long teamId) {
+		return teamRepository.findById(teamId)
+			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+	}
+
+	private PageRequest createPageRequestSortBySeasonName(Pageable pageable) {
+		return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("season.name").descending());
 	}
 }
