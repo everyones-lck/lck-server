@@ -1,6 +1,7 @@
 package com.lckback.lckforall.vote.model;
 
 import com.lckback.lckforall.base.model.BaseEntity;
+import com.lckback.lckforall.base.model.BaseVote;
 import com.lckback.lckforall.match.model.Set;
 import com.lckback.lckforall.player.model.Player;
 import com.lckback.lckforall.user.model.User;
@@ -25,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "SET_POG_VOTE")
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SetPogVote extends BaseEntity {
+public class SetPogVote extends BaseEntity implements BaseVote {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,4 +43,8 @@ public class SetPogVote extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "PLAYER_ID")
 	private Player player;
+
+	public Long getPlayerId() {
+		return player.getId();
+	}
 }
