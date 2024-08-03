@@ -1,7 +1,6 @@
 package com.lckback.lckforall.match.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -32,4 +31,5 @@ public class MatchInfoDto {
 
 		private Integer matchNumber; // ex) 1st match, 2nd match
 	}
+
 }
