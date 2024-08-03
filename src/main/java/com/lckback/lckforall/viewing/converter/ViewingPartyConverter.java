@@ -1,5 +1,6 @@
 package com.lckback.lckforall.viewing.converter;
 
+import com.lckback.lckforall.viewing.dto.GetViewingPartyDetailDTO;
 import com.lckback.lckforall.viewing.dto.ViewingPartyListDTO;
 import com.lckback.lckforall.viewing.model.ViewingParty;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,21 @@ public class ViewingPartyConverter {
                 .latitude(viewingParty.getLatitude())
                 .longitude(viewingParty.getLongitude())
                 .location(viewingParty.getLocation())
+                .build();
+    }
+    public static GetViewingPartyDetailDTO.Response toResponse(ViewingParty viewingParty) {
+        return GetViewingPartyDetailDTO.Response.builder()
+                .name(viewingParty.getName())
+                .ownerName(viewingParty.getUser().getNickname())
+                .ownerTeam(viewingParty.getUser().getTeam().getTeamName())
+                .ownerImage(viewingParty.getUser().getProfileImageUrl())
+                .qualify(viewingParty.getPartyQualify())
+                .partyDate(viewingParty.getDate())
+                .location(viewingParty.getLocation())
+                .price(viewingParty.getPrice())
+                .lowParticipate(viewingParty.getLowParticipate())
+                .highParticipate(viewingParty.getHighParticipate())
+                .etc(viewingParty.getEtc())
                 .build();
     }
 }
