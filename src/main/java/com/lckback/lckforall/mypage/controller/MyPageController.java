@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +31,16 @@ public class MyPageController {
 
         return ResponseEntity.ok()
             .body(ApiResponse.createSuccess(response));
+    }
+
+    @PatchMapping("/withdrawal")
+    public ResponseEntity<?> withdrawFromAccount(
+        @RequestHeader(name = "userId") Long userId) {
+
+        myPageService.withdrawFromAccount(userId);
+
+        return ResponseEntity.ok()
+            .body(ApiResponse.createSuccessWithNoContent());
     }
 
 }
