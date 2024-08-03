@@ -36,6 +36,6 @@ public class MyPageService {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
-		userRepository.delete(user);
+		user.withdrawFromAccount();
 	}
 }
