@@ -16,19 +16,26 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MyPageService {
 
-    private final UserRepository userRepository;
+	private final UserRepository userRepository;
 
-    public GetUserProfileDto.Response getUserProfile(Long userId) {
+	public GetUserProfileDto.Response getUserProfile(Long userId) {
 
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
-        return GetUserProfileDto.Response.builder()
-            .nickname(user.getNickname())
-            .profileImageUrl(user.getProfileImageUrl())
-            .teamLogoUrl(user.getTeam().getTeamLogoUrl())
-            .tier("temp")
-            .build();
-    }
+		return GetUserProfileDto.Response.builder()
+			.nickname(user.getNickname())
+			.profileImageUrl(user.getProfileImageUrl())
+			.teamLogoUrl(user.getTeam().getTeamLogoUrl())
+			.tier("temp")
+			.build();
+	}
 
+	public void withdrawFromAccount(Long userId) {
+
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+
+		userRepository.delete(user);
+	}
 }
