@@ -8,21 +8,21 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class ViewingPartyResponseDTO {
+public class ViewingPartyListDTO {
 
     @Builder
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class PartyListRes{
-        List<PartyRes> partyList;
+    public static class ResponseList {
+        List<Response> partyList;
     }
 
     @Builder
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class PartyRes{
+    public static class Response {
         String name;
         String userName;
         String photoURL;
