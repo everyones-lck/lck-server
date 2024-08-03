@@ -25,4 +25,13 @@ public class GetViewingPartyDetailDTO {
         Integer highParticipate;
         String etc;
     }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ParticipateResponse {
+        Long participantId;
+        Long ownerId;
+    }
 }
