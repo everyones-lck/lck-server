@@ -31,4 +31,16 @@ public class MyPageService {
             .build();
     }
 
+	public void logout(String accessToken, String refreshToken) {
+
+       /* String user의_고유_식별_값 = accessToken claim에서 뽑아오기;
+        Long accessToken_만료_기간 = ~~~;
+        redis에 blacklist 설정(accessToken_만료_기간, accessToken, "logout");
+
+        if(redis.hasKey(user의_고유_식별_값)){
+            redis.deleteRefreshToken(refreshToken);
+        }else{
+            throw new RestApiException()
+        }*/
+	}
 }
