@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lckback.lckforall.base.api.ApiResponse;
+import com.lckback.lckforall.match.dto.MatchInfoDto;
 import com.lckback.lckforall.match.service.HomeService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,8 +21,9 @@ public class HomeController {
 
 	@GetMapping("/today/information")
 	public ResponseEntity<?> getTodayMatches() {
+		MatchInfoDto.HomePageResponse response = homeService.getHomePageInformation();
 
 		return ResponseEntity.ok()
-			.body(ApiResponse.createSuccess(homeService.getHomePageInformation()));
+			.body(ApiResponse.createSuccess(response));
 	}
 }

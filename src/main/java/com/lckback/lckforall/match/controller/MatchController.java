@@ -1,6 +1,9 @@
 package com.lckback.lckforall.match.controller;
 
+import java.util.List;
+
 import com.lckback.lckforall.base.api.ApiResponse;
+import com.lckback.lckforall.match.dto.MatchInfoDto;
 import com.lckback.lckforall.match.service.MatchService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,8 +24,9 @@ public class MatchController {
 
 	@GetMapping("/today/information")
 	public ResponseEntity<?> getTodayMatches() { // 오늘 경기정보 반환
+		List<MatchInfoDto.TodayMatchResponse> responses = matchService.todayMatchInfo();
 
 		return ResponseEntity.ok()
-			.body(ApiResponse.createSuccess(matchService.todayMatchInfo()));
+			.body(ApiResponse.createSuccess(responses));
 	}
 }
