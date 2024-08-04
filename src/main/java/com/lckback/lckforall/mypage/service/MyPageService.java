@@ -96,6 +96,7 @@ public class MyPageService {
 			throw new RestApiException(TeamErrorCode.MY_TEAM_CANNOT_UPDATE);
 		}
 
+
 		user.updateMyTeam(team);
 	}
 }
