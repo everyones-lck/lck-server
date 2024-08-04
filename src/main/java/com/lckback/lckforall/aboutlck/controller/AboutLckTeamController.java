@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.lckback.lckforall.aboutlck.dto.FindTeamPlayerHistoryDto;
-import com.lckback.lckforall.aboutlck.dto.FindTeamRatingHistoryDto;
-import com.lckback.lckforall.aboutlck.dto.FindTeamRatingBySeasonDto;
-import com.lckback.lckforall.aboutlck.dto.FindTeamWinningHistoryDto;
+import com.lckback.lckforall.aboutlck.dto.team.FindTeamPlayerHistoryDto;
+import com.lckback.lckforall.aboutlck.dto.team.FindTeamRatingHistoryDto;
+import com.lckback.lckforall.aboutlck.dto.team.FindTeamRatingBySeasonDto;
+import com.lckback.lckforall.aboutlck.dto.team.FindTeamWinningHistoryDto;
 import com.lckback.lckforall.aboutlck.service.AboutLckTeamService;
 import com.lckback.lckforall.base.api.ApiResponse;
 
