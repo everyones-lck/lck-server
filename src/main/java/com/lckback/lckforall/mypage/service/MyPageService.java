@@ -39,17 +39,8 @@ public class MyPageService {
 		MultipartFile profileImage,
 		UpdateUserProfileDto.Request request) {
 
-		if (profileImage.isEmpty() && request.getNickname() == null) {
-			throw new RestApiException(CommonErrorCode.INVALID_PARAMETER);
-		}
-
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
-
-		if (!profileImage.isEmpty()) {
-			String updatedProfileImageUrl = "temp"; // s3 도입 전까지 임시
-			user.updateProfileImageUrl(updatedProfileImageUrl);
-		}
 
 		if (request.getNickname() != null) {
 
@@ -58,6 +49,15 @@ public class MyPageService {
 			}
 
 			user.updateNickname(request.getNickname());
+		}
+
+		if (request.isDefaultImage() && profileImage.isEmpty()) {
+			user.updateProfileImageUrl("defaultImage");
+		}
+
+		if (!request.isDefaultImage() && !profileImage.isEmpty()) {
+			String updatedProfileImageUrl = "temp"; // s3 도입 전까지 임시
+			user.updateProfileImageUrl(updatedProfileImageUrl);
 		}
 
 		return UpdateUserProfileDto.Response.builder()
