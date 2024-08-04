@@ -2,6 +2,7 @@ package com.lckback.lckforall.mypage.controller;
 
 import com.lckback.lckforall.base.api.ApiResponse;
 import com.lckback.lckforall.mypage.dto.GetUserProfileDto;
+import com.lckback.lckforall.mypage.dto.UpdateMyTeamDto;
 import com.lckback.lckforall.mypage.dto.UpdateUserProfileDto;
 import com.lckback.lckforall.mypage.service.MyPageService;
 
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -59,6 +61,17 @@ public class MyPageController {
 
         return ResponseEntity.ok()
             .body(ApiResponse.createSuccess(response));
+    }
+
+    @PatchMapping("/my-team")
+    public ResponseEntity<?> updateMyTeam(
+        @RequestHeader(name = "userId") Long userId,
+        @RequestBody @Valid UpdateMyTeamDto.Request request) {
+
+        myPageService.updateMyTeam(userId, request);
+
+        return ResponseEntity.ok()
+            .body(ApiResponse.createSuccessWithNoContent());
     }
 
 }
