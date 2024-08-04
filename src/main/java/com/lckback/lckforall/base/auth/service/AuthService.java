@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.lckback.lckforall.base.api.error.TokenErrorCode;
 import com.lckback.lckforall.base.api.error.UserErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
 import com.lckback.lckforall.base.auth.converter.AuthResponseConverter;
@@ -31,11 +32,16 @@ public class AuthService {
 
 	public AuthResponseDto signup(SignupUserDataDto.SignupUserData signupUserData) {
 
-		if (userRepository.findByKakaoUserId(signupUserData.getKakaoUserId()).isPresent()) {
+		if (userRepository.existsByKakaoUserId(signupUserData.getKakaoUserId())) {
 			throw new RestApiException(UserErrorCode.USER_ALREADY_EXISTS);
 		}
 
-		User user = SignupUserDataConverter.convertToUser(signupUserData);
+		String profileImageUrl = "temp"; // s3 도입 전까지 임시
+
+		// S3 업로드 로직 추가 필요
+		// String profileImageUrl = s3Service.uploadFile(signupUserData.getProfileImage());
+
+		User user = SignupUserDataConverter.convertToUser(signupUserData, profileImageUrl);
 		userRepository.save(user);
 
 		String role = user.getRole().name();
@@ -89,7 +95,7 @@ public class AuthService {
 
 		String refreshToken = tokenService.getRefreshToken(kakaoUserId);
 		if (refreshToken == null || !tokenService.validateRefreshToken(kakaoUserId, refreshToken)) {
-			throw new RestApiException(UserErrorCode.INVALID_REFRESH_TOKEN);
+			throw new RestApiException(TokenErrorCode.INVALID_REFRESH_TOKEN);
 		}
 
 		User user = userRepository.findByKakaoUserId(kakaoUserId)
