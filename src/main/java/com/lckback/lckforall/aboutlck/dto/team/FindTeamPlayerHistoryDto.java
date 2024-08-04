@@ -1,4 +1,4 @@
-package com.lckback.lckforall.aboutlck.dto;
+package com.lckback.lckforall.aboutlck.dto.team;
 
 
 import java.util.List;

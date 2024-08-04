@@ -1,10 +1,10 @@
-package com.lckback.lckforall.aboutlck.converter;
+package com.lckback.lckforall.aboutlck.converter.team;
 
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 
-import com.lckback.lckforall.aboutlck.dto.FindTeamRatingBySeasonDto;
+import com.lckback.lckforall.aboutlck.dto.team.FindTeamRatingBySeasonDto;
 import com.lckback.lckforall.team.model.SeasonTeam;
 
 public class FindTeamRatingBySeasonConverter {

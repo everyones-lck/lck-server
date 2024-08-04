@@ -1,4 +1,4 @@
-package com.lckback.lckforall.aboutlck.dto;
+package com.lckback.lckforall.aboutlck.dto.match;
 
 import java.time.LocalDate;
 import java.util.List;
