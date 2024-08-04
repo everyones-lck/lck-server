@@ -5,13 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import com.lckback.lckforall.base.type.MatchResult;
 
 public class MatchInfoDto {
 	@Getter
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class TodayMatchResponse { // today's match response
-		private Long id;
+		private Long matchId;
 
 		private LocalDateTime matchDate;
 
@@ -32,4 +35,52 @@ public class MatchInfoDto {
 		private Integer matchNumber; // ex) 1st match, 2nd match
 	}
 
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class TodayMatchDto { // today's match response
+		private Long matchId;
+
+		private LocalDateTime matchDate;
+
+		private String team1Name;
+
+		private String team1LogoUrl;
+
+		private String team2Name;
+
+		private String team2LogoUrl;
+
+		private String seasonInfo; // ex) 2024 spring
+
+		private Integer matchNumber; // ex) 1st match, 2nd match
+	}
+
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class RecentMatchResultDto {
+		private Long matchId;
+
+		private LocalDateTime matchDate;
+
+		private String team1Name;
+
+		private String team1LogoUrl;
+
+		private String team2Name;
+
+		private String team2LogoUrl;
+
+		private MatchResult matchResult;
+
+	}
+
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class HomePageResponse { // today's match response
+		List<TodayMatchDto> todayMatches;
+		List<RecentMatchResultDto> recentMatchResults;
+	}
 }
