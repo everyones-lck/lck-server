@@ -1,4 +1,4 @@
-package com.lckback.lckforall.player.model.repository;
+package com.lckback.lckforall.player.repository;
 
 import com.lckback.lckforall.match.model.Match;
 import com.lckback.lckforall.player.model.Player;
