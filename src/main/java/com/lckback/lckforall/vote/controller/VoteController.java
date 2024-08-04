@@ -28,15 +28,15 @@ public class VoteController {
 	public ResponseEntity<?> getCandidateMatchVote(
 		@RequestHeader(name = "userId") Long userId,
 		@RequestParam("match-id") Long matchId) {
-		MatchVoteDto.VoteCandidateResponse response = voteService.getCandidate(
-			new MatchVoteDto.VoteCandidateDto(userId,matchId));
+		MatchVoteDto.MatchPredictionCandidateResponse response = voteService.getMatchPredictionCandidate(
+			new MatchVoteDto.MatchPredictionCandidateDto(userId,matchId));
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccess(response));
 	}
 
 	@PostMapping("/match/making")
 	public ResponseEntity<?> makeMatchVote(
-		@RequestHeader(name = "userId") Long userId, @RequestBody MatchVoteDto.MatchPredictVoteRequest request) {
+		@RequestHeader(name = "userId") Long userId, @RequestBody MatchVoteDto.MatchPredictionRequest request) {
 		voteService.doMatchPredictionVote(request.toDto(userId));
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccessWithNoContent());
@@ -47,7 +47,7 @@ public class VoteController {
 		@RequestHeader(name = "userId") Long userId,
 		@RequestParam("matchId") Long matchId) {
 		MatchVoteDto.MatchPogVoteCandidateResponse response = voteService.getMatchPogCandidate(
-			new MatchVoteDto.VoteCandidateDto(userId, matchId));
+			new MatchVoteDto.MatchPredictionCandidateDto(userId, matchId));
 		return ResponseEntity.ok().body(ApiResponse.createSuccess(response));
 	}
 

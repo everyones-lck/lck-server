@@ -8,7 +8,7 @@ import lombok.Getter;
 public class MatchVoteDto {
 	@Getter
 	@AllArgsConstructor
-	public static class VoteCandidateResponse {
+	public static class MatchPredictionCandidateResponse {
 		private String seasonName;
 
 		private Integer matchNumber;
@@ -24,7 +24,7 @@ public class MatchVoteDto {
 
 	@Getter
 	@AllArgsConstructor
-	public static class VoteCandidateDto {
+	public static class MatchPredictionCandidateDto {
 		private Long userId;
 
 		private Long matchId;
@@ -33,7 +33,7 @@ public class MatchVoteDto {
 
 	@Getter
 	@AllArgsConstructor
-	public static class MatchPredictDto {
+	public static class MatchPredictionDto {
 		private Long userId;
 
 		private Long matchId;
@@ -44,14 +44,14 @@ public class MatchVoteDto {
 
 	@Getter
 	@AllArgsConstructor
-	public static class MatchPredictVoteRequest {
+	public static class MatchPredictionRequest {
 
 		private Long matchId;
 
 		private Long teamId;
 
-		public MatchPredictDto toDto(Long userId) {
-			return new MatchPredictDto(userId, matchId, teamId);
+		public MatchPredictionDto toDto(Long userId) {
+			return new MatchPredictionDto(userId, matchId, teamId);
 		}
 	}
 

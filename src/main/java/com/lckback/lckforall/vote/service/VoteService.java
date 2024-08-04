@@ -52,7 +52,8 @@ public class VoteService {
 	private final SetRepository setRepository;
 	private final SetPogVoteRepository setPogVoteRepository;
 
-	public MatchVoteDto.VoteCandidateResponse getCandidate(MatchVoteDto.VoteCandidateDto dto) {
+	public MatchVoteDto.MatchPredictionCandidateResponse getMatchPredictionCandidate(
+		MatchVoteDto.MatchPredictionCandidateDto dto) {
 		Long userId = dto.getUserId();
 		Long matchId = dto.getMatchId();
 		if (matchVoteRepository.existsByMatchIdAndUserId(matchId, userId)) {
@@ -60,12 +61,12 @@ public class VoteService {
 		}
 		Match match = matchRepository.findById(matchId)
 			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
-		return new MatchVoteDto.VoteCandidateResponse(match.getSeason().getName(), match.getMatchNumber()
+		return new MatchVoteDto.MatchPredictionCandidateResponse(match.getSeason().getName(), match.getMatchNumber()
 			, match.getTeam1().getId(), match.getTeam1().getTeamLogoUrl()
 			, match.getTeam2().getId(), match.getTeam2().getTeamLogoUrl());
 	}
 
-	public void doMatchPredictionVote(MatchVoteDto.MatchPredictDto dto) {
+	public void doMatchPredictionVote(MatchVoteDto.MatchPredictionDto dto) {
 		Long userId = dto.getUserId();
 		Long matchId = dto.getMatchId();
 		User user = userRepository.findById(userId)
@@ -86,9 +87,9 @@ public class VoteService {
 	}
 
 	public MatchVoteDto.MatchPogVoteCandidateResponse getMatchPogCandidate(
-		MatchVoteDto.VoteCandidateDto voteCandidateDto) {
-		Long userId = voteCandidateDto.getUserId();
-		Long matchId = voteCandidateDto.getMatchId();
+		MatchVoteDto.MatchPredictionCandidateDto dto) {
+		Long userId = dto.getUserId();
+		Long matchId = dto.getMatchId();
 		Match match = matchRepository.findById(matchId)
 			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
 		// 투표를 이미 한 경우 (투표한 선수의 정보 리턴)
