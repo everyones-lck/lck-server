@@ -8,11 +8,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lckback.lckforall.aboutlck.dto.team.FindTeamPlayerHistoryDto;
+import com.lckback.lckforall.aboutlck.dto.team.FindTeamPlayerInformationDto;
 import com.lckback.lckforall.aboutlck.dto.team.FindTeamRatingHistoryDto;
 import com.lckback.lckforall.aboutlck.dto.team.FindTeamRatingBySeasonDto;
 import com.lckback.lckforall.aboutlck.dto.team.FindTeamWinningHistoryDto;
 import com.lckback.lckforall.aboutlck.service.AboutLckTeamService;
 import com.lckback.lckforall.base.api.ApiResponse;
+import com.lckback.lckforall.base.type.PlayerRole;
 
 import lombok.RequiredArgsConstructor;
 
@@ -72,6 +74,22 @@ public class AboutLckTeamController {
 			.build();
 
 		FindTeamPlayerHistoryDto.Response data = aboutLckTeamService.findTeamPlayerHistory(parameter);
+		return ApiResponse.createSuccess(data);
+	}
+
+	@GetMapping("/{teamId}/player-information")
+	public ApiResponse<FindTeamPlayerInformationDto.Response> findTeamPlayerInformationBySeasonAndRole(
+		@PathVariable("teamId") Long teamId,
+		@RequestParam("seasonName") String seasonName,
+		@RequestParam("player_role") PlayerRole role) {
+		FindTeamPlayerInformationDto.Parameter parameter = FindTeamPlayerInformationDto.Parameter.builder()
+			.teamId(teamId)
+			.seasonName(seasonName)
+			.playerRole(role)
+			.build();
+
+		FindTeamPlayerInformationDto.Response data = aboutLckTeamService.findTeamPlayerInformation(
+			parameter);
 		return ApiResponse.createSuccess(data);
 	}
 }

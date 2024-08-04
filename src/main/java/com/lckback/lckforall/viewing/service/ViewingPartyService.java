@@ -7,4 +7,6 @@ public interface ViewingPartyService {
     ViewingPartyListDTO.ResponseList getViewingPartyList(Long userId, Integer page, Integer size);
 
     GetViewingPartyDetailDTO.Response getViewingPartyDetail(Long userId, Long viewingId);
+
+    GetViewingPartyDetailDTO.ParticipateResponse createParticipant(Long userId, Long viewingPartyId);
 }
