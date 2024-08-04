@@ -38,6 +38,16 @@ public class MyPageController {
             .body(ApiResponse.createSuccess(response));
     }
 
+    @PatchMapping("/withdrawal")
+    public ResponseEntity<?> withdrawFromAccount(
+        @RequestHeader(name = "userId") Long userId) {
+
+        myPageService.withdrawFromAccount(userId);
+
+        return ResponseEntity.ok()
+            .body(ApiResponse.createSuccessWithNoContent());
+    }
+  
     @PatchMapping("/profiles")
     public ResponseEntity<?> updateUserProfile(
         @RequestHeader(name = "userId") Long userId,

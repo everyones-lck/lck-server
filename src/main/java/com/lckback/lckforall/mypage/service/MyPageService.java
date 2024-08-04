@@ -34,6 +34,14 @@ public class MyPageService {
 			.build();
 	}
 
+	public void withdrawFromAccount(Long userId) {
+
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+
+		user.withdrawFromAccount();
+  }
+  
 	public UpdateUserProfileDto.Response updateUserProfile(
 		Long userId,
 		MultipartFile profileImage,
@@ -65,4 +73,5 @@ public class MyPageService {
 			.updatedProfileImageUrl(user.getProfileImageUrl())
 			.build();
 	}
+  
 }

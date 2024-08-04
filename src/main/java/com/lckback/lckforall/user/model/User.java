@@ -99,4 +99,8 @@ public class User extends BaseEntity {
     public void updateProfileImageUrl(String profileImageUrl) {
         this.profileImageUrl = profileImageUrl;
     }
+
+    public void withdrawFromAccount() {
+        this.status = UserStatus.INACTIVE;
+    }
 }
