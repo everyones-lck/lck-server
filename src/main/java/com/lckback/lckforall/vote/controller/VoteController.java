@@ -23,20 +23,39 @@ import lombok.RequiredArgsConstructor;
 public class VoteController {
 	private final VoteService voteService;
 
-	@GetMapping("/candidates")
+	@GetMapping("/match/candidates")
 	public ResponseEntity<?> getCandidateMatchVote(
-		@RequestHeader(name = "userId") Long userId, @RequestParam("match-id") Long matchId) {
+		@RequestHeader(name = "userId") Long userId,
+		@RequestParam("match-id") Long matchId) {
 		MatchVoteDto.VoteCandidateResponse response = voteService.getCandidate(
-			new MatchVoteDto.VoteCandidateDto(userId, matchId));
+			new MatchVoteDto.VoteCandidateDto(userId,matchId));
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccess(response));
 	}
 
-	@PostMapping("/making")
-	public ResponseEntity<?> makeVote(
+	@PostMapping("/match/making")
+	public ResponseEntity<?> makeMatchVote(
 		@RequestHeader(name = "userId") Long userId, @RequestBody MatchVoteDto.MakeVoteRequest request) {
 		voteService.doVote(request.toDto(userId));
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccessWithNoContent());
 	}
+
+	@GetMapping("/match-pog/candidates")
+	public ResponseEntity<?> getCandidateMatchPogVote(
+		@RequestHeader(name = "userId") Long userId,
+		@RequestParam("match-id") Long matchId) {
+		MatchVoteDto.MatchPogVoteCandidateResponse response = voteService.getMatchPogCandidate(
+			new MatchVoteDto.VoteCandidateDto(userId, matchId));
+		return ResponseEntity.ok().body(ApiResponse.createSuccessWithNoContent());
+	}
+
+		@PostMapping("match-pog/making")
+	public ResponseEntity<?> makeMatchPogVote(
+		@RequestHeader(name = "userId") Long userId, @RequestBody MatchVoteDto.MakeVoteRequest request) {
+		voteService.doVote(request.toDto(userId));
+		return ResponseEntity.ok()
+			.body(ApiResponse.createSuccessWithNoContent());
+	}
+
 }

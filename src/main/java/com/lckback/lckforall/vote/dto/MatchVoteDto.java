@@ -1,5 +1,7 @@
 package com.lckback.lckforall.vote.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -53,4 +55,19 @@ public class MatchVoteDto {
 		}
 	}
 
+	@Getter
+	@AllArgsConstructor
+	public static class PlayerInformation {
+		private Long playerId;
+
+		private String playerImgUrl;
+
+		private String playerName;
+	}
+
+	@Getter
+	@AllArgsConstructor
+	public static class MatchPogVoteCandidateResponse {
+		private List<PlayerInformation> information;
+	}
 }
