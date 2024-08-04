@@ -1,5 +1,6 @@
 package com.lckback.lckforall.user.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,64 +44,75 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(nullable = false, length = 20)
-    private String nickname;
+  @Column(nullable = false)
+  private String kakaoUserId;
 
-    @Column(nullable = false, length = 100)
-    private String profileImageUrl;
+  @Column(nullable = false, length = 20)
+  private String nickname;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private UserRole role;
+	@Column(nullable = false, length = 100)
+	private String profileImageUrl;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private UserStatus status;
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private UserRole role;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TEAM_ID", nullable = false)
-    private Team team;
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private UserStatus status;
 
-    @OneToMany(mappedBy = "user")
-    private List<Post> posts = new ArrayList<>();
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "TEAM_ID", nullable = false)
+	private Team team;
 
-    @OneToMany(mappedBy = "user")
-    private List<PostReport> postReports = new ArrayList<>();
+	@Column(nullable = false)
+	private LocalDateTime lastUpdatedMyTeam;
 
-    @OneToMany(mappedBy = "user")
-    private List<Comment> comments = new ArrayList<>();
+	@OneToMany(mappedBy = "user")
+	private List<Post> posts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<CommentReport> commentReports = new ArrayList<>();
+	@OneToMany(mappedBy = "user")
+	private List<PostReport> postReports = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<Participate> participatingViewingParties = new ArrayList<>();
+	@OneToMany(mappedBy = "user")
+	private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<ViewingParty> hostingViewingParties = new ArrayList<>();
+	@OneToMany(mappedBy = "user")
+	private List<CommentReport> commentReports = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<MatchVote> matchVotes = new ArrayList<>();
+	@OneToMany(mappedBy = "user")
+	private List<Participate> participatingViewingParties = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<MatchPogVote> matchPogVotes = new ArrayList<>();
+	@OneToMany(mappedBy = "user")
+	private List<ViewingParty> hostingViewingParties = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<SetPogVote> setPogVotes = new ArrayList<>();
+	@OneToMany(mappedBy = "user")
+	private List<MatchVote> matchVotes = new ArrayList<>();
 
-    public void updateNickname(String nickname) {
-        this.nickname = nickname;
-    }
+	@OneToMany(mappedBy = "user")
+	private List<MatchPogVote> matchPogVotes = new ArrayList<>();
 
-    public void updateProfileImageUrl(String profileImageUrl) {
-        this.profileImageUrl = profileImageUrl;
-    }
+	@OneToMany(mappedBy = "user")
+	private List<SetPogVote> setPogVotes = new ArrayList<>();
 
-    public void withdrawFromAccount() {
-        this.status = UserStatus.INACTIVE;
-    }
+	public void updateNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
+	public void updateProfileImageUrl(String profileImageUrl) {
+		this.profileImageUrl = profileImageUrl;
+	}
+
+	public void withdrawFromAccount() {
+		this.status = UserStatus.INACTIVE;
+	}
+
+	public void updateMyTeam(Team team) {
+		this.team = team;
+		this.lastUpdatedMyTeam = LocalDateTime.now();
+	}
 }

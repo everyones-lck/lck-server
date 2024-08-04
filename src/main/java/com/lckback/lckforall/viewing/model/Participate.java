@@ -34,4 +34,15 @@ public class Participate extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "USER_ID", nullable = false)
 	private User user;
+
+	public void setUser(User user) {
+		if(this.user != null){
+			user.getParticipatingViewingParties().remove(this);
+		}
+		this.user = user;
+		user.getParticipatingViewingParties().add(this);
+	}
+	public void setViewingParty(ViewingParty viewingParty) {
+		this.viewingParty = viewingParty;
+	}
 }

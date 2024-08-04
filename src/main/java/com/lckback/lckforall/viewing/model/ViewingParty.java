@@ -71,4 +71,12 @@ public class ViewingParty extends BaseEntity {
 
 	@OneToMany(mappedBy = "viewingParty")
 	private List<Participate> participates = new ArrayList<>();
+
+	public void setUser(User user) {
+		if(this.user != null) {
+			user.getHostingViewingParties().remove(this);
+		}
+		this.user = user;
+		user.getHostingViewingParties().add(this);
+	}
 }

@@ -1,7 +1,9 @@
 package com.lckback.lckforall.viewing.converter;
 
+import com.lckback.lckforall.user.model.User;
 import com.lckback.lckforall.viewing.dto.GetViewingPartyDetailDTO;
 import com.lckback.lckforall.viewing.dto.ViewingPartyListDTO;
+import com.lckback.lckforall.viewing.model.Participate;
 import com.lckback.lckforall.viewing.model.ViewingParty;
 import org.springframework.data.domain.Page;
 
@@ -41,6 +43,20 @@ public class ViewingPartyConverter {
                 .lowParticipate(viewingParty.getLowParticipate())
                 .highParticipate(viewingParty.getHighParticipate())
                 .etc(viewingParty.getEtc())
+                .build();
+    }
+
+    public static Participate toParticipate(User user, ViewingParty viewingParty) {
+        return Participate.builder()
+                .user(user)
+                .viewingParty(viewingParty)
+                .build();
+    }
+
+    public static GetViewingPartyDetailDTO.ParticipateResponse toParticipateResponse(Participate participate) {
+        return GetViewingPartyDetailDTO.ParticipateResponse.builder()
+                .participantId(participate.getUser().getId())
+                .ownerId(participate.getViewingParty().getUser().getId())
                 .build();
     }
 }
