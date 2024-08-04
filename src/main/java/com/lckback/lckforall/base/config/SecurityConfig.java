@@ -12,8 +12,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.lckback.lckforall.base.auth.jwt.JWTFilter;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 @Configuration
 @EnableWebSecurity
+@Slf4j
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     // 계층 권한 설정
@@ -27,15 +32,8 @@ public class SecurityConfig {
 
     private final JWTFilter jwtFilter;
 
-    public SecurityConfig(JWTFilter jwtFilter) {
-
-        this.jwtFilter = jwtFilter;
-    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        System.out.println("Setting up security filter chain");
-
         // csrf disable
         http
             .csrf((auth) -> auth.disable());
@@ -67,6 +65,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-
-
-
