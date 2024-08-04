@@ -10,6 +10,9 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.lckback.lckforall.base.api.error.TokenErrorCode;
+import com.lckback.lckforall.base.api.exception.RestApiException;
+
 import io.jsonwebtoken.Jwts;
 import lombok.Getter;
 
@@ -41,7 +44,7 @@ public class JWTUtil {
                 .getSubject();
         } catch (Exception e) {
 
-            return null;
+            throw new RestApiException(TokenErrorCode.INVALID_ACCESS_TOKEN);
         }
     }
 
@@ -56,7 +59,7 @@ public class JWTUtil {
                 .get("role", String.class);
         } catch (Exception e) {
 
-            return null;
+            throw new RestApiException(TokenErrorCode.INVALID_ACCESS_TOKEN);
         }
     }
 
@@ -66,7 +69,7 @@ public class JWTUtil {
         // 토큰이 null이거나 빈 문자열이면 만료된 것으로 처리
         if (token == null || token.trim().isEmpty()) {
 
-            return true;
+            throw new RestApiException(TokenErrorCode.INVALID_ACCESS_TOKEN);
         }
 
         try {
@@ -78,7 +81,7 @@ public class JWTUtil {
                 .before(new Date());
         } catch (Exception e) {
 
-            return true;
+            throw new RestApiException(TokenErrorCode.EXPIRED_ACCESS_TOKEN);
         }
 
     }
@@ -100,7 +103,7 @@ public class JWTUtil {
         // 토큰이 null이거나 빈 문자열이면 만료된 것으로 처리
         if (token == null || token.trim().isEmpty()) {
 
-            return false;
+            throw new RestApiException(TokenErrorCode.INVALID_ACCESS_TOKEN);
         }
 
         try {
@@ -111,7 +114,7 @@ public class JWTUtil {
 
         } catch (Exception e) {
 
-            return false;
+            throw new RestApiException(TokenErrorCode.INVALID_ACCESS_TOKEN);
         }
 
     }
