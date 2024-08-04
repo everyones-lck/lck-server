@@ -1,8 +1,8 @@
-package com.lckback.lckforall.aboutlck.converter;
+package com.lckback.lckforall.aboutlck.converter.team;
 
 import org.springframework.data.domain.Page;
 
-import com.lckback.lckforall.aboutlck.dto.FindTeamWinningHistoryDto;
+import com.lckback.lckforall.aboutlck.dto.team.FindTeamWinningHistoryDto;
 import com.lckback.lckforall.team.model.SeasonTeam;
 
 public class FindTeamWinningHistoryConverter {

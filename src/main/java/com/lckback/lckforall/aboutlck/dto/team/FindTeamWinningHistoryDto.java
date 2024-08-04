@@ -1,4 +1,4 @@
-package com.lckback.lckforall.aboutlck.dto;
+package com.lckback.lckforall.aboutlck.dto.team;
 
 import java.util.List;
 
@@ -7,31 +7,21 @@ import org.springframework.data.domain.Pageable;
 import lombok.Builder;
 import lombok.Getter;
 
-public class FindTeamRatingBySeasonDto {
-
+public class FindTeamWinningHistoryDto {
 	@Getter
 	@Builder
 	public static class Parameter {
-		String seasonName;
-		Pageable pageable;
+		private Long teamId;
+		private Pageable pageable;
 	}
 
 	@Getter
 	@Builder
 	public static class Response {
-		private List<TeamDetail> teamDetailList;
+		private List<String> seasonNameList;
 		private Integer totalPage;
 		private Long totalElements;
 		private Boolean isFirst;
 		private Boolean isLast;
-	}
-
-	@Getter
-	@Builder
-	public static class TeamDetail {
-		private Long teamId;
-		private String teamName;
-		private String teamLogoUrl;
-		private Integer rating;
 	}
 }

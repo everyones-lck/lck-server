@@ -25,17 +25,19 @@ public class PogController {
 	@PostMapping("/match")
 	public ResponseEntity<?> getMatchPog( // match의 pog 투표 결과 선정된 player를 반환
 		@RequestBody PogInfoDto.MatchPogRequest request) {
+		PogInfoDto.PogResponse response = pogService.findMatchPog(request.toDto());
 
 		return ResponseEntity.ok()
-			.body(ApiResponse.createSuccess(pogService.findMatchPog(request.toDto())));
+			.body(ApiResponse.createSuccess(response));
 	}
 
 	@PostMapping("/set")
 	public ResponseEntity<?> getSetPog( // match의 pog 투표 결과 선정된 player를 반환
 		@RequestParam("set") Integer setIndex,
 		@RequestBody PogInfoDto.MatchPogRequest request) {
+		PogInfoDto.PogResponse response = pogService.findSetPog(request.toDto(), setIndex);
 
 		return ResponseEntity.ok()
-			.body(ApiResponse.createSuccess(pogService.findSetPog(request.toDto(), setIndex)));
+			.body(ApiResponse.createSuccess(response));
 	}
 }

@@ -1,10 +1,10 @@
-package com.lckback.lckforall.aboutlck.converter;
+package com.lckback.lckforall.aboutlck.converter.team;
 
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 
-import com.lckback.lckforall.aboutlck.dto.FindTeamPlayerHistoryDto;
+import com.lckback.lckforall.aboutlck.dto.team.FindTeamPlayerHistoryDto;
 import com.lckback.lckforall.player.model.Player;
 import com.lckback.lckforall.team.model.SeasonTeam;
 
