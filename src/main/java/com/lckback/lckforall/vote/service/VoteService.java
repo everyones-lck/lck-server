@@ -14,6 +14,7 @@ import com.lckback.lckforall.base.api.error.UserErrorCode;
 import com.lckback.lckforall.base.api.error.VoteErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
 import com.lckback.lckforall.base.type.MatchResult;
+import com.lckback.lckforall.base.type.PlayerRole;
 import com.lckback.lckforall.match.model.Match;
 import com.lckback.lckforall.match.repository.MatchRepository;
 import com.lckback.lckforall.player.model.Player;
@@ -113,10 +114,12 @@ public class VoteService {
 		}
 		return new MatchVoteDto.MatchPogVoteCandidateResponse(
 			winnerTeam.getSeasonTeamPlayers().stream()
+				.filter(seasonTeamPlayer -> seasonTeamPlayer.getPlayer().getRole() == PlayerRole.LCK_ROSTER)
 				.map(seasonTeamPlayer -> new MatchVoteDto.PlayerInformation(
 					seasonTeamPlayer.getPlayer().getId(),
 					seasonTeamPlayer.getPlayer().getProfileImageUrl(),
-					seasonTeamPlayer.getPlayer().getName())).collect(Collectors.toList()));
+					seasonTeamPlayer.getPlayer().getName()))
+				.collect(Collectors.toList()));
 
 	}
 
