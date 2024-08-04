@@ -10,5 +10,5 @@ import com.lckback.lckforall.match.model.Set;
 
 public interface SetRepository extends JpaRepository<Set, Long> {
 	@Query("SELECT s FROM Set s WHERE s.setIndex = :setIndex AND s.match.id = :matchId")
-	Optional<Set> findBySetIndexAndMatchId(Integer setIdx, Long matchId);
+	Optional<Set> findBySetIndexAndMatchId(Integer setIndex, Long matchId);
 }
