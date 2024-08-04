@@ -1,6 +1,7 @@
 package com.lckback.lckforall.team.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,4 +32,6 @@ public interface SeasonTeamRepository extends JpaRepository<SeasonTeam, Long> {
 	@Query("select st from SeasonTeam st join st.seasonTeamPlayers stp where st.rating = 1 and stp in :seasonTeamPlayers")
 	Page<SeasonTeam> findWinningSeasonTeamBySeasonTeamPlayers(List<SeasonTeamPlayer> seasonTeamPlayers,
 		Pageable pageable);
+
+	Optional<SeasonTeam> findBySeasonAndTeam (Season season, Team team);
 }

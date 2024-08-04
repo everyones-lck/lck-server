@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum UserErrorCode implements ErrorCode {
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을수 없습니다."),
 
 	USER_ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근 권한이 없는 사용자입니다."),
 	USER_ALREADY_EXISTS(HttpStatus.CONFLICT, "사용자가 이미 존재합니다."),
