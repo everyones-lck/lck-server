@@ -1,4 +1,4 @@
-package com.lckback.lckforall.aboutlck.repository;
+package com.lckback.lckforall.team.repository;
 
 import java.util.Optional;
 

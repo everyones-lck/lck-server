@@ -14,13 +14,13 @@ import com.lckback.lckforall.aboutlck.converter.player.FindPlayerWinningHistoryC
 import com.lckback.lckforall.aboutlck.dto.player.FindPlayerInformationDto;
 import com.lckback.lckforall.aboutlck.dto.player.FindPlayerTeamHistoryDto;
 import com.lckback.lckforall.aboutlck.dto.player.FindPlayerWinningHistoryDto;
-import com.lckback.lckforall.aboutlck.repository.PlayerRepository;
-import com.lckback.lckforall.aboutlck.repository.SeasonTeamPlayerRepository;
-import com.lckback.lckforall.aboutlck.repository.SeasonTeamRepository;
+import com.lckback.lckforall.player.repository.SeasonTeamPlayerRepository;
+import com.lckback.lckforall.team.repository.SeasonTeamRepository;
 import com.lckback.lckforall.base.api.error.CommonErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
 import com.lckback.lckforall.player.model.Player;
 import com.lckback.lckforall.player.model.SeasonTeamPlayer;
+import com.lckback.lckforall.player.repository.PlayerRepository;
 import com.lckback.lckforall.team.model.SeasonTeam;
 
 import lombok.RequiredArgsConstructor;

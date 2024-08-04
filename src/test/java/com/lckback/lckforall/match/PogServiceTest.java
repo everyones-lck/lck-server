@@ -9,7 +9,7 @@ import com.lckback.lckforall.match.model.Set;
 import com.lckback.lckforall.match.repository.MatchRepository;
 import com.lckback.lckforall.match.service.PogService;
 import com.lckback.lckforall.player.model.Player;
-import com.lckback.lckforall.player.model.repository.PlayerRepository;
+import com.lckback.lckforall.player.repository.PlayerRepository;
 import com.lckback.lckforall.team.model.Season;
 import com.lckback.lckforall.team.model.Team;
 import com.lckback.lckforall.user.model.User;

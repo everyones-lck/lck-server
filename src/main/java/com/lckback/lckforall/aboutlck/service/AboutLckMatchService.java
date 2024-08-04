@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lckback.lckforall.aboutlck.converter.match.AboutMatchConverter;
 import com.lckback.lckforall.aboutlck.dto.match.FindMatchesByDateDto;
-import com.lckback.lckforall.aboutlck.repository.MatchRepository;
 import com.lckback.lckforall.match.model.Match;
+import com.lckback.lckforall.match.repository.MatchRepository;
 
 import lombok.RequiredArgsConstructor;
 
