@@ -59,7 +59,12 @@ public class AuthController {
         // 회원가입 후 자동으로 로그인 되도록 SecurityContextHolder에 인증 정보 설정
         setAuthentication(user.getKakaoUserId(), role, accessToken);
 
-        AuthResponseDto authResponseDto = AuthResponseConverter.convertToAuthResponseDto(accessToken, refreshToken);
+        long currentTimestamp = System.currentTimeMillis();
+        String accessTokenExpirationTime = jwtUtil.formatDate(currentTimestamp + jwtUtil.getAccessTokenExpiration());
+        String refreshTokenExpirationTime = jwtUtil.formatDate(currentTimestamp + jwtUtil.getRefreshTokenExpiration());
+
+        AuthResponseDto authResponseDto = AuthResponseConverter.convertToAuthResponseDto(accessToken, refreshToken, accessTokenExpirationTime, refreshTokenExpirationTime);
+
         return ResponseEntity.status(201).body(ApiResponse.createSuccess(authResponseDto));
     }
 
@@ -104,7 +109,12 @@ public class AuthController {
             refreshToken = tokenService.createRefreshToken(kakaoUserId, role);
         }
 
-        AuthResponseDto authResponseDto = AuthResponseConverter.convertToAuthResponseDto(accessToken, refreshToken);
+        long currentTimestamp = System.currentTimeMillis();
+        String accessTokenExpirationTime = jwtUtil.formatDate(currentTimestamp + jwtUtil.getAccessTokenExpiration());
+        String refreshTokenExpirationTime = jwtUtil.formatDate(currentTimestamp + jwtUtil.getRefreshTokenExpiration());
+
+        AuthResponseDto authResponseDto = AuthResponseConverter.convertToAuthResponseDto(accessToken, refreshToken, accessTokenExpirationTime, refreshTokenExpirationTime);
+
         return ResponseEntity.ok(ApiResponse.createSuccess(authResponseDto));
     }
 
@@ -134,7 +144,12 @@ public class AuthController {
         // SecurityContextHolder에 인증 정보 설정
         setAuthentication(kakaoUserId, role, newAccessToken);
 
-        AuthResponseDto authResponseDto = AuthResponseConverter.convertToAuthResponseDto(newAccessToken, newRefreshToken);
+        long currentTimestamp = System.currentTimeMillis();
+        String accessTokenExpirationTime = jwtUtil.formatDate(currentTimestamp + jwtUtil.getAccessTokenExpiration());
+        String refreshTokenExpirationTime = jwtUtil.formatDate(currentTimestamp + jwtUtil.getRefreshTokenExpiration());
+
+        AuthResponseDto authResponseDto = AuthResponseConverter.convertToAuthResponseDto(newAccessToken, newRefreshToken, accessTokenExpirationTime, refreshTokenExpirationTime);
+
         return ResponseEntity.ok(ApiResponse.createSuccess(authResponseDto));
     }
 
@@ -148,6 +163,3 @@ public class AuthController {
     }
 
 }
-
-
-
