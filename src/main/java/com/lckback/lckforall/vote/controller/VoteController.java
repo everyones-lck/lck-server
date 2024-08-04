@@ -35,8 +35,8 @@ public class VoteController {
 
 	@PostMapping("/match/making")
 	public ResponseEntity<?> makeMatchVote(
-		@RequestHeader(name = "userId") Long userId, @RequestBody MatchVoteDto.MakeVoteRequest request) {
-		voteService.doVote(request.toDto(userId));
+		@RequestHeader(name = "userId") Long userId, @RequestBody MatchVoteDto.MatchPredictVoteRequest request) {
+		voteService.doMatchPredictionVote(request.toDto(userId));
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccessWithNoContent());
 	}
@@ -47,13 +47,13 @@ public class VoteController {
 		@RequestParam("match-id") Long matchId) {
 		MatchVoteDto.MatchPogVoteCandidateResponse response = voteService.getMatchPogCandidate(
 			new MatchVoteDto.VoteCandidateDto(userId, matchId));
-		return ResponseEntity.ok().body(ApiResponse.createSuccessWithNoContent());
+		return ResponseEntity.ok().body(ApiResponse.createSuccess(response));
 	}
 
 		@PostMapping("match-pog/making")
 	public ResponseEntity<?> makeMatchPogVote(
-		@RequestHeader(name = "userId") Long userId, @RequestBody MatchVoteDto.MakeVoteRequest request) {
-		voteService.doVote(request.toDto(userId));
+		@RequestHeader(name = "userId") Long userId, @RequestBody MatchVoteDto.MatchPogVoteRequest request) {
+		voteService.doMatchPogVote(request.toDto(userId));
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccessWithNoContent());
 	}

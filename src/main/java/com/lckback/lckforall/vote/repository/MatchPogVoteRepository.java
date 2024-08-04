@@ -13,5 +13,5 @@ public interface MatchPogVoteRepository extends JpaRepository<MatchPogVote,Long>
 	boolean existsByMatchIdAndUserId(@Param("matchId") Long matchId, @Param("userId") Long userId);
 
 	@Query("SELECT mpv.player FROM MatchPogVote mpv WHERE mpv.match.id = :matchId AND mpv.user.id = :userId")
-	Player votePlayerByMatchIdAndUserId(@Param("matchId") Long matchId, @Param("userId") Long userId);
+	Player votedPlayerByMatchIdAndUserId(@Param("matchId") Long matchId, @Param("userId") Long userId);
 }

@@ -2,6 +2,8 @@ package com.lckback.lckforall.vote.dto;
 
 import java.util.List;
 
+import com.lckback.lckforall.vote.model.MatchPogVote;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -33,7 +35,7 @@ public class MatchVoteDto {
 
 	@Getter
 	@AllArgsConstructor
-	public static class MakeVoteDto {
+	public static class MatchPredictDto {
 		private Long userId;
 
 		private Long matchId;
@@ -44,16 +46,39 @@ public class MatchVoteDto {
 
 	@Getter
 	@AllArgsConstructor
-	public static class MakeVoteRequest {
+	public static class MatchPredictVoteRequest {
 
 		private Long matchId;
 
 		private Long teamId;
 
-		public MatchVoteDto.MakeVoteDto toDto(Long userId) {
-			return new MakeVoteDto(userId, matchId, teamId);
+		public MatchPredictDto toDto(Long userId) {
+			return new MatchPredictDto(userId, matchId, teamId);
 		}
 	}
+	@Getter
+	@AllArgsConstructor
+	public static class MatchPogVoteDto {
+		private Long userId;
+
+		private Long matchId;
+
+		private Long playerId;
+
+	}
+	@Getter
+	@AllArgsConstructor
+	public static class MatchPogVoteRequest {
+
+		private Long matchId;
+
+		private Long playerId;
+
+		public MatchPogVoteDto toDto(Long userId) {
+			return new MatchPogVoteDto(userId, matchId, playerId);
+		}
+	}
+
 
 	@Getter
 	@AllArgsConstructor
