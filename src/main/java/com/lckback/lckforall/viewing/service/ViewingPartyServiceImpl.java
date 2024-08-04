@@ -39,7 +39,7 @@ public class ViewingPartyServiceImpl implements ViewingPartyService {
     @Transactional
     public GetViewingPartyDetailDTO.Response getViewingPartyDetail(Long userId, Long viewingId) {
         userRepository.findById(userId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
-        ViewingParty viewingPartyDetail = viewingPartyRepository.findById(viewingId).orElseThrow(() -> new RuntimeException(ViewingPartyErrorCode.PARTY_NOT_FOUND.getMessage()));
+        ViewingParty viewingPartyDetail = viewingPartyRepository.findById(viewingId).orElseThrow(() -> new RestApiException(ViewingPartyErrorCode.PARTY_NOT_FOUND));
         return ViewingPartyConverter.toResponse(viewingPartyDetail);
 
     }
