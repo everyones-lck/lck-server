@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.lckback.lckforall.aboutlck.repository.TeamRepository;
 import com.lckback.lckforall.base.api.error.MatchErrorCode;
 import com.lckback.lckforall.base.api.error.PlayerErrorCode;
 import com.lckback.lckforall.base.api.error.TeamErrorCode;
@@ -22,6 +21,7 @@ import com.lckback.lckforall.player.repository.PlayerRepository;
 import com.lckback.lckforall.team.model.SeasonTeam;
 import com.lckback.lckforall.team.model.Team;
 import com.lckback.lckforall.team.repository.SeasonTeamRepository;
+import com.lckback.lckforall.team.repository.TeamRepository;
 import com.lckback.lckforall.user.model.User;
 import com.lckback.lckforall.user.respository.UserRepository;
 import com.lckback.lckforall.vote.dto.MatchVoteDto;
@@ -65,7 +65,7 @@ public class VoteService {
 		Match match = matchRepository.findById(dto.getMatchId())
 			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
 		Team team = teamRepository.findById(dto.getTeamId())
-			.orElseThrow(() -> new RestApiException(TeamErrorCode.NOT_EXIST_TEAM));
+			.orElseThrow(() -> new RestApiException(TeamErrorCode.NOT_EXISTS_TEAM));
 
 		if (matchVoteRepository.existsByMatchIdAndUserId(matchId, userId)) { // 예외처리
 			throw new RestApiException(VoteErrorCode.ALREADY_VOTE);
@@ -107,10 +107,10 @@ public class VoteService {
 		SeasonTeam winnerTeam;
 		if (match.getMatchResult().equals(MatchResult.TEAM1_WIN)) { // team1 win
 			winnerTeam = seasonTeamRepository.findBySeasonAndTeam(match.getSeason(), match.getTeam1())
-				.orElseThrow(() -> new RestApiException(TeamErrorCode.NOT_EXIST_TEAM));
+				.orElseThrow(() -> new RestApiException(TeamErrorCode.NOT_EXISTS_TEAM));
 		} else { // team2 win
 			winnerTeam = seasonTeamRepository.findBySeasonAndTeam(match.getSeason(), match.getTeam2())
-				.orElseThrow(() -> new RestApiException(TeamErrorCode.NOT_EXIST_TEAM));
+				.orElseThrow(() -> new RestApiException(TeamErrorCode.NOT_EXISTS_TEAM));
 		}
 		return new MatchVoteDto.MatchPogVoteCandidateResponse(
 			winnerTeam.getSeasonTeamPlayers().stream()
