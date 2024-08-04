@@ -1,6 +1,7 @@
 package com.lckback.lckforall.base.auth.jwt;
 
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.crypto.SecretKey;
@@ -10,8 +11,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Jwts;
+import lombok.Getter;
 
 @Component
+@Getter
 public class JWTUtil {
 
     private final SecretKey secretKey;
@@ -113,5 +116,9 @@ public class JWTUtil {
 
     }
 
-}
+    public String formatDate(long timestamp) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(new Date(timestamp));
+    }
 
+}
