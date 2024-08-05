@@ -69,7 +69,7 @@ public class ViewingParty extends BaseEntity {
 	@JoinColumn(name = "USER_ID", nullable = false)
 	private User user;
 
-	@OneToMany(mappedBy = "viewingParty")
+	@OneToMany(mappedBy = "viewingParty", orphanRemoval = true)
 	private List<Participate> participates = new ArrayList<>();
 
 	public void setUser(User user) {
