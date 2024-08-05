@@ -7,6 +7,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.lckback.lckforall.base.api.error.TokenErrorCode;
 import com.lckback.lckforall.base.api.error.UserErrorCode;
@@ -30,16 +31,17 @@ public class AuthService {
 	private final TokenService tokenService;
 	private final UserRepository userRepository;
 
-	public AuthResponseDto signup(SignupUserDataDto.SignupUserData signupUserData) {
-
+	public AuthResponseDto signup(MultipartFile profileImage, SignupUserDataDto.SignupUserData signupUserData) {
 		if (userRepository.existsByKakaoUserId(signupUserData.getKakaoUserId())) {
 			throw new RestApiException(UserErrorCode.USER_ALREADY_EXISTS);
 		}
 
 		String profileImageUrl = "temp"; // s3 도입 전까지 임시
 
-		// S3 업로드 로직 추가 필요
-		// String profileImageUrl = s3Service.uploadFile(signupUserData.getProfileImage());
+		if (profileImage != null && !profileImage.isEmpty()) {
+			// 프로필 이미지를 저장하고 URL을 얻는 로직 추가 필요
+			// 예: profileImageUrl = s3Service.uploadFile(profileImage);
+		}
 
 		User user = SignupUserDataConverter.convertToUser(signupUserData, profileImageUrl);
 		userRepository.save(user);

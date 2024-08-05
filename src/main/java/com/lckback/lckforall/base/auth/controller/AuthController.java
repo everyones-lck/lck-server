@@ -5,7 +5,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.lckback.lckforall.base.api.ApiResponse;
 import com.lckback.lckforall.base.auth.dto.AuthResponseDto;
@@ -22,12 +24,14 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody SignupUserDataDto.SignupUserData signupUserData) {
+    public ResponseEntity<?> signup(
+        @RequestPart(required = false) MultipartFile profileImage,
+        @RequestPart SignupUserDataDto.SignupUserData signupUserData) {
 
-        AuthResponseDto authResponseDto = authService.signup(signupUserData);
-
+        AuthResponseDto authResponseDto = authService.signup(profileImage, signupUserData);
         return ResponseEntity.status(201).body(ApiResponse.createSuccess(authResponseDto));
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam String kakaoUserId) {
