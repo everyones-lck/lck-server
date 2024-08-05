@@ -38,7 +38,7 @@ public class AuthService {
 
 		String profileImageUrl = "temp"; // s3 도입 전까지 임시
 
-		if (profileImage != null && !profileImage.isEmpty()) {
+		if (!profileImage.isEmpty()) {
 			// 프로필 이미지를 저장하고 URL을 얻는 로직 추가 필요
 			// 예: profileImageUrl = s3Service.uploadFile(profileImage);
 		}
