@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.lckback.lckforall.base.api.error.TokenErrorCode;
+import com.lckback.lckforall.base.api.exception.RestApiException;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,13 +49,15 @@ public class JWTFilter extends OncePerRequestFilter {
 
         String bearerToken = request.getHeader("Authorization");
 
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-
-            String token = bearerToken.substring(7);
-
-            return token;
+        if (bearerToken == null) {
+            throw new RestApiException(TokenErrorCode.MISSING_AUTHORIZATION_HEADER);
         }
-        return null;
+
+        if (!bearerToken.startsWith("Bearer ")) {
+            throw new RestApiException(TokenErrorCode.INVALID_BEARER_PREFIX);
+        }
+
+        return bearerToken.substring(7);
     }
 }
 
