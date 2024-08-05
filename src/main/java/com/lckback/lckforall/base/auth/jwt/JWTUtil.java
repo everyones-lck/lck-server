@@ -13,7 +13,9 @@ import org.springframework.stereotype.Component;
 import com.lckback.lckforall.base.api.error.TokenErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import lombok.Getter;
 
 @Component
@@ -42,8 +44,11 @@ public class JWTUtil {
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
+        } catch (MalformedJwtException e) {
+            throw new RestApiException(TokenErrorCode.MALFORMED_JWT);
+        } catch (ExpiredJwtException e) {
+            throw new RestApiException(TokenErrorCode.EXPIRED_ACCESS_TOKEN);
         } catch (Exception e) {
-
             throw new RestApiException(TokenErrorCode.INVALID_ACCESS_TOKEN);
         }
     }
@@ -57,20 +62,17 @@ public class JWTUtil {
                 .parseSignedClaims(token)
                 .getPayload()
                 .get("role", String.class);
+        } catch (MalformedJwtException e) {
+            throw new RestApiException(TokenErrorCode.MALFORMED_JWT);
+        } catch (ExpiredJwtException e) {
+            throw new RestApiException(TokenErrorCode.EXPIRED_ACCESS_TOKEN);
         } catch (Exception e) {
-
             throw new RestApiException(TokenErrorCode.INVALID_ACCESS_TOKEN);
         }
     }
 
     // 토큰 만료 여부 확인
     public boolean isTokenExpired(String token) {
-
-        // 토큰이 null이거나 빈 문자열이면 만료된 것으로 처리
-        if (token == null || token.trim().isEmpty()) {
-
-            throw new RestApiException(TokenErrorCode.INVALID_ACCESS_TOKEN);
-        }
 
         try {
             return Jwts.parser().verifyWith(secretKey)
@@ -79,15 +81,19 @@ public class JWTUtil {
                 .getPayload()
                 .getExpiration()
                 .before(new Date());
-        } catch (Exception e) {
-
+        } catch (MalformedJwtException e) {
+            throw new RestApiException(TokenErrorCode.MALFORMED_JWT);
+        } catch (ExpiredJwtException e) {
             throw new RestApiException(TokenErrorCode.EXPIRED_ACCESS_TOKEN);
+        } catch (Exception e) {
+            throw new RestApiException(TokenErrorCode.INVALID_ACCESS_TOKEN);
         }
 
     }
 
     // 토큰 생성
     public String createToken(String userId, String role, Long expiredMs) {
+
         return Jwts.builder()
             .claim("sub", userId)
             .claim("role", role)
@@ -100,20 +106,17 @@ public class JWTUtil {
     // 토큰 검증
     public boolean validateToken(String token) {
 
-        // 토큰이 null이거나 빈 문자열이면 만료된 것으로 처리
-        if (token == null || token.trim().isEmpty()) {
-
-            throw new RestApiException(TokenErrorCode.INVALID_ACCESS_TOKEN);
-        }
-
         try {
             Jwts.parser().verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token);
             return true;
 
+        } catch (MalformedJwtException e) {
+            throw new RestApiException(TokenErrorCode.MALFORMED_JWT);
+        } catch (ExpiredJwtException e) {
+            throw new RestApiException(TokenErrorCode.EXPIRED_ACCESS_TOKEN);
         } catch (Exception e) {
-
             throw new RestApiException(TokenErrorCode.INVALID_ACCESS_TOKEN);
         }
 
