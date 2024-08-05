@@ -1,6 +1,8 @@
 package com.lckback.lckforall.mypage.controller;
 
 import com.lckback.lckforall.base.api.ApiResponse;
+import com.lckback.lckforall.mypage.dto.GetUserCommentDto;
+import com.lckback.lckforall.mypage.dto.GetUserPostDto;
 import com.lckback.lckforall.mypage.dto.GetUserProfileDto;
 import com.lckback.lckforall.mypage.dto.UpdateMyTeamDto;
 import com.lckback.lckforall.mypage.dto.UpdateUserProfileDto;
@@ -10,6 +12,8 @@ import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -74,4 +78,25 @@ public class MyPageController {
             .body(ApiResponse.createSuccessWithNoContent());
     }
 
+    @GetMapping("/posts")
+    public ResponseEntity<?> getUserPost(
+        @RequestHeader(name = "userId") Long userId,
+        @PageableDefault(size = 6) Pageable pageable) {
+
+        GetUserPostDto.Response response = myPageService.getUserPost(userId, pageable);
+
+        return ResponseEntity.ok()
+            .body(ApiResponse.createSuccess(response));
+    }
+
+    @GetMapping("/comments")
+    public ResponseEntity<?> getUseComment(
+        @RequestHeader(name = "userId") Long userId,
+        @PageableDefault(size = 6) Pageable pageable) {
+
+        GetUserCommentDto.Response response = myPageService.getUserComment(userId, pageable);
+
+        return ResponseEntity.ok()
+            .body(ApiResponse.createSuccess(response));
+    }
 }
