@@ -4,6 +4,12 @@ import com.lckback.lckforall.base.api.error.CommonErrorCode;
 import com.lckback.lckforall.base.api.error.TeamErrorCode;
 import com.lckback.lckforall.base.api.error.UserErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
+import com.lckback.lckforall.community.model.Comment;
+import com.lckback.lckforall.community.model.Post;
+import com.lckback.lckforall.community.repository.CommentRepository;
+import com.lckback.lckforall.community.repository.PostRepository;
+import com.lckback.lckforall.mypage.dto.GetUserCommentDto;
+import com.lckback.lckforall.mypage.dto.GetUserPostDto;
 import com.lckback.lckforall.mypage.dto.GetUserProfileDto;
 import com.lckback.lckforall.mypage.dto.UpdateMyTeamDto;
 import com.lckback.lckforall.mypage.dto.UpdateUserProfileDto;
@@ -14,8 +20,13 @@ import com.lckback.lckforall.user.respository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +39,10 @@ public class MyPageService {
 	private final UserRepository userRepository;
 
 	private final TeamRepository teamRepository;
+
+	private final PostRepository postRepository;
+
+	private final CommentRepository commentRepository;
 
 	public GetUserProfileDto.Response getUserProfile(Long userId) {
 
@@ -96,7 +111,54 @@ public class MyPageService {
 			throw new RestApiException(TeamErrorCode.MY_TEAM_CANNOT_UPDATE);
 		}
 
-
 		user.updateMyTeam(team);
 	}
+
+	public GetUserPostDto.Response getUserPost(Long userId, Pageable pageable) {
+
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
+
+		Page<Post> posts = postRepository.findByUser(user, pageable);
+
+		return GetUserPostDto.Response.builder()
+			.posts(convertToPostInformation(posts))
+			.isLast(posts.isLast())
+			.build();
+	}
+
+	public GetUserCommentDto.Response getUserComment(Long userId, Pageable pageable) {
+
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
+
+		Page<Comment> comments = commentRepository.findByUser(user, pageable);
+
+		return GetUserCommentDto.Response.builder()
+			.comments(convertToCommentInformation(comments))
+			.isLast(comments.isLast())
+			.build();
+	}
+
+	private List<GetUserPostDto.Information> convertToPostInformation(Page<Post> posts) {
+		return posts.stream()
+			.map(post -> GetUserPostDto.Information.builder()
+				.id(post.getId())
+				.title(post.getTitle())
+				.postType(post.getPostType().getType())
+				.build())
+			.collect(Collectors.toList());
+	}
+
+	private List<GetUserCommentDto.Information> convertToCommentInformation(
+		Page<Comment> comments) {
+		return comments.stream()
+			.map(comment -> GetUserCommentDto.Information.builder()
+				.id(comment.getId())
+				.content(comment.getContent())
+				.postType(comment.getPost().getPostType().getType())
+				.build())
+			.collect(Collectors.toList());
+	}
+
 }
