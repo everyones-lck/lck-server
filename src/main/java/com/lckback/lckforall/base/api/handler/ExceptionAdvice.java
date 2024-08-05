@@ -63,16 +63,9 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<Object> handleExpiredAccessToken(ExpiredJwtException e) {
-        log.warn("handle Expired Access Token");
-        ErrorCode errorCode = TokenErrorCode.EXPIRED_ACCESS_TOKEN;
-        return handleExceptionInternal(errorCode, errorCode.getMessage());
-    }
-
-    @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<Object> handleExpiredRefreshToken(ExpiredJwtException e) {
-        log.warn("handle Expired Refresh Token");
-        ErrorCode errorCode = TokenErrorCode.EXPIRED_REFRESH_TOKEN;
+    public ResponseEntity<Object> handleExpiredJwt(ExpiredJwtException e) {
+        log.warn("handle Expired JWT");
+        ErrorCode errorCode = TokenErrorCode.EXPIRED_TOKEN;
         return handleExceptionInternal(errorCode, errorCode.getMessage());
     }
 
