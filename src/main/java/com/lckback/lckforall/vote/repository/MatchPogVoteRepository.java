@@ -1,5 +1,7 @@
 package com.lckback.lckforall.vote.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,5 +15,5 @@ public interface MatchPogVoteRepository extends JpaRepository<MatchPogVote,Long>
 	boolean existsByMatchIdAndUserId(@Param("matchId") Long matchId, @Param("userId") Long userId);
 
 	@Query("SELECT mpv.player FROM MatchPogVote mpv WHERE mpv.match.id = :matchId AND mpv.user.id = :userId")
-	Player votedPlayerByMatchIdAndUserId(@Param("matchId") Long matchId, @Param("userId") Long userId);
+	Optional<Player> votedPlayerByMatchIdAndUserId(@Param("matchId") Long matchId, @Param("userId") Long userId);
 }

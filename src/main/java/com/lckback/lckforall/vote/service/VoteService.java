@@ -69,6 +69,7 @@ public class VoteService {
 	public void doMatchPredictionVote(MatchVoteDto.MatchPredictionDto dto) {
 		Long userId = dto.getUserId();
 		Long matchId = dto.getMatchId();
+
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 		Match match = matchRepository.findById(dto.getMatchId())
@@ -81,7 +82,9 @@ public class VoteService {
 		}
 		// 투표 생성
 		MatchVote vote = MatchVote.builder()
-			.user(user).match(match).team(team)
+			.user(user)
+			.match(match)
+			.team(team)
 			.build();
 		matchVoteRepository.save(vote);
 	}
@@ -90,11 +93,11 @@ public class VoteService {
 		MatchVoteDto.MatchPredictionCandidateDto dto) {
 		Long userId = dto.getUserId();
 		Long matchId = dto.getMatchId();
-		Match match = matchRepository.findById(matchId)
-			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
+
 		// 투표를 이미 한 경우 (투표한 선수의 정보 리턴)
-		if (matchPogVoteRepository.existsByMatchIdAndUserId(matchId, userId)) {
-			Player votedPlayer = matchPogVoteRepository.votedPlayerByMatchIdAndUserId(matchId, userId);
+		if (matchPogVoteRepository.votedPlayerByMatchIdAndUserId(matchId, userId).isPresent()) {
+			Player votedPlayer = matchPogVoteRepository.votedPlayerByMatchIdAndUserId(matchId, userId)
+				.orElseThrow(() -> new RestApiException(VoteErrorCode.NOT_EXIST_VOTE));
 			MatchVoteDto.MatchPogVoteCandidateResponse response = new MatchVoteDto.MatchPogVoteCandidateResponse(
 				Collections.singletonList(new MatchVoteDto.PlayerInformation(
 					votedPlayer.getId(),
@@ -104,6 +107,9 @@ public class VoteService {
 			);
 			return response;
 		}
+
+		Match match = matchRepository.findById(matchId)
+			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
 		// 투표를 하지 않았고 투표 시간이 다 된 경우
 		if (!match.getVotable()) {
 			throw new RestApiException(VoteErrorCode.VOTE_TIME_OVER);
@@ -113,16 +119,26 @@ public class VoteService {
 			throw new RestApiException(VoteErrorCode.MATCH_NOT_END);
 		}
 		// 투표를 하지 않았고 투표 시간이 남은 경우
-		SeasonTeam winnerTeam;
+
 		if (match.getMatchResult().equals(MatchResult.TEAM1_WIN)) { // team1 win
-			winnerTeam = seasonTeamRepository.findBySeasonAndTeam(match.getSeason(), match.getTeam1())
+			SeasonTeam seasonTeam1 = seasonTeamRepository.findBySeasonAndTeam(match.getSeason(), match.getTeam1())
 				.orElseThrow(() -> new RestApiException(TeamErrorCode.NOT_EXISTS_TEAM));
-		} else { // team2 win
-			winnerTeam = seasonTeamRepository.findBySeasonAndTeam(match.getSeason(), match.getTeam2())
-				.orElseThrow(() -> new RestApiException(TeamErrorCode.NOT_EXISTS_TEAM));
+
+			return new MatchVoteDto.MatchPogVoteCandidateResponse(
+				seasonTeam1.getSeasonTeamPlayers().stream()
+					.filter(seasonTeamPlayer -> seasonTeamPlayer.getPlayer().getRole() == PlayerRole.LCK_ROSTER)
+					.map(seasonTeamPlayer -> new MatchVoteDto.PlayerInformation(
+						seasonTeamPlayer.getPlayer().getId(),
+						seasonTeamPlayer.getPlayer().getProfileImageUrl(),
+						seasonTeamPlayer.getPlayer().getName()))
+					.collect(Collectors.toList()));
 		}
+		// team2 win
+		SeasonTeam seasonTeam2 = seasonTeamRepository.findBySeasonAndTeam(match.getSeason(), match.getTeam2())
+			.orElseThrow(() -> new RestApiException(TeamErrorCode.NOT_EXISTS_TEAM));
+
 		return new MatchVoteDto.MatchPogVoteCandidateResponse(
-			winnerTeam.getSeasonTeamPlayers().stream()
+			seasonTeam2.getSeasonTeamPlayers().stream()
 				.filter(seasonTeamPlayer -> seasonTeamPlayer.getPlayer().getRole() == PlayerRole.LCK_ROSTER)
 				.map(seasonTeamPlayer -> new MatchVoteDto.PlayerInformation(
 					seasonTeamPlayer.getPlayer().getId(),
@@ -153,16 +169,17 @@ public class VoteService {
 
 	public SetVoteDto.SetPogVoteCandidateResponse getSetPogCandidate(SetVoteDto.VoteCandidateDto dto) {
 		Long userId = dto.getUserId();
-		Integer setIdx = dto.getSetIdx();
+		Integer setIndex = dto.getSetIndex();
 		Long matchId = dto.getMatchId();
-		Match match = matchRepository.findById(matchId)
-			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
-		// setIdx가 잘못 주어졌을 때 예외처리
-		Set set = setRepository.findBySetIndexAndMatchId(setIdx, matchId)
+		// setIndex가 잘못 주어졌을 때 예외처리
+		Set set = setRepository.findBySetIndexAndMatchId(setIndex, matchId)
 			.orElseThrow(() -> new RestApiException(SetErrorCode.NOT_EXIST_SET));
+		Match match = set.getMatch();
 		// 투표를 이미 한 경우 (투표한 선수의 정보 리턴)
-		if (setPogVoteRepository.existsBySetIdAndUserId(set.getId(), userId)) {
-			Player votedPlayer = setPogVoteRepository.votedPlayerBySetIdAndUserId(set.getId(), userId);
+		if (setPogVoteRepository.votedPlayerBySetIdAndUserId(set.getId(), userId).isPresent()) {
+			Player votedPlayer = setPogVoteRepository.votedPlayerBySetIdAndUserId(set.getId(), userId)
+				.orElseThrow(() -> new RestApiException(VoteErrorCode.NOT_EXIST_VOTE));
+
 			SetVoteDto.SetPogVoteCandidateResponse response = new SetVoteDto.SetPogVoteCandidateResponse(
 				Collections.singletonList(new SetVoteDto.PlayerInformation(
 					votedPlayer.getId(),
@@ -177,16 +194,24 @@ public class VoteService {
 			throw new RestApiException(VoteErrorCode.VOTE_TIME_OVER);
 		}
 		// 투표를 하지 않았고 투표 시간이 남은 경우
-		SeasonTeam winnerTeam;
 		if (set.getWinnerTeam().equals(match.getTeam1())) { // team1 win
-			winnerTeam = seasonTeamRepository.findBySeasonAndTeam(match.getSeason(), match.getTeam1())
+			SeasonTeam seasonTeam1 = seasonTeamRepository.findBySeasonAndTeam(match.getSeason(), match.getTeam1())
 				.orElseThrow(() -> new RestApiException(TeamErrorCode.NOT_EXISTS_TEAM));
-		} else { // team2 win
-			winnerTeam = seasonTeamRepository.findBySeasonAndTeam(match.getSeason(), match.getTeam2())
-				.orElseThrow(() -> new RestApiException(TeamErrorCode.NOT_EXISTS_TEAM));
-		}
+
+			return new SetVoteDto.SetPogVoteCandidateResponse(
+				seasonTeam1.getSeasonTeamPlayers().stream()
+					.filter(seasonTeamPlayer -> seasonTeamPlayer.getPlayer().getRole() == PlayerRole.LCK_ROSTER)
+					.map(seasonTeamPlayer -> new SetVoteDto.PlayerInformation(
+						seasonTeamPlayer.getPlayer().getId(),
+						seasonTeamPlayer.getPlayer().getProfileImageUrl(),
+						seasonTeamPlayer.getPlayer().getName()))
+					.collect(Collectors.toList()));
+		} // team2 win
+		SeasonTeam seasonTeam2 = seasonTeamRepository.findBySeasonAndTeam(match.getSeason(), match.getTeam2())
+			.orElseThrow(() -> new RestApiException(TeamErrorCode.NOT_EXISTS_TEAM));
+
 		return new SetVoteDto.SetPogVoteCandidateResponse(
-			winnerTeam.getSeasonTeamPlayers().stream()
+			seasonTeam2.getSeasonTeamPlayers().stream()
 				.filter(seasonTeamPlayer -> seasonTeamPlayer.getPlayer().getRole() == PlayerRole.LCK_ROSTER)
 				.map(seasonTeamPlayer -> new SetVoteDto.PlayerInformation(
 					seasonTeamPlayer.getPlayer().getId(),
@@ -199,11 +224,9 @@ public class VoteService {
 	public void doSetPogVote(SetVoteDto.SetPogVoteDto dto) {
 		Player player = playerRepository.findById(dto.getPlayerId())
 			.orElseThrow(() -> new RestApiException(PlayerErrorCode.NOT_EXIST_PLAYER));
-		Match match = matchRepository.findById(dto.getMatchId())
-			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
 		User user = userRepository.findById(dto.getUserId())
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
-		Set set = setRepository.findBySetIndexAndMatchId(dto.getSetIdx(), match.getId())
+		Set set = setRepository.findBySetIndexAndMatchId(dto.getSetIndex(), dto.getMatchId())
 			.orElseThrow(() -> new RestApiException(SetErrorCode.NOT_EXIST_SET));
 		// 이미 투표 했다면 예외처리
 		if (setPogVoteRepository.existsBySetIdAndUserId(set.getId(), user.getId())) {

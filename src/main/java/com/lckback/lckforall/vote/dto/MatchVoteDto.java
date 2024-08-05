@@ -85,7 +85,7 @@ public class MatchVoteDto {
 	public static class PlayerInformation {
 		private Long playerId;
 
-		private String playerImgUrl;
+		private String playerProfileImageUrl;
 
 		private String playerName;
 	}

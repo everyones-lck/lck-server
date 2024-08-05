@@ -20,7 +20,7 @@ public class SetVoteDto {
 
 		private Long matchId;
 
-		private Integer setIdx;
+		private Integer setIndex;
 
 	}
 	@Getter
@@ -30,7 +30,7 @@ public class SetVoteDto {
 
 		private Long matchId;
 
-		private Integer setIdx;
+		private Integer setIndex;
 
 		private Long playerId;
 
@@ -41,7 +41,7 @@ public class SetVoteDto {
 	public static class PlayerInformation {
 		private Long playerId;
 
-		private String playerImgUrl;
+		private String playerProfileImageUrl;
 
 		private String playerName;
 	}
@@ -51,12 +51,12 @@ public class SetVoteDto {
 	public static class SetPogVoteRequest {
 		private Long matchId;
 
-		private Integer setIdx;
+		private Integer setIndex;
 
 		private Long playerId;
 
 		public SetVoteDto.SetPogVoteDto toDto(Long userId) {
-			return new SetVoteDto.SetPogVoteDto(userId, matchId, setIdx, playerId);
+			return new SetVoteDto.SetPogVoteDto(userId, matchId, setIndex, playerId);
 		}
 	}
 }

@@ -63,9 +63,9 @@ public class VoteController {
 	public ResponseEntity<?> getCandidateSetPogVote(
 		@RequestHeader(name = "userId") Long userId,
 		@RequestParam("matchId") Long matchId,
-		@RequestParam("setIdx") Integer setIdx) {
+		@RequestParam("setIndex") Integer setIndex) {
 		SetVoteDto.SetPogVoteCandidateResponse response = voteService.getSetPogCandidate(
-			new SetVoteDto.VoteCandidateDto(userId, matchId, setIdx));
+			new SetVoteDto.VoteCandidateDto(userId, matchId, setIndex));
 		return ResponseEntity.ok().body(ApiResponse.createSuccess(response));
 	}
 
