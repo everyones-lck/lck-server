@@ -34,7 +34,7 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam String kakaoUserId) {
+    public ResponseEntity<?> login(@RequestBody String kakaoUserId) {
 
         AuthResponseDto authResponseDto = authService.login(kakaoUserId);
 
@@ -42,7 +42,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestParam String kakaoUserId) {
+    public ResponseEntity<?> refresh(@RequestBody String kakaoUserId) {
 
         AuthResponseDto authResponseDto = authService.refresh(kakaoUserId);
 
