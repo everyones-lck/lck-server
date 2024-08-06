@@ -1,5 +1,7 @@
 package com.lckback.lckforall.base.auth.controller;
 
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,7 +35,9 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody String kakaoUserId) {
+    public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
+
+        String kakaoUserId = request.get("kakaoUserId");
 
         AuthResponseDto authResponseDto = authService.login(kakaoUserId);
 
@@ -41,7 +45,9 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestBody String kakaoUserId) {
+    public ResponseEntity<?> refresh(@RequestBody Map<String, String> request) {
+
+        String kakaoUserId = request.get("kakaoUserId");
 
         AuthResponseDto authResponseDto = authService.refresh(kakaoUserId);
 

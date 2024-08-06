@@ -66,25 +66,20 @@ public class AuthService {
 
 		String role = user.getRole().name();
 
-		SecurityContext context = SecurityContextHolder.getContext();
-		String accessToken = null;
-
-		if (context.getAuthentication() != null && context.getAuthentication().getPrincipal().equals(kakaoUserId)) {
-			accessToken = (String) context.getAuthentication().getCredentials();
-
-			if (jwtUtil.isTokenExpired(accessToken)) {
-				accessToken = tokenService.createAccessToken(kakaoUserId, role);
-				setAuthentication(kakaoUserId, role, accessToken);
-			}
-		} else {
-			accessToken = tokenService.createAccessToken(kakaoUserId, role);
-			setAuthentication(kakaoUserId, role, accessToken);
-		}
-
+		String accessToken;
 		String refreshToken = tokenService.getRefreshToken(kakaoUserId);
-		if (refreshToken == null || !tokenService.validateRefreshToken(kakaoUserId, refreshToken)) {
+
+		// Redis에서 RefreshToken을 확인
+		if (refreshToken != null && tokenService.validateRefreshToken(kakaoUserId, refreshToken)) {
+			// RefreshToken이 유효한 경우 AccessToken만 생성
+			accessToken = tokenService.createAccessToken(kakaoUserId, role);
+		} else {
+			// RefreshToken이 없거나 유효하지 않은 경우 AccessToken과 RefreshToken을 모두 생성
+			accessToken = tokenService.createAccessToken(kakaoUserId, role);
 			refreshToken = tokenService.createRefreshToken(kakaoUserId, role);
 		}
+
+		setAuthentication(kakaoUserId, role, accessToken);
 
 		long currentTimestamp = System.currentTimeMillis();
 		String accessTokenExpirationTime = jwtUtil.formatDate(currentTimestamp + jwtUtil.getAccessTokenExpiration());
