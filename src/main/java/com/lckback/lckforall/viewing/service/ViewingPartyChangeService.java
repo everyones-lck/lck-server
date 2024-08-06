@@ -6,4 +6,7 @@ public interface ViewingPartyChangeService {
 
     ChangeViewingPartyDTO.Response createViewingParty(Long userId, ChangeViewingPartyDTO.CreateViewingPartyRequest request);
 
+    ChangeViewingPartyDTO.Response updateViewingParty(Long userId, Long viewingPartyId, ChangeViewingPartyDTO.CreateViewingPartyRequest request);
+
+    ChangeViewingPartyDTO.Response deleteViewingParty(Long userId, Long viewingPartyId);
 }
