@@ -34,7 +34,7 @@ public class ViewingPartyServiceImpl implements ViewingPartyService {
     @Override
     @Transactional(readOnly = true)
     public ViewingPartyListDTO.ResponseList getViewingPartyList(Long userId, Integer page, Integer size) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
+        userRepository.findById(userId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
         Page<ViewingParty> viewingPartyList = viewingPartyRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(page, size));
         return ViewingPartyConverter.toPartyListResponse(viewingPartyList);
     }
