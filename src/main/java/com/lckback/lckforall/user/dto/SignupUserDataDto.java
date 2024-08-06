@@ -13,13 +13,10 @@ public class SignupUserDataDto {
     @Builder
     public static class SignupUserData {
 
-        private Long id;
         private String kakaoUserId;
         private String nickName;
-        private MultipartFile profileImage;
         private String role;
-        private String status;
-        private Team team;
+        private Long teamId;
     }
 
 }

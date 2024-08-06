@@ -2,12 +2,16 @@ package com.lckback.lckforall.base.auth.jwt;
 
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import com.lckback.lckforall.base.api.error.TokenErrorCode;
@@ -122,9 +126,36 @@ public class JWTUtil {
 
     }
 
+    public void validateRefreshToken(String token) {
+
+        try {
+            Jwts.parser().verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token);
+            return;
+
+        } catch (MalformedJwtException e) {
+            throw new RestApiException(TokenErrorCode.MALFORMED_JWT);
+        } catch (ExpiredJwtException e) {
+            throw new RestApiException(TokenErrorCode.EXPIRED_REFRESH_TOKEN);
+        } catch (Exception e) {
+            throw new RestApiException(TokenErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+    }
+
     public String formatDate(long timestamp) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(new Date(timestamp));
+    }
+
+    // 잠시 테스트
+    // Authentication 객체 생성
+    public Authentication getAuthentication(String token) {
+        String userId = getUserId(token);
+        String role = getRole(token);
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.startsWith("ROLE_") ? role : "ROLE_" + role);
+        return new UsernamePasswordAuthenticationToken(userId, null, Collections.singleton(authority));
     }
 
 }

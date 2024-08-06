@@ -1,14 +1,14 @@
 package com.lckback.lckforall.base.auth.service;
 
-import java.util.Collections;
-
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.lckback.lckforall.base.api.ApiResponse;
+import com.lckback.lckforall.base.api.error.TeamErrorCode;
 import com.lckback.lckforall.base.api.error.TokenErrorCode;
 import com.lckback.lckforall.base.api.error.UserErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
@@ -16,6 +16,10 @@ import com.lckback.lckforall.base.auth.converter.AuthResponseConverter;
 import com.lckback.lckforall.base.auth.dto.AuthResponseDto;
 import com.lckback.lckforall.base.auth.jwt.JWTUtil;
 import com.lckback.lckforall.base.auth.jwt.TokenService;
+import com.lckback.lckforall.base.auth.jwt.model.RefreshToken;
+import com.lckback.lckforall.base.auth.jwt.repository.RefreshTokenRepository;
+import com.lckback.lckforall.team.model.Team;
+import com.lckback.lckforall.team.repository.TeamRepository;
 import com.lckback.lckforall.user.converter.SignupUserDataConverter;
 import com.lckback.lckforall.user.dto.SignupUserDataDto;
 import com.lckback.lckforall.user.model.User;
@@ -25,11 +29,14 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthService {
 
 	private final JWTUtil jwtUtil;
 	private final TokenService tokenService;
 	private final UserRepository userRepository;
+	private final TeamRepository teamRepository;
+	private final RefreshTokenRepository refreshTokenRepository;
 
 	public AuthResponseDto signup(MultipartFile profileImage, SignupUserDataDto.SignupUserData signupUserData) {
 		if (userRepository.existsByKakaoUserId(signupUserData.getKakaoUserId())) {
@@ -43,12 +50,23 @@ public class AuthService {
 			// 예: profileImageUrl = s3Service.uploadFile(profileImage);
 		}
 
-		User user = SignupUserDataConverter.convertToUser(signupUserData, profileImageUrl);
+		Team team = teamRepository.findById(signupUserData.getTeamId()).orElseThrow(() -> new RestApiException(
+			TeamErrorCode.NOT_EXISTS_TEAM
+		));
+
+		User user = SignupUserDataConverter.convertToUser(signupUserData, profileImageUrl, team);
 		userRepository.save(user);
 
 		String role = user.getRole().name();
 		String accessToken = tokenService.createAccessToken(user.getKakaoUserId(), role);
 		String refreshToken = tokenService.createRefreshToken(user.getKakaoUserId(), role);
+
+		RefreshToken savedRefreshToken = RefreshToken.builder()
+			.kakaoUserId(user.getKakaoUserId())
+			.refreshToken(refreshToken)
+			.build();
+
+		refreshTokenRepository.save(savedRefreshToken);
 
 		setAuthentication(user.getKakaoUserId(), role, accessToken);
 
@@ -66,18 +84,16 @@ public class AuthService {
 
 		String role = user.getRole().name();
 
-		String accessToken;
-		String refreshToken = tokenService.getRefreshToken(kakaoUserId);
+		// 토큰 생성
+		String accessToken = tokenService.createAccessToken(kakaoUserId, role);
+		String refreshToken = tokenService.createRefreshToken(kakaoUserId, role);
 
-		// Redis에서 RefreshToken을 확인
-		if (refreshToken != null && tokenService.validateRefreshToken(kakaoUserId, refreshToken)) {
-			// RefreshToken이 유효한 경우 AccessToken만 생성
-			accessToken = tokenService.createAccessToken(kakaoUserId, role);
-		} else {
-			// RefreshToken이 없거나 유효하지 않은 경우 AccessToken과 RefreshToken을 모두 생성
-			accessToken = tokenService.createAccessToken(kakaoUserId, role);
-			refreshToken = tokenService.createRefreshToken(kakaoUserId, role);
-		}
+		RefreshToken refreshToken1 = RefreshToken.builder()
+			.kakaoUserId(user.getKakaoUserId())
+			.refreshToken(refreshToken)
+			.build();
+
+		refreshTokenRepository.save(refreshToken1);
 
 		setAuthentication(kakaoUserId, role, accessToken);
 
@@ -88,10 +104,14 @@ public class AuthService {
 		return AuthResponseConverter.convertToAuthResponseDto(accessToken, refreshToken, accessTokenExpirationTime, refreshTokenExpirationTime);
 	}
 
-	public AuthResponseDto refresh(String kakaoUserId) {
+	public AuthResponseDto refresh(String kakaoUserId, String refreshToken) {
 
-		String refreshToken = tokenService.getRefreshToken(kakaoUserId);
-		if (refreshToken == null || !tokenService.validateRefreshToken(kakaoUserId, refreshToken)) {
+		jwtUtil.validateRefreshToken(refreshToken);
+
+		RefreshToken findRefreshToken = refreshTokenRepository.findById(kakaoUserId).orElseThrow(() -> new RestApiException(TokenErrorCode.INVALID_REFRESH_TOKEN));
+
+		if (!refreshToken.equals(findRefreshToken.getRefreshToken())) {
+
 			throw new RestApiException(TokenErrorCode.INVALID_REFRESH_TOKEN);
 		}
 
@@ -100,11 +120,11 @@ public class AuthService {
 
 		String role = user.getRole().name();
 		String newAccessToken = tokenService.createAccessToken(kakaoUserId, role);
+		String newRefreshToken = tokenService.createRefreshToken(kakaoUserId, role);
 
-		String newRefreshToken = refreshToken;
-		if (jwtUtil.isTokenExpired(refreshToken)) {
-			newRefreshToken = tokenService.createRefreshToken(kakaoUserId, role);
-		}
+		RefreshToken savedRefreshToken = new RefreshToken(kakaoUserId, newRefreshToken);
+
+		refreshTokenRepository.save(savedRefreshToken);
 
 		setAuthentication(kakaoUserId, role, newAccessToken);
 
@@ -115,10 +135,33 @@ public class AuthService {
 		return AuthResponseConverter.convertToAuthResponseDto(newAccessToken, newRefreshToken, accessTokenExpirationTime, refreshTokenExpirationTime);
 	}
 
-	private void setAuthentication(String kakaoUserId, String role, String accessToken) {
+	public ResponseEntity<?> testToken(String token) {
+		try {
+			// 토큰에서 Bearer 제거
+			String actualToken = token.substring(7);
+			// 토큰 검증
+			if (jwtUtil.isTokenExpired(actualToken)) {
+				throw new RestApiException(TokenErrorCode.EXPIRED_TOKEN);
+			}
 
-		SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.startsWith("ROLE_") ? role : "ROLE_" + role);
-		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(kakaoUserId, accessToken, Collections.singleton(authority));
+			Authentication authentication = jwtUtil.getAuthentication(actualToken);
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+
+			return ResponseEntity.ok(ApiResponse.createSuccess("Token is valid"));
+
+		} catch (Exception e) {
+			throw new RestApiException(TokenErrorCode.INVALID_ACCESS_TOKEN);
+		}
+	}
+
+	// 카카오 유저 아이디 가져옴
+	public String getKakaoUserId(String accessToken) {
+
+		return jwtUtil.getUserId(accessToken);
+	}
+
+	private void setAuthentication(String kakaoUserId, String role, String accessToken) {
+		Authentication authentication = jwtUtil.getAuthentication(accessToken);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
 }
