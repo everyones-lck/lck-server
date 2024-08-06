@@ -3,7 +3,6 @@ package com.lckback.lckforall.viewing.controller;
 import com.lckback.lckforall.base.api.ApiResponse;
 import com.lckback.lckforall.viewing.dto.ChangeViewingPartyDTO;
 import com.lckback.lckforall.viewing.service.ViewingPartyChangeServiceImpl;
-import com.lckback.lckforall.viewing.service.ViewingPartyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -45,7 +44,7 @@ public class ViewingChangeController {
             @Parameter(name = "user_id", description = "RequestHeader - 로그인한 사용자 아이디(accessToken으로 변경 예정)"),
             @Parameter(name = "viewing_party_id", description = "query string(RequestParam) - 해당 뷰잉파티 글의 ID"),
     })
-    public ApiResponse<?> createViewingParty(@RequestHeader(name = "user_id") Long userId,
+    public ApiResponse<?> updateViewingParty(@RequestHeader(name = "user_id") Long userId,
                                              @RequestParam(name = "viewing_party_id") Long viewingPartyId,
                                              @RequestBody @Valid ChangeViewingPartyDTO.CreateViewingPartyRequest request){
         return ApiResponse.createSuccess(viewingPartyChangeService.updateViewingParty(userId, viewingPartyId, request));
@@ -63,7 +62,7 @@ public class ViewingChangeController {
             @Parameter(name = "user_id", description = "RequestHeader - 로그인한 사용자 아이디(accessToken으로 변경 예정)"),
             @Parameter(name = "viewing_party_id", description = "query string(RequestParam) - 해당 뷰잉파티 글의 ID"),
     })
-    public ApiResponse<?> createViewingParty(@RequestHeader(name = "user_id") Long userId,
+    public ApiResponse<?> deleteViewingParty(@RequestHeader(name = "user_id") Long userId,
                                              @RequestParam(name = "viewing_party_id") Long viewingPartyId){
         return ApiResponse.createSuccess(viewingPartyChangeService.deleteViewingParty(userId, viewingPartyId));
     }

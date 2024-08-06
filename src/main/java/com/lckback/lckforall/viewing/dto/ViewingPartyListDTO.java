@@ -23,6 +23,7 @@ public class ViewingPartyListDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Response {
+        Long id;
         String name;
         String userName;
         String photoURL;
