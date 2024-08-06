@@ -8,6 +8,7 @@ import com.lckback.lckforall.base.model.BaseEntity;
 import com.lckback.lckforall.base.type.MatchResult;
 import com.lckback.lckforall.player.model.Player;
 import com.lckback.lckforall.team.model.Season;
+import com.lckback.lckforall.team.model.SeasonTeam;
 import com.lckback.lckforall.team.model.Team;
 import com.lckback.lckforall.vote.model.MatchPogVote;
 import com.lckback.lckforall.vote.model.MatchVote;

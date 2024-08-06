@@ -1,6 +1,5 @@
 package com.lckback.lckforall.viewing.service;
 
-import com.lckback.lckforall.base.api.error.CommonErrorCode;
 import com.lckback.lckforall.base.api.error.UserErrorCode;
 import com.lckback.lckforall.base.api.error.ViewingPartyErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
@@ -18,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ViewingPartyChangeServiceImpl implements ViewingPartyChangeService {
 
-    private final UserRepository userRepository;
-    private final ViewingPartyRepository viewingPartyRepository;
+	private final UserRepository userRepository;
+	private final ViewingPartyRepository viewingPartyRepository;
 
 
     @Override
