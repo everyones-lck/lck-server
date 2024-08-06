@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 public class PogInfoDto {
 	@Getter
@@ -38,7 +39,7 @@ public class PogInfoDto {
 	}
 
 	@Getter
-	@AllArgsConstructor
+	@NoArgsConstructor
 	public static class MatchPogRequest {
 		private Long matchId;
 
