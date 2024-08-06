@@ -20,8 +20,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Mockito.when;
-
 public class MatchServiceTest {
 	@Mock
 	private MatchRepository matchRepository; // MatchRepository를 Mocking
