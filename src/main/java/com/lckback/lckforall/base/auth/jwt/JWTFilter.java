@@ -47,6 +47,13 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private String getTokenFromRequest(HttpServletRequest request) {
 
+        // 로그인 요청의 URL 패턴 확인
+        String requestURI = request.getRequestURI();
+        if (requestURI.contains("/auth/login")) {
+            // 로그인 요청인 경우 Authorization 헤더를 체크하지 않음
+            return null;
+        }
+
         String bearerToken = request.getHeader("Authorization");
 
         if (bearerToken == null) {
