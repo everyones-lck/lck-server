@@ -9,7 +9,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface ViewingPartyRepository extends JpaRepository<ViewingParty, Long> {
-    Page<ViewingParty> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    Optional<ViewingParty> findByIdAndUser(Long viewingPartyId, User user);
+
+	Page<ViewingParty> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+	Page<ViewingParty> findByUser(User user, Pageable pageable);
+  
+  Optional<ViewingParty> findByIdAndUser(Long viewingPartyId, User user);
+
 }
