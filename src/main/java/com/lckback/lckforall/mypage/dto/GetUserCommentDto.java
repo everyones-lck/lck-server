@@ -16,6 +16,7 @@ public class GetUserCommentDto {
     }
 
     @Builder
+    @Getter
     public static class Information {
 
         private Long id;
