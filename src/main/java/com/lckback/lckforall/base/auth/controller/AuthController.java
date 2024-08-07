@@ -14,10 +14,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.lckback.lckforall.base.api.ApiResponse;
 import com.lckback.lckforall.base.auth.dto.AuthResponseDto;
+import com.lckback.lckforall.base.auth.dto.GetKakaoUserIdDto;
+import com.lckback.lckforall.base.auth.dto.GetRefreshTokenDto;
 import com.lckback.lckforall.base.auth.jwt.JWTUtil;
 import com.lckback.lckforall.base.auth.service.AuthService;
 import com.lckback.lckforall.user.dto.SignupUserDataDto;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -39,22 +42,17 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
+    public ResponseEntity<?> login(@RequestBody @Valid GetKakaoUserIdDto.Request request) {
 
-        String kakaoUserId = request.get("kakaoUserId");
-
-        AuthResponseDto authResponseDto = authService.login(kakaoUserId);
+        AuthResponseDto authResponseDto = authService.login(request);
 
         return ResponseEntity.ok(ApiResponse.createSuccess(authResponseDto));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestBody Map<String, String> request) {
+    public ResponseEntity<?> refresh(@RequestBody @Valid GetRefreshTokenDto.Request request) {
 
-        String kakaoUserId = request.get("kakaoUserId");
-        String refreshToken = request.get("refreshToken");
-
-        AuthResponseDto authResponseDto = authService.refresh(kakaoUserId, refreshToken);
+        AuthResponseDto authResponseDto = authService.refresh(request);
 
         return ResponseEntity.ok(ApiResponse.createSuccess(authResponseDto));
     }

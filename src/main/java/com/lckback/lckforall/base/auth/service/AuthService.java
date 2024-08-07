@@ -14,6 +14,8 @@ import com.lckback.lckforall.base.api.error.UserErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
 import com.lckback.lckforall.base.auth.converter.AuthResponseConverter;
 import com.lckback.lckforall.base.auth.dto.AuthResponseDto;
+import com.lckback.lckforall.base.auth.dto.GetKakaoUserIdDto;
+import com.lckback.lckforall.base.auth.dto.GetRefreshTokenDto;
 import com.lckback.lckforall.base.auth.jwt.JWTUtil;
 import com.lckback.lckforall.base.auth.jwt.TokenService;
 import com.lckback.lckforall.base.auth.jwt.model.RefreshToken;
@@ -77,25 +79,25 @@ public class AuthService {
 		return AuthResponseConverter.convertToAuthResponseDto(accessToken, refreshToken, accessTokenExpirationTime, refreshTokenExpirationTime);
 	}
 
-	public AuthResponseDto login(String kakaoUserId) {
+	public AuthResponseDto login(GetKakaoUserIdDto.Request request) {
 
-		User user = userRepository.findByKakaoUserId(kakaoUserId)
+		User user = userRepository.findByKakaoUserId(request.getKakaoUserId())
 			.orElseThrow(() -> new RestApiException(UserErrorCode.INVALID_KAKAO_USER_ID));
 
 		String role = user.getRole().name();
 
 		// 토큰 생성
-		String accessToken = tokenService.createAccessToken(kakaoUserId, role);
-		String refreshToken = tokenService.createRefreshToken(kakaoUserId, role);
+		String accessToken = tokenService.createAccessToken(request.getKakaoUserId(), role);
+		String refreshToken = tokenService.createRefreshToken(request.getKakaoUserId(), role);
 
-		RefreshToken refreshToken1 = RefreshToken.builder()
+		RefreshToken savedRefreshToken = RefreshToken.builder()
 			.kakaoUserId(user.getKakaoUserId())
 			.refreshToken(refreshToken)
 			.build();
 
-		refreshTokenRepository.save(refreshToken1);
+		refreshTokenRepository.save(savedRefreshToken);
 
-		setAuthentication(kakaoUserId, role, accessToken);
+		setAuthentication(request.getKakaoUserId(), role, accessToken);
 
 		long currentTimestamp = System.currentTimeMillis();
 		String accessTokenExpirationTime = jwtUtil.formatDate(currentTimestamp + jwtUtil.getAccessTokenExpiration());
@@ -104,29 +106,30 @@ public class AuthService {
 		return AuthResponseConverter.convertToAuthResponseDto(accessToken, refreshToken, accessTokenExpirationTime, refreshTokenExpirationTime);
 	}
 
-	public AuthResponseDto refresh(String kakaoUserId, String refreshToken) {
+	public AuthResponseDto refresh(GetRefreshTokenDto.Request request) {
 
-		jwtUtil.validateRefreshToken(refreshToken);
+		jwtUtil.validateRefreshToken(request.getRefreshToken());
 
-		RefreshToken findRefreshToken = refreshTokenRepository.findById(kakaoUserId).orElseThrow(() -> new RestApiException(TokenErrorCode.INVALID_REFRESH_TOKEN));
+		RefreshToken findRefreshToken = refreshTokenRepository.findById(request.getKakaoUserId())
+			.orElseThrow(() -> new RestApiException(TokenErrorCode.INVALID_REFRESH_TOKEN));
 
-		if (!refreshToken.equals(findRefreshToken.getRefreshToken())) {
+		if (!request.getRefreshToken().equals(findRefreshToken.getRefreshToken())) {
 
 			throw new RestApiException(TokenErrorCode.INVALID_REFRESH_TOKEN);
 		}
 
-		User user = userRepository.findByKakaoUserId(kakaoUserId)
+		User user = userRepository.findByKakaoUserId(request.getKakaoUserId())
 			.orElseThrow(() -> new RestApiException(UserErrorCode.INVALID_KAKAO_USER_ID));
 
 		String role = user.getRole().name();
-		String newAccessToken = tokenService.createAccessToken(kakaoUserId, role);
-		String newRefreshToken = tokenService.createRefreshToken(kakaoUserId, role);
+		String newAccessToken = tokenService.createAccessToken(request.getKakaoUserId(), role);
+		String newRefreshToken = tokenService.createRefreshToken(request.getKakaoUserId(), role);
 
-		RefreshToken savedRefreshToken = new RefreshToken(kakaoUserId, newRefreshToken);
+		RefreshToken savedRefreshToken = new RefreshToken(request.getKakaoUserId(), newRefreshToken);
 
 		refreshTokenRepository.save(savedRefreshToken);
 
-		setAuthentication(kakaoUserId, role, newAccessToken);
+		setAuthentication(request.getKakaoUserId(), role, newAccessToken);
 
 		long currentTimestamp = System.currentTimeMillis();
 		String accessTokenExpirationTime = jwtUtil.formatDate(currentTimestamp + jwtUtil.getAccessTokenExpiration());
