@@ -45,7 +45,7 @@ public class ViewingChangeController {
             @Parameter(name = "viewing_party_id", description = "query string(RequestParam) - 해당 뷰잉파티 글의 ID"),
     })
     public ApiResponse<?> updateViewingParty(@RequestHeader(name = "user_id") Long userId,
-                                             @RequestParam(name = "viewing_party_id") Long viewingPartyId,
+                                             @PathVariable(name = "viewing_party_id") Long viewingPartyId,
                                              @RequestBody @Valid ChangeViewingPartyDTO.CreateViewingPartyRequest request){
         return ApiResponse.createSuccess(viewingPartyChangeService.updateViewingParty(userId, viewingPartyId, request));
     }
@@ -63,7 +63,7 @@ public class ViewingChangeController {
             @Parameter(name = "viewing_party_id", description = "query string(RequestParam) - 해당 뷰잉파티 글의 ID"),
     })
     public ApiResponse<?> deleteViewingParty(@RequestHeader(name = "user_id") Long userId,
-                                             @RequestParam(name = "viewing_party_id") Long viewingPartyId){
+                                             @PathVariable(name = "viewing_party_id") Long viewingPartyId){
         return ApiResponse.createSuccess(viewingPartyChangeService.deleteViewingParty(userId, viewingPartyId));
     }
 }
