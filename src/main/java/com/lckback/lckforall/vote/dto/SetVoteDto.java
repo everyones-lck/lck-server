@@ -16,7 +16,7 @@ public class SetVoteDto {
 	@Getter
 	@AllArgsConstructor
 	public static class VoteCandidateDto {
-		private Long userId;
+		private String kakaoUserId;
 
 		private Long matchId;
 
@@ -26,7 +26,7 @@ public class SetVoteDto {
 	@Getter
 	@AllArgsConstructor
 	public static class SetPogVoteDto {
-		private Long userId;
+		private String kakaoUserId;
 
 		private Long matchId;
 
@@ -55,8 +55,8 @@ public class SetVoteDto {
 
 		private Long playerId;
 
-		public SetVoteDto.SetPogVoteDto toDto(Long userId) {
-			return new SetVoteDto.SetPogVoteDto(userId, matchId, setIndex, playerId);
+		public SetVoteDto.SetPogVoteDto toDto(String kakaoId) {
+			return new SetVoteDto.SetPogVoteDto(kakaoId, matchId, setIndex, playerId);
 		}
 	}
 }

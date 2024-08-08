@@ -25,7 +25,7 @@ public class MatchVoteDto {
 	@Getter
 	@AllArgsConstructor
 	public static class MatchPredictionCandidateDto {
-		private Long userId;
+		private String kakaoUserId;
 
 		private Long matchId;
 
@@ -34,7 +34,7 @@ public class MatchVoteDto {
 	@Getter
 	@AllArgsConstructor
 	public static class MatchPredictionDto {
-		private Long userId;
+		private String kakaoUserId;
 
 		private Long matchId;
 
@@ -50,15 +50,15 @@ public class MatchVoteDto {
 
 		private Long teamId;
 
-		public MatchPredictionDto toDto(Long userId) {
-			return new MatchPredictionDto(userId, matchId, teamId);
+		public MatchPredictionDto toDto(String kakaoUserId) {
+			return new MatchPredictionDto(kakaoUserId, matchId, teamId);
 		}
 	}
 
 	@Getter
 	@AllArgsConstructor
 	public static class MatchPogVoteDto {
-		private Long userId;
+		private String kakaoUserId;
 
 		private Long matchId;
 
@@ -74,8 +74,8 @@ public class MatchVoteDto {
 
 		private Long playerId;
 
-		public  MatchPogVoteDto toDto(Long userId) {
-			return new MatchPogVoteDto(userId, matchId, playerId);
+		public  MatchPogVoteDto toDto(String kakaoUserId) {
+			return new MatchPogVoteDto(kakaoUserId, matchId, playerId);
 		}
 	}
 
