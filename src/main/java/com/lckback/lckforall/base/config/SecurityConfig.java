@@ -49,13 +49,13 @@ public class SecurityConfig {
 
 		// 경로별 인가 작업
 		http
-			.authorizeHttpRequests((auth) -> auth
-				.requestMatchers("/auth/login", "/auth/signup", "/auth/refresh").permitAll() // 인증 없이 접근 가능
-				.requestMatchers("/").hasRole("USER")
-				.requestMatchers("/admin/**").hasRole("ADMIN")
-				.requestMatchers(HttpMethod.GET,
-					"/swagger-ui/*", "/v3/api-docs/swagger-config", "/api/logistics", "/v3/api-docs").permitAll()
-				.anyRequest().authenticated()); // 나머지 경로는 인증 필요
+			.authorizeHttpRequests((auth) -> auth.anyRequest().permitAll());
+//				.requestMatchers("/auth/login", "/auth/signup", "/auth/refresh").permitAll() // 인증 없이 접근 가능
+//				.requestMatchers("/").hasRole("USER")
+//				.requestMatchers("/admin/**").hasRole("ADMIN")
+//				.requestMatchers(HttpMethod.GET,
+//					"/swagger-ui/*", "/v3/api-docs/swagger-config", "/api/logistics", "/v3/api-docs").permitAll()
+//				.anyRequest().authenticated()); // 나머지 경로는 인증 필요
 
 		// 세션 설정 : STATELESS
 		http

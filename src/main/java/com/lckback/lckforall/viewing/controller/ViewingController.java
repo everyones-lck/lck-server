@@ -18,25 +18,6 @@ public class ViewingController {
 
     private final ViewingPartyService viewingPartyService;
 
-
-    // 기능 API
-    @GetMapping("/alarm")
-    @Operation(summary = "예시 API", description = "다음과 같이 작성해주세요. 스웨거 작성 예시입니다. query String 으로 page 번호를 주세요")
-    @ApiResponses({
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "VIEWING4001", description = "NOT_FOUND, 뷰잉파티글을 찾을 수 없습니다."),
-
-    })
-    @Parameters({
-            @Parameter(name = "page", description = "query string(RequestParam) - 몇번째 페이지인지 가리키는 page 변수 (0부터 시작)"),
-            @Parameter(name = "userId", description = "RequestHeader - 로그인한 사용자 아이디(accessToken으로 변경 예정)")
-    })
-    public ApiResponse<String> testSwagger(@RequestHeader("userId") Long userId,
-                                           @RequestParam(name = "page") Integer page){
-        return ApiResponse.createSuccess("사용자 아이디 : %d, 페이지 번호 : %d".formatted(userId,page));
-    }
-
-
     @GetMapping("/list")
     @Operation(summary = "뷰잉파티 목록 조회 API", description = "뷰잉파티 목록을 조회하는 API이며, 페이징을 포함합니다. query String 으로 page 번호를 주세요")
     @ApiResponses({

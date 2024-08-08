@@ -12,6 +12,7 @@ import com.lckback.lckforall.community.model.Post;
 import com.lckback.lckforall.report.model.CommentReport;
 import com.lckback.lckforall.report.model.PostReport;
 import com.lckback.lckforall.team.model.Team;
+import com.lckback.lckforall.viewing.model.ChatMessage;
 import com.lckback.lckforall.viewing.model.Participate;
 import com.lckback.lckforall.viewing.model.ViewingParty;
 import com.lckback.lckforall.vote.model.MatchPogVote;
@@ -98,6 +99,9 @@ public class User extends BaseEntity {
 
 	@OneToMany(mappedBy = "user")
 	private List<SetPogVote> setPogVotes = new ArrayList<>();
+
+	@OneToMany(mappedBy = "user")
+	private List<ChatMessage> chatMessages = new ArrayList<>();
 
 	public void updateNickname(String nickname) {
 		this.nickname = nickname;
