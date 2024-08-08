@@ -5,6 +5,7 @@ import com.lckback.lckforall.base.api.error.PlayerErrorCode;
 import com.lckback.lckforall.base.api.error.SetErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
 import com.lckback.lckforall.base.model.BaseVote;
+import com.lckback.lckforall.base.type.PlayerRole;
 import com.lckback.lckforall.match.dto.PogInfoDto;
 import com.lckback.lckforall.match.model.Match;
 import com.lckback.lckforall.match.model.Set;
@@ -25,7 +26,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class PogService {
 
@@ -36,11 +37,17 @@ public class PogService {
 	public PogInfoDto.PogResponse findMatchPog(PogInfoDto.PogServiceDto dto) { // match의 pog 정보를 리턴
 		Match match = matchRepository.findById(dto.getMatchId())
 			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
-		if (match.getPogPlayer() != null) { // match table에 pogPlayer값이 존재한다면 원래 있던 값 리턴
+
+		Player defaultPlayer = playerRepository.findByRole(PlayerRole.DEFAULT)
+			.orElseThrow(() -> new RestApiException(PlayerErrorCode.NOT_EXIST_PLAYER));
+
+		if (match.getPogPlayer() != defaultPlayer) { // match table에 pogPlayer값이 존재한다면 원래 있던 값 리턴
 			Player winner = match.getPogPlayer();
 			return PogInfoDto.PogResponse.create(winner.getId(), winner.getName(), winner.getProfileImageUrl(),
 				match.getSeason().getName(), match.getMatchNumber(), match.getMatchDate());
 		}
+
+
 		// match table에 pogPlayer값이 존재하지 않는다면 pogPlayer 계산
 		List<MatchPogVote> voteResult = match.getMatchPogVotes();
 		Long winnerId = getMatchPog(voteResult);
@@ -57,9 +64,14 @@ public class PogService {
 			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
 		List<Set> sets = match.getSets();
 		Set nowSet = sets.get(setIndex - 1); // 해당 세트 탐색
+
 		if (!nowSet.getSetIndex().equals(setIndex))
 			throw new RestApiException(SetErrorCode.NOT_EXIST_SET);
-		if (nowSet.getPogPlayer() != null) { // set table에 pogPlayer값이 존재한다면 원래 있던 값 리턴
+
+		Player noPlayer = playerRepository.findByRole(PlayerRole.DEFAULT)
+			.orElseThrow(() -> new RestApiException(PlayerErrorCode.NOT_EXIST_PLAYER));
+
+		if (nowSet.getPogPlayer() != noPlayer) { // set table에 pogPlayer값이 존재한다면 원래 있던 값 리턴
 			Player winner = nowSet.getPogPlayer();
 			return PogInfoDto.PogResponse.create(winner.getId(), winner.getName(), winner.getProfileImageUrl(),
 				match.getSeason().getName(), match.getMatchNumber(), match.getMatchDate());

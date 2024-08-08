@@ -1,8 +1,29 @@
+// package com.lckback.lckforall.user.dto;
+//
+// import org.springframework.web.multipart.MultipartFile;
+//
+// import lombok.Builder;
+// import lombok.Getter;
+//
+// @Getter
+// public class SignupUserDataDto {
+//
+//     private MultipartFile profileImage;
+//     private SignupUserData signupUserData;
+//
+//     @Getter
+//     @Builder
+//     public static class SignupUserData {
+//         private String kakaoUserId;
+//         private String nickName;
+//         private String role;
+//         private Long teamId;
+//     }
+// }
+
 package com.lckback.lckforall.user.dto;
 
-import com.lckback.lckforall.base.type.UserRole;
-import com.lckback.lckforall.base.type.UserStatus;
-import com.lckback.lckforall.team.model.Team;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -13,15 +34,10 @@ public class SignupUserDataDto {
     @Builder
     public static class SignupUserData {
 
-        private Long id;
         private String kakaoUserId;
         private String nickName;
-        private String profileImageUrl;
-        private UserRole role;
-        private UserStatus status;
-        private Team team;
+        private String role;
+        private Long teamId;
     }
 
 }
-
-

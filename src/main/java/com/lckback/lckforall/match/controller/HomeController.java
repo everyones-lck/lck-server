@@ -2,6 +2,7 @@ package com.lckback.lckforall.match.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +21,7 @@ public class HomeController {
 	private final HomeService homeService;
 
 	@GetMapping("/today/information")
-	public ResponseEntity<?> getTodayMatches() {
+	public ResponseEntity<?> getTodayMatches(@RequestHeader("Authorization") String token) {
 		MatchInfoDto.HomePageResponse response = homeService.getHomePageInformation();
 
 		return ResponseEntity.ok()

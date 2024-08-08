@@ -2,23 +2,36 @@ package com.lckback.lckforall.mypage.service;
 
 import com.lckback.lckforall.base.api.error.CommonErrorCode;
 import com.lckback.lckforall.base.api.error.TeamErrorCode;
+import com.lckback.lckforall.base.api.error.TokenErrorCode;
 import com.lckback.lckforall.base.api.error.UserErrorCode;
+import com.lckback.lckforall.base.api.error.ViewingPartyErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
+import com.lckback.lckforall.base.auth.jwt.model.RefreshToken;
+import com.lckback.lckforall.base.auth.jwt.repository.RefreshTokenRepository;
 import com.lckback.lckforall.community.model.Comment;
 import com.lckback.lckforall.community.model.Post;
 import com.lckback.lckforall.community.repository.CommentRepository;
 import com.lckback.lckforall.community.repository.PostRepository;
+import com.lckback.lckforall.mypage.dto.DeleteParticipationDto;
+import com.lckback.lckforall.mypage.dto.DeleteViewingPartyDto;
 import com.lckback.lckforall.mypage.dto.GetUserCommentDto;
 import com.lckback.lckforall.mypage.dto.GetUserPostDto;
 import com.lckback.lckforall.mypage.dto.GetUserProfileDto;
+import com.lckback.lckforall.mypage.dto.GetViewingPartyDto;
 import com.lckback.lckforall.mypage.dto.UpdateMyTeamDto;
 import com.lckback.lckforall.mypage.dto.UpdateUserProfileDto;
+import com.lckback.lckforall.s3.service.S3Service;
 import com.lckback.lckforall.team.model.Team;
 import com.lckback.lckforall.team.repository.TeamRepository;
 import com.lckback.lckforall.user.model.User;
 import com.lckback.lckforall.user.respository.UserRepository;
+import com.lckback.lckforall.viewing.model.Participate;
+import com.lckback.lckforall.viewing.model.ViewingParty;
+import com.lckback.lckforall.viewing.repository.ParticipateRepository;
+import com.lckback.lckforall.viewing.repository.ViewingPartyRepository;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,9 +57,17 @@ public class MyPageService {
 
 	private final CommentRepository commentRepository;
 
-	public GetUserProfileDto.Response getUserProfile(Long userId) {
+	private final ParticipateRepository participateRepository;
 
-		User user = userRepository.findById(userId)
+	private final ViewingPartyRepository viewingPartyRepository;
+
+	private final RefreshTokenRepository refreshTokenRepository;
+
+	private final S3Service s3Service;
+
+	public GetUserProfileDto.Response getUserProfile(String kakaoUserId) {
+
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
 		return GetUserProfileDto.Response.builder()
@@ -57,20 +78,20 @@ public class MyPageService {
 			.build();
 	}
 
-	public void withdrawFromAccount(Long userId) {
+	public void withdrawFromAccount(String kakaoUserId) {
 
-		User user = userRepository.findById(userId)
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
 		user.withdrawFromAccount();
 	}
 
 	public UpdateUserProfileDto.Response updateUserProfile(
-		Long userId,
+		String kakaoUserId,
 		MultipartFile profileImage,
 		UpdateUserProfileDto.Request request) {
 
-		User user = userRepository.findById(userId)
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
 		if (request.getNickname() != null) {
@@ -87,7 +108,7 @@ public class MyPageService {
 		}
 
 		if (!request.isDefaultImage() && !profileImage.isEmpty()) {
-			String updatedProfileImageUrl = "temp"; // s3 도입 전까지 임시
+			String updatedProfileImageUrl = s3Service.upload(profileImage);
 			user.updateProfileImageUrl(updatedProfileImageUrl);
 		}
 
@@ -97,9 +118,9 @@ public class MyPageService {
 			.build();
 	}
 
-	public void updateMyTeam(Long userId, UpdateMyTeamDto.Request request) {
+	public void updateMyTeam(String kakaoUserId, UpdateMyTeamDto.Request request) {
 
-		User user = userRepository.findById(userId)
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
 		Team team = teamRepository.findById(request.getTeamId())
@@ -114,9 +135,9 @@ public class MyPageService {
 		user.updateMyTeam(team);
 	}
 
-	public GetUserPostDto.Response getUserPost(Long userId, Pageable pageable) {
+	public GetUserPostDto.Response getUserPost(String kakaoUserId, Pageable pageable) {
 
-		User user = userRepository.findById(userId)
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
 		Page<Post> posts = postRepository.findByUser(user, pageable);
@@ -127,9 +148,9 @@ public class MyPageService {
 			.build();
 	}
 
-	public GetUserCommentDto.Response getUserComment(Long userId, Pageable pageable) {
+	public GetUserCommentDto.Response getUserComment(String kakaoUserId, Pageable pageable) {
 
-		User user = userRepository.findById(userId)
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
 		Page<Comment> comments = commentRepository.findByUser(user, pageable);
@@ -138,6 +159,84 @@ public class MyPageService {
 			.comments(convertToCommentInformation(comments))
 			.isLast(comments.isLast())
 			.build();
+	}
+
+	public GetViewingPartyDto.Response getUserViewingPartyAsParticipate(
+		String kakaoUserId,
+		Pageable pageable) {
+
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
+			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
+
+		Page<Participate> participates = participateRepository.findByUser(user, pageable);
+
+		Page<ViewingParty> viewingParties = participates
+			.map(participate -> participate.getViewingParty());
+
+		return GetViewingPartyDto.Response.builder()
+			.viewingParties(convertToViewingPartiesInformation(viewingParties))
+			.isLast(viewingParties.isLast())
+			.build();
+	}
+
+	public GetViewingPartyDto.Response getUserViewingPartyAsHost(String kakaoUserId,
+		Pageable pageable) {
+
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
+			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
+
+		Page<ViewingParty> viewingParties = viewingPartyRepository.findByUser(user, pageable);
+
+		return GetViewingPartyDto.Response.builder()
+			.viewingParties(convertToViewingPartiesInformation(viewingParties))
+			.isLast(viewingParties.isLast())
+			.build();
+	}
+
+	public void cancelViewingPartyParticipation(
+		String kakaoUserId,
+		DeleteParticipationDto.Request request) {
+
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
+			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
+
+		ViewingParty viewingParty = viewingPartyRepository.findById(request.getViewingPartyId())
+			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+
+		Participate participate =
+			participateRepository.findByViewingPartyAndUser(viewingParty, user)
+				.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+
+		participateRepository.delete(participate);
+	}
+
+	public void cancelViewingPartyHosting(
+		String kakaoUserId,
+		DeleteViewingPartyDto.Request request) {
+
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
+			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
+
+		ViewingParty viewingParty = viewingPartyRepository.findById(request.getViewingPartyId())
+			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+
+		if (!viewingParty.getUser().equals(user)) {
+			throw new RestApiException(ViewingPartyErrorCode.USER_IS_NOT_HOST);
+		}
+
+		viewingPartyRepository.delete(viewingParty);
+	}
+
+	public void logout(String kakaoUserId, String refreshToken) {
+
+		RefreshToken findRefreshToken = refreshTokenRepository.findById(kakaoUserId)
+			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+
+		if (!refreshToken.equals(findRefreshToken.getRefreshToken())) {
+			throw new RestApiException(TokenErrorCode.NOT_EXISTS_REFRESH_TOKEN);
+		}
+
+		refreshTokenRepository.delete(findRefreshToken);
 	}
 
 	private List<GetUserPostDto.Information> convertToPostInformation(Page<Post> posts) {
@@ -161,4 +260,15 @@ public class MyPageService {
 			.collect(Collectors.toList());
 	}
 
+	private List<GetViewingPartyDto.Information> convertToViewingPartiesInformation(
+		Page<ViewingParty> viewingParties) {
+
+		return viewingParties.stream()
+			.map(viewingParty -> GetViewingPartyDto.Information.builder()
+				.id(viewingParty.getId())
+				.name(viewingParty.getName())
+				.date(viewingParty.getDate().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")))
+				.build()
+			).collect(Collectors.toList());
+	}
 }

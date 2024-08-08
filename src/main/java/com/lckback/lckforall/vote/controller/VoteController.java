@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lckback.lckforall.base.api.ApiResponse;
+import com.lckback.lckforall.base.auth.service.AuthService;
 import com.lckback.lckforall.vote.dto.MatchVoteDto;
 import com.lckback.lckforall.vote.dto.SetVoteDto;
 import com.lckback.lckforall.vote.service.VoteService;
@@ -24,55 +25,66 @@ import lombok.RequiredArgsConstructor;
 public class VoteController {
 	private final VoteService voteService;
 
+	private final AuthService authService;
+
 	@GetMapping("/match/candidates")
 	public ResponseEntity<?> getCandidateMatchVote(
-		@RequestHeader(name = "userId") Long userId,
+		@RequestHeader("Authorization") String token,
 		@RequestParam("match-id") Long matchId) {
+		String kakaoUserId = authService.getKakaoUserId(token);
 		MatchVoteDto.MatchPredictionCandidateResponse response = voteService.getMatchPredictionCandidate(
-			new MatchVoteDto.MatchPredictionCandidateDto(userId,matchId));
+			new MatchVoteDto.MatchPredictionCandidateDto(kakaoUserId,matchId));
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccess(response));
 	}
 
 	@PostMapping("/match/making")
 	public ResponseEntity<?> makeMatchVote(
-		@RequestHeader(name = "userId") Long userId, @RequestBody MatchVoteDto.MatchPredictionRequest request) {
-		voteService.doMatchPredictionVote(request.toDto(userId));
+		@RequestHeader("Authorization") String token,
+		@RequestBody MatchVoteDto.MatchPredictionRequest request) {
+		String kakaoUserId = authService.getKakaoUserId(token);
+		voteService.doMatchPredictionVote(request.toDto(kakaoUserId));
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccessWithNoContent());
 	}
 
 	@GetMapping("/match-pog/candidates")
 	public ResponseEntity<?> getCandidateMatchPogVote(
-		@RequestHeader(name = "userId") Long userId,
-		@RequestParam("matchId") Long matchId) {
+		@RequestHeader("Authorization") String token,
+		@RequestParam("match-id") Long matchId) {
+		String kakaoUserId = authService.getKakaoUserId(token);
 		MatchVoteDto.MatchPogVoteCandidateResponse response = voteService.getMatchPogCandidate(
-			new MatchVoteDto.MatchPredictionCandidateDto(userId, matchId));
+			new MatchVoteDto.MatchPredictionCandidateDto(kakaoUserId, matchId));
 		return ResponseEntity.ok().body(ApiResponse.createSuccess(response));
 	}
 
 	@PostMapping("match-pog/making")
 	public ResponseEntity<?> makeMatchPogVote(
-		@RequestHeader(name = "userId") Long userId, @RequestBody MatchVoteDto.MatchPogVoteRequest request) {
-		voteService.doMatchPogVote(request.toDto(userId));
+		@RequestHeader("Authorization") String token,
+		@RequestBody MatchVoteDto.MatchPogVoteRequest request) {
+		String kakaoUserId = authService.getKakaoUserId(token);
+		voteService.doMatchPogVote(request.toDto(kakaoUserId));
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccessWithNoContent());
 	}
 
 	@GetMapping("/set-pog/candidates")
 	public ResponseEntity<?> getCandidateSetPogVote(
-		@RequestHeader(name = "userId") Long userId,
-		@RequestParam("matchId") Long matchId,
-		@RequestParam("setIndex") Integer setIndex) {
+		@RequestHeader("Authorization") String token,
+		@RequestParam("match-id") Long matchId,
+		@RequestParam("set-index") Integer setIndex) {
+		String kakaoUserId = authService.getKakaoUserId(token);
 		SetVoteDto.SetPogVoteCandidateResponse response = voteService.getSetPogCandidate(
-			new SetVoteDto.VoteCandidateDto(userId, matchId, setIndex));
+			new SetVoteDto.VoteCandidateDto(kakaoUserId, matchId, setIndex));
 		return ResponseEntity.ok().body(ApiResponse.createSuccess(response));
 	}
 
 	@PostMapping("set-pog/making")
 	public ResponseEntity<?> makeSetPogVote(
-		@RequestHeader(name = "userId") Long userId, @RequestBody SetVoteDto.SetPogVoteRequest request) {
-		voteService.doSetPogVote(request.toDto(userId));
+		@RequestHeader("Authorization") String token,
+		@RequestBody SetVoteDto.SetPogVoteRequest request) {
+		String kakaoUserId = authService.getKakaoUserId(token);
+		voteService.doSetPogVote(request.toDto(kakaoUserId));
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccessWithNoContent());
 	}

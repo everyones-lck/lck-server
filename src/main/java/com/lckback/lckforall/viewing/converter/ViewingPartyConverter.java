@@ -2,6 +2,7 @@ package com.lckback.lckforall.viewing.converter;
 
 import com.lckback.lckforall.user.model.User;
 import com.lckback.lckforall.viewing.dto.GetViewingPartyDetailDTO;
+import com.lckback.lckforall.viewing.dto.ParticipantListDTO;
 import com.lckback.lckforall.viewing.dto.ViewingPartyListDTO;
 import com.lckback.lckforall.viewing.model.Participate;
 import com.lckback.lckforall.viewing.model.ViewingParty;
@@ -12,14 +13,14 @@ import java.util.stream.Collectors;
 
 public class ViewingPartyConverter {
 
-    public static ViewingPartyListDTO.ResponseList toPartyListRes(Page<ViewingParty> viewingPartyPage) {
-        List<ViewingPartyListDTO.Response> partyList = viewingPartyPage.stream().map(ViewingPartyConverter::toPartyRes).collect(Collectors.toList());
+    public static ViewingPartyListDTO.ResponseList toPartyListResponse(Page<ViewingParty> viewingPartyPage) {
+        List<ViewingPartyListDTO.Response> partyList = viewingPartyPage.stream().map(ViewingPartyConverter::toPartyResponse).collect(Collectors.toList());
         return ViewingPartyListDTO.ResponseList.builder()
                 .partyList(partyList)
                 .build();
     }
 
-    public static ViewingPartyListDTO.Response toPartyRes(ViewingParty viewingParty) {
+    public static ViewingPartyListDTO.Response toPartyResponse(ViewingParty viewingParty) {
         return ViewingPartyListDTO.Response.builder()
                 .name(viewingParty.getName())
                 .userName(viewingParty.getUser().getNickname())
@@ -59,4 +60,25 @@ public class ViewingPartyConverter {
                 .ownerId(participate.getViewingParty().getUser().getId())
                 .build();
     }
+
+    public static ParticipantListDTO.ResponseList toParticipantListResponse(Page<User> users, ViewingParty viewingParty) {
+        List<ParticipantListDTO.Response> userList = users.stream().map(ViewingPartyConverter::toParticipantResponse).toList();
+        return ParticipantListDTO.ResponseList.builder()
+                .viewingPartyName(viewingParty.getName())
+                .ownerName(viewingParty.getUser().getNickname())
+                .ownerTeam(viewingParty.getUser().getTeam().getTeamName())
+                .ownerImage(viewingParty.getUser().getProfileImageUrl())
+                .participantList(userList)
+                .build();
+    }
+
+    public static ParticipantListDTO.Response toParticipantResponse(User user) {
+        return ParticipantListDTO.Response.builder()
+                .id(user.getId())
+                .name(user.getNickname())
+                .team(user.getTeam().getTeamName())
+                .image(user.getProfileImageUrl())
+                .build();
+    }
+
 }

@@ -1,0 +1,82 @@
+name: Continuous Deployment
+
+on:
+  # release 브랜치에 대해 pr close 시 동작
+  pull_request:
+    branches:
+      - test
+    types: [closed]
+jobs:
+
+  build:
+
+    # merge 될 시 동작하도록 함
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    env:
+      SPRING_PROFILES_ACTIVE: prod
+    steps:
+    
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.ACTION_TOKEN }}
+        submodules: true
+
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: 17
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+
+    - name: Prepare environment
+      run: |
+        mkdir -p src/main/resources/privates
+        cp -r ./config/* src/main/resources/privates/
+        
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x ./gradlew
+
+    - name: Build with Gradle
+      run: ./gradlew clean build -x test
+
+    - name: Set Version
+      id: set_current_date
+      run: echo "version=$(date '+%Y-%m-%d-%H-%M-%S')" >> $GITHUB_OUTPUT
+
+    - name: Docker Image Build
+      run: |
+        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/lck-for-all-release:${{ steps.set_current_date.outputs.version }} -f Dockerfile_release .
+        docker tag ${{ secrets.DOCKERHUB_USERNAME }}/lck-for-all-release:${{ steps.set_current_date.outputs.version }} ${{ secrets.DOCKERHUB_USERNAME }}/lck-for-all-release:latest
+
+    - name: Docker Login
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+    - name: Docker Hub Push
+      run: |
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/lck-for-all-release:${{ steps.set_current_date.outputs.version }}
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/lck-for-all-release:latest
+
+    #ssh 접속 후 docker-compose
+    - name: Deploy in EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ubuntu
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd app
+          sudo docker rm -f $(docker ps -qa)
+          sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/lck-for-all-release
+          docker-compose up -d
+          sudo docker logs -f lck-for-all-release &> lck-for-all-release.log &
+          docker image prune -f
+        
+    

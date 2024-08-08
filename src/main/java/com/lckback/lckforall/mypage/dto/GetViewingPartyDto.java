@@ -5,14 +5,14 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
-public class GetUserCommentDto {
+public class GetViewingPartyDto {
 
     @Builder
     @Getter
     public static class Response {
 
-        private List<Information> comments;
-        private Boolean isLast;
+        private List<Information> viewingParties;
+        private boolean isLast;
     }
 
     @Builder
@@ -20,7 +20,7 @@ public class GetUserCommentDto {
     public static class Information {
 
         private Long id;
-        private String content;
-        private String postType;
+        private String name;
+        private String date;
     }
 }

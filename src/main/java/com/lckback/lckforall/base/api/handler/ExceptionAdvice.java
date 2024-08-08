@@ -1,9 +1,15 @@
 package com.lckback.lckforall.base.api.handler;
 
+import java.security.SignatureException;
+
 import com.lckback.lckforall.base.api.ApiResponse;
 import com.lckback.lckforall.base.api.error.CommonErrorCode;
 import com.lckback.lckforall.base.api.error.ErrorCode;
+import com.lckback.lckforall.base.api.error.TokenErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
+
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -54,6 +60,27 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         log.warn("ConstraintViolationException");
         ErrorCode errorCode = CommonErrorCode.INVALID_PARAMETER;
         return handleExceptionInternal(errorCode, e.getMessage());
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<Object> handleExpiredJwt(ExpiredJwtException e) {
+        log.warn("handle Expired JWT");
+        ErrorCode errorCode = TokenErrorCode.EXPIRED_TOKEN;
+        return handleExceptionInternal(errorCode, errorCode.getMessage());
+    }
+
+    @ExceptionHandler(MalformedJwtException.class)
+    public ResponseEntity<Object> handleMalformedJwt(MalformedJwtException e) {
+        log.warn("handle MalformedJwtException");
+        ErrorCode errorCode = TokenErrorCode.MALFORMED_JWT;
+        return handleExceptionInternal(errorCode, errorCode.getMessage());
+    }
+
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<Object> handleSignature(SignatureException e) {
+        log.warn("handle SignatureException");
+        ErrorCode errorCode = TokenErrorCode.SIGNATURE_INVALID;
+        return handleExceptionInternal(errorCode, errorCode.getMessage());
     }
 
     private static String getDefaultMessage(MethodArgumentNotValidException e) {
