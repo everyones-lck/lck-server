@@ -54,8 +54,12 @@ public class VoteService {
 
 	public MatchVoteDto.MatchPredictionCandidateResponse getMatchPredictionCandidate(
 		MatchVoteDto.MatchPredictionCandidateDto dto) {
-		Long userId = dto.getUserId();
+		String kakaoUserId = dto.getKakaoUserId();
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
+			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
+		Long userId = user.getId();
 		Long matchId = dto.getMatchId();
+
 		if (matchVoteRepository.existsByMatchIdAndUserId(matchId, userId)) {
 			throw new RestApiException(VoteErrorCode.ALREADY_VOTE);
 		}
@@ -67,11 +71,11 @@ public class VoteService {
 	}
 
 	public void doMatchPredictionVote(MatchVoteDto.MatchPredictionDto dto) {
-		Long userId = dto.getUserId();
-		Long matchId = dto.getMatchId();
-
-		User user = userRepository.findById(userId)
+		String kakaoUserId = dto.getKakaoUserId();
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
+		Long userId = user.getId();
+		Long matchId = dto.getMatchId();
 		Match match = matchRepository.findById(dto.getMatchId())
 			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
 
@@ -96,7 +100,10 @@ public class VoteService {
 
 	public MatchVoteDto.MatchPogVoteCandidateResponse getMatchPogCandidate(
 		MatchVoteDto.MatchPredictionCandidateDto dto) {
-		Long userId = dto.getUserId();
+		String kakaoUserId = dto.getKakaoUserId();
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
+			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
+		Long userId = user.getId();
 		Long matchId = dto.getMatchId();
 
 		// 투표를 이미 한 경우 (투표한 선수의 정보 리턴)
@@ -150,12 +157,13 @@ public class VoteService {
 	}
 
 	public void doMatchPogVote(MatchVoteDto.MatchPogVoteDto dto) {
+		String kakaoUserId = dto.getKakaoUserId();
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
+			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 		Player player = playerRepository.findById(dto.getPlayerId())
 			.orElseThrow(() -> new RestApiException(PlayerErrorCode.NOT_EXIST_PLAYER));
 		Match match = matchRepository.findById(dto.getMatchId())
 			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
-		User user = userRepository.findById(dto.getUserId())
-			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
 		// match pog vote 시간이 아닌경우
 		if(!match.getMatchPogVotable()){
@@ -198,7 +206,10 @@ public class VoteService {
 	// pog-player가 set내에 존재할때 로직 처리
 
 	public SetVoteDto.SetPogVoteCandidateResponse getSetPogCandidate(SetVoteDto.VoteCandidateDto dto) {
-		Long userId = dto.getUserId();
+		String kakaoUserId = dto.getKakaoUserId();
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
+			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
+		Long userId = user.getId();
 		Integer setIndex = dto.getSetIndex();
 		Long matchId = dto.getMatchId();
 		// setIndex가 잘못 주어졌을 때 예외처리
@@ -252,10 +263,11 @@ public class VoteService {
 	}
 
 	public void doSetPogVote(SetVoteDto.SetPogVoteDto dto) {
+		String kakaoUserId = dto.getKakaoUserId();
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
+			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 		Player player = playerRepository.findById(dto.getPlayerId())
 			.orElseThrow(() -> new RestApiException(PlayerErrorCode.NOT_EXIST_PLAYER));
-		User user = userRepository.findById(dto.getUserId())
-			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 		Set set = setRepository.findBySetIndexAndMatchId(dto.getSetIndex(), dto.getMatchId())
 			.orElseThrow(() -> new RestApiException(SetErrorCode.NOT_EXIST_SET));
 		Match match = matchRepository.findById(dto.getMatchId())
