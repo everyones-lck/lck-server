@@ -163,8 +163,8 @@ public class AuthService {
 
 	// 카카오 유저 아이디 가져옴
 	public String getKakaoUserId(String accessToken) {
-
-		return jwtUtil.getUserId(accessToken);
+		String actualToken = accessToken.substring(7);
+		return jwtUtil.getUserId(actualToken);
 	}
 
 	private void setAuthentication(String kakaoUserId, String role, String accessToken) {
