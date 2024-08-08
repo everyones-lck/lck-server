@@ -2,18 +2,16 @@ package com.lckback.lckforall.base.auth.jwt;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.lckback.lckforall.base.api.error.TokenErrorCode;
+import com.lckback.lckforall.base.api.error.UserErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
 
 import jakarta.servlet.FilterChain;
@@ -40,28 +38,35 @@ public class JWTFilter extends OncePerRequestFilter {
         IOException {
 
         try {
-
             if (shouldExclude(request)) {
 
                 log.info("shouldExclude: {}", request.getRequestURI());
-
                 filterChain.doFilter(request, response);
 
                 return;
             }
 
             String token = getTokenFromRequest(request);
+
             if (StringUtils.hasText(token) && jwtUtil.validateToken(token)) {
-                String kakaoUserId = jwtUtil.getUserId(token);
-                String role = jwtUtil.getRole(token);
+                Authentication authentication = jwtUtil.getAuthentication(token);
 
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(kakaoUserId, token, Collections.singleton(new SimpleGrantedAuthority(role)));
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                // 권한 검사 로직을 추가
+                if (authentication.getAuthorities().isEmpty()) {
+                    // 권한이 부족한 경우
+                    log.warn("User does not have authorities, throwing USER_ACCESS_DENIED exception");
+                    throw new RestApiException(UserErrorCode.USER_ACCESS_DENIED);
+                }
+
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
             }
+
         } catch(Exception e) {
+            log.error("Exception in JWTFilter: {}", e.getMessage());
             request.setAttribute("exception", e);
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage()); // 403 에러를 반환
+
+            return; // 필터 체인 진행을 중단
         }
 
         filterChain.doFilter(request, response);
@@ -69,10 +74,8 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private String getTokenFromRequest(HttpServletRequest request) {
 
-        // 로그인 요청의 URL 패턴 확인String requestURI = request.getRequestURI();
-
         if (shouldExclude(request)) {
-            // 로그인 요청인 경우 Authorization 헤더를 체크하지 않음
+
             return null;
         }
 
@@ -90,11 +93,7 @@ public class JWTFilter extends OncePerRequestFilter {
     }
 
     private boolean shouldExclude(HttpServletRequest request) {
+
         return EXCLUDE_URLS.stream().anyMatch(url -> request.getRequestURI().equals(url));
     }
 }
-
-
-
-
-

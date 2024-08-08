@@ -10,6 +10,9 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
+import com.lckback.lckforall.base.api.error.UserErrorCode;
+import com.lckback.lckforall.base.api.exception.RestApiException;
+
 /**
  * 접근 거부 핸들러를 커스텀으로 처리하는 클래스.
  * Spring Security에서 접근 거부 예외가 발생할 때 호출됩니다.
@@ -41,8 +44,18 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         AccessDeniedException accessDeniedException) throws IOException {
         log.info("CustomAccessDeniedHandler 실행");
 
+
+        // 예외가 null인지 확인
+        if (accessDeniedException == null) {
+            log.error("AccessDeniedException is null");
+
+            resolver.resolveException(request, response, null,
+                new RestApiException(UserErrorCode.USER_ACCESS_DENIED));
+        }
+
         // 예외 처리 리졸버를 사용하여 예외를 처리합니다.
         resolver.resolveException(request, response, null,
             (Exception) request.getAttribute("exception"));
+
     }
 }

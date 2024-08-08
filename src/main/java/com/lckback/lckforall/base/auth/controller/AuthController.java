@@ -1,7 +1,5 @@
 package com.lckback.lckforall.base.auth.controller;
 
-import java.util.Map;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +35,7 @@ public class AuthController {
         @RequestPart SignupUserDataDto.SignupUserData signupUserData) {
 
         AuthResponseDto authResponseDto = authService.signup(profileImage, signupUserData);
+
         return ResponseEntity.status(201).body(ApiResponse.createSuccess(authResponseDto));
     }
 
@@ -59,7 +58,19 @@ public class AuthController {
 
     @GetMapping("/test")
     public ResponseEntity<?> test(@RequestHeader("Authorization") String token) {
-        return authService.testToken(token);
 
+        return authService.testToken(token);
+    }
+
+    @GetMapping("/admin/test")
+    public ResponseEntity<?> adminTest(@RequestHeader("Authorization") String token) {
+
+        return authService.testToken(token);
+    }
+
+    @GetMapping("/users/test")
+    public ResponseEntity<?> userTest(@RequestHeader("Authorization") String token) {
+
+        return authService.testToken(token);
     }
 }

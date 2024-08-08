@@ -9,13 +9,13 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import com.lckback.lckforall.base.api.error.TokenErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
+import com.lckback.lckforall.base.config.CustomAuthenticationToken;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -149,13 +149,12 @@ public class JWTUtil {
         return sdf.format(new Date(timestamp));
     }
 
-    // 잠시 테스트
-    // Authentication 객체 생성
+    // 토큰에서 사용자 정보를 추출하고 CustomAuthenticationToken을 생성
     public Authentication getAuthentication(String token) {
-        String userId = getUserId(token);
+        String kakaoUserId = getUserId(token);
         String role = getRole(token);
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.startsWith("ROLE_") ? role : "ROLE_" + role);
-        return new UsernamePasswordAuthenticationToken(userId, null, Collections.singleton(authority));
+        return new CustomAuthenticationToken(kakaoUserId, null, role, Collections.singleton(authority));
     }
 
 }

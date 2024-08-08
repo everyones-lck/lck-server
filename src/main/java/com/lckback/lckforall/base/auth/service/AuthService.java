@@ -1,7 +1,10 @@
 package com.lckback.lckforall.base.auth.service;
 
+import java.util.Collections;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +23,7 @@ import com.lckback.lckforall.base.auth.jwt.JWTUtil;
 import com.lckback.lckforall.base.auth.jwt.TokenService;
 import com.lckback.lckforall.base.auth.jwt.model.RefreshToken;
 import com.lckback.lckforall.base.auth.jwt.repository.RefreshTokenRepository;
+import com.lckback.lckforall.base.config.CustomAuthenticationToken;
 import com.lckback.lckforall.team.model.Team;
 import com.lckback.lckforall.team.repository.TeamRepository;
 import com.lckback.lckforall.user.converter.SignupUserDataConverter;
@@ -164,7 +168,8 @@ public class AuthService {
 	}
 
 	private void setAuthentication(String kakaoUserId, String role, String accessToken) {
-		Authentication authentication = jwtUtil.getAuthentication(accessToken);
+		CustomAuthenticationToken authentication = new CustomAuthenticationToken(kakaoUserId, null, role, Collections.singleton(new SimpleGrantedAuthority(role.startsWith("ROLE_") ? role : "ROLE_" + role)));
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
+
 }
