@@ -73,7 +73,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         script: |
           cd app
-          sudo docker rm - f $(docker ps -qa)
+          sudo docker rm -f $(docker ps -qa)
           sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/lck-for-all-release
           docker-compose up -d
           sudo docker logs -f lck-for-all-release &> lck-for-all-release.log &
