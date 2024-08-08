@@ -2,6 +2,7 @@ package com.lckback.lckforall.base.auth.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,24 +35,35 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Tag(name = "Auth" , description = "회원가입 및 로그인, 토큰재발행 관련")
 @Slf4j
+@CrossOrigin("*")
 public class AuthController {
 
     private final AuthService authService;
     private final JWTUtil jWTUtil;
 
-    @Operation(summary = "회원가입 API", description = "회원가입 API")
-    @ApiResponses({
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON201", description = "OK, 성공"),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER4001", description = "CONFLICT, 사용자가 이미 존재합니다."),
-    })
-    @PostMapping("/signup")
-    public ResponseEntity<?> signup(
-        @ModelAttribute SignupUserDataDto signupUserDataDto) {
+        @PostMapping("/signup")
+        public ResponseEntity<?> signup(
+            @RequestPart(required = false) MultipartFile profileImage,
+            @RequestPart SignupUserDataDto.SignupUserData signupUserData) {
 
-        AuthResponseDto authResponseDto = authService.signup(signupUserDataDto.getProfileImage(), signupUserDataDto.getSignupUserData());
+            AuthResponseDto authResponseDto = authService.signup(profileImage, signupUserData);
 
-        return ResponseEntity.status(201).body(com.lckback.lckforall.base.api.ApiResponse.createSuccess(authResponseDto));
-    }
+            return ResponseEntity.status(201).body(ApiResponse.createSuccess(authResponseDto));
+        }
+
+    // @Operation(summary = "회원가입 API", description = "회원가입 API")
+    // @ApiResponses({
+    //     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON201", description = "OK, 성공"),
+    //     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER4001", description = "CONFLICT, 사용자가 이미 존재합니다."),
+    // })
+    // @PostMapping("/signup")
+    // public ResponseEntity<?> signup(
+    //     @ModelAttribute SignupUserDataDto signupUserDataDto) {
+    //
+    //     AuthResponseDto authResponseDto = authService.signup(signupUserDataDto.getProfileImage(), signupUserDataDto.getSignupUserData());
+    //
+    //     return ResponseEntity.status(201).body(com.lckback.lckforall.base.api.ApiResponse.createSuccess(authResponseDto));
+    // }
 
     @Operation(summary = "로그인 API", description = "로그인 API")
     @ApiResponses({
