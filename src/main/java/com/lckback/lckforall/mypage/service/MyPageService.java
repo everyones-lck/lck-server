@@ -20,6 +20,7 @@ import com.lckback.lckforall.mypage.dto.GetUserProfileDto;
 import com.lckback.lckforall.mypage.dto.GetViewingPartyDto;
 import com.lckback.lckforall.mypage.dto.UpdateMyTeamDto;
 import com.lckback.lckforall.mypage.dto.UpdateUserProfileDto;
+import com.lckback.lckforall.s3.service.S3Service;
 import com.lckback.lckforall.team.model.Team;
 import com.lckback.lckforall.team.repository.TeamRepository;
 import com.lckback.lckforall.user.model.User;
@@ -61,6 +62,8 @@ public class MyPageService {
 	private final ViewingPartyRepository viewingPartyRepository;
 
 	private final RefreshTokenRepository refreshTokenRepository;
+
+	private final S3Service s3Service;
 
 	public GetUserProfileDto.Response getUserProfile(String kakaoUserId) {
 
@@ -105,7 +108,7 @@ public class MyPageService {
 		}
 
 		if (!request.isDefaultImage() && !profileImage.isEmpty()) {
-			String updatedProfileImageUrl = "temp"; // s3 도입 전까지 임시
+			String updatedProfileImageUrl = s3Service.upload(profileImage);
 			user.updateProfileImageUrl(updatedProfileImageUrl);
 		}
 
