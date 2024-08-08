@@ -172,4 +172,16 @@ public class MyPageController {
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccessWithNoContent());
 	}
+	@DeleteMapping("/logout")
+	public ResponseEntity<?> logout(
+		@RequestHeader(name = "Authorization") String accessToken,
+		@RequestHeader(name = "Refresh") String refreshToken) {
+
+		String kakaoUserId = authService.getKakaoUserId(accessToken);
+
+		myPageService.logout(kakaoUserId, refreshToken);
+
+		return ResponseEntity.ok()
+			.body(ApiResponse.createSuccessWithNoContent());
+	}
 }
