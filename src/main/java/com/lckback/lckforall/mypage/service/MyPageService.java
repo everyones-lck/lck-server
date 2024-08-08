@@ -57,9 +57,9 @@ public class MyPageService {
 
 	private final ViewingPartyRepository viewingPartyRepository;
 
-	public GetUserProfileDto.Response getUserProfile(Long userId) {
+	public GetUserProfileDto.Response getUserProfile(String kakaoUserId) {
 
-		User user = userRepository.findById(userId)
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
 		return GetUserProfileDto.Response.builder()
@@ -70,20 +70,20 @@ public class MyPageService {
 			.build();
 	}
 
-	public void withdrawFromAccount(Long userId) {
+	public void withdrawFromAccount(String kakaoUserId) {
 
-		User user = userRepository.findById(userId)
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
 		user.withdrawFromAccount();
 	}
 
 	public UpdateUserProfileDto.Response updateUserProfile(
-		Long userId,
+		String kakaoUserId,
 		MultipartFile profileImage,
 		UpdateUserProfileDto.Request request) {
 
-		User user = userRepository.findById(userId)
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
 		if (request.getNickname() != null) {
@@ -110,9 +110,9 @@ public class MyPageService {
 			.build();
 	}
 
-	public void updateMyTeam(Long userId, UpdateMyTeamDto.Request request) {
+	public void updateMyTeam(String kakaoUserId, UpdateMyTeamDto.Request request) {
 
-		User user = userRepository.findById(userId)
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
 		Team team = teamRepository.findById(request.getTeamId())
@@ -127,9 +127,9 @@ public class MyPageService {
 		user.updateMyTeam(team);
 	}
 
-	public GetUserPostDto.Response getUserPost(Long userId, Pageable pageable) {
+	public GetUserPostDto.Response getUserPost(String kakaoUserId, Pageable pageable) {
 
-		User user = userRepository.findById(userId)
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
 		Page<Post> posts = postRepository.findByUser(user, pageable);
@@ -140,9 +140,9 @@ public class MyPageService {
 			.build();
 	}
 
-	public GetUserCommentDto.Response getUserComment(Long userId, Pageable pageable) {
+	public GetUserCommentDto.Response getUserComment(String kakaoUserId, Pageable pageable) {
 
-		User user = userRepository.findById(userId)
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
 		Page<Comment> comments = commentRepository.findByUser(user, pageable);
@@ -154,10 +154,10 @@ public class MyPageService {
 	}
 
 	public GetViewingPartyDto.Response getUserViewingPartyAsParticipate(
-		Long userId,
+		String kakaoUserId,
 		Pageable pageable) {
 
-		User user = userRepository.findById(userId)
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
 		Page<Participate> participates = participateRepository.findByUser(user, pageable);
@@ -171,9 +171,9 @@ public class MyPageService {
 			.build();
 	}
 
-	public GetViewingPartyDto.Response getUserViewingPartyAsHost(Long userId, Pageable pageable) {
+	public GetViewingPartyDto.Response getUserViewingPartyAsHost(String kakaoUserId, Pageable pageable) {
 
-		User user = userRepository.findById(userId)
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
 		Page<ViewingParty> viewingParties = viewingPartyRepository.findByUser(user, pageable);
@@ -185,10 +185,10 @@ public class MyPageService {
 	}
 
 	public void cancelViewingPartyParticipation(
-		Long userId,
+		String kakaoUserId,
 		DeleteParticipationDto.Request request) {
 
-		User user = userRepository.findById(userId)
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
 		ViewingParty viewingParty = viewingPartyRepository.findById(request.getViewingPartyId())
@@ -202,10 +202,10 @@ public class MyPageService {
 	}
 
 	public void cancelViewingPartyHosting(
-		Long userId,
+		String kakaoUserId,
 		DeleteViewingPartyDto.Request request) {
 
-		User user = userRepository.findById(userId)
+		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
 		ViewingParty viewingParty = viewingPartyRepository.findById(request.getViewingPartyId())

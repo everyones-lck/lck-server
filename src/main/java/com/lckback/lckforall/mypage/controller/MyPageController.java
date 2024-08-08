@@ -1,6 +1,7 @@
 package com.lckback.lckforall.mypage.controller;
 
 import com.lckback.lckforall.base.api.ApiResponse;
+import com.lckback.lckforall.base.auth.service.AuthService;
 import com.lckback.lckforall.mypage.dto.DeleteParticipationDto;
 import com.lckback.lckforall.mypage.dto.DeleteViewingPartyDto;
 import com.lckback.lckforall.mypage.dto.GetUserCommentDto;
@@ -37,12 +38,16 @@ public class MyPageController {
 
 	private final MyPageService myPageService;
 
+	private final AuthService authService;
+
 	@GetMapping("/profiles")
 	public ResponseEntity<?> getUserProfile(
-		@RequestHeader(name = "userId") Long userId) {
+		@RequestHeader(name = "Authorization") String accessToken) {
+
+		String kakaoUserId = authService.getKakaoUserId(accessToken);
 
 		GetUserProfileDto.Response response =
-			myPageService.getUserProfile(userId);
+			myPageService.getUserProfile(kakaoUserId);
 
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccess(response));
@@ -50,9 +55,11 @@ public class MyPageController {
 
 	@PatchMapping("/withdrawal")
 	public ResponseEntity<?> withdrawFromAccount(
-		@RequestHeader(name = "userId") Long userId) {
+		@RequestHeader(name = "Authorization") String accessToken) {
 
-		myPageService.withdrawFromAccount(userId);
+		String kakaoUserId = authService.getKakaoUserId(accessToken);
+
+		myPageService.withdrawFromAccount(kakaoUserId);
 
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccessWithNoContent());
@@ -60,12 +67,14 @@ public class MyPageController {
 
 	@PatchMapping("/profiles")
 	public ResponseEntity<?> updateUserProfile(
-		@RequestHeader(name = "userId") Long userId,
+		@RequestHeader(name = "Authorization") String accessToken,
 		@RequestPart(required = false) MultipartFile profileImage,
 		@RequestPart @Valid UpdateUserProfileDto.Request request) {
 
+		String kakaoUserId = authService.getKakaoUserId(accessToken);
+
 		UpdateUserProfileDto.Response response =
-			myPageService.updateUserProfile(userId, profileImage, request);
+			myPageService.updateUserProfile(kakaoUserId, profileImage, request);
 
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccess(response));
@@ -73,10 +82,12 @@ public class MyPageController {
 
 	@PatchMapping("/my-team")
 	public ResponseEntity<?> updateMyTeam(
-		@RequestHeader(name = "userId") Long userId,
+		@RequestHeader(name = "Authorization") String accessToken,
 		@RequestBody @Valid UpdateMyTeamDto.Request request) {
 
-		myPageService.updateMyTeam(userId, request);
+		String kakaoUserId = authService.getKakaoUserId(accessToken);
+
+		myPageService.updateMyTeam(kakaoUserId, request);
 
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccessWithNoContent());
@@ -84,10 +95,12 @@ public class MyPageController {
 
 	@GetMapping("/posts")
 	public ResponseEntity<?> getUserPost(
-		@RequestHeader(name = "userId") Long userId,
+		@RequestHeader(name = "Authorization") String accessToken,
 		@PageableDefault(size = 6) Pageable pageable) {
 
-		GetUserPostDto.Response response = myPageService.getUserPost(userId, pageable);
+		String kakaoUserId = authService.getKakaoUserId(accessToken);
+
+		GetUserPostDto.Response response = myPageService.getUserPost(kakaoUserId, pageable);
 
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccess(response));
@@ -95,10 +108,12 @@ public class MyPageController {
 
 	@GetMapping("/comments")
 	public ResponseEntity<?> getUseComment(
-		@RequestHeader(name = "userId") Long userId,
+		@RequestHeader(name = "Authorization") String accessToken,
 		@PageableDefault(size = 6) Pageable pageable) {
 
-		GetUserCommentDto.Response response = myPageService.getUserComment(userId, pageable);
+		String kakaoUserId = authService.getKakaoUserId(accessToken);
+
+		GetUserCommentDto.Response response = myPageService.getUserComment(kakaoUserId, pageable);
 
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccess(response));
@@ -106,11 +121,13 @@ public class MyPageController {
 
 	@GetMapping("/viewing-parties/participate")
 	public ResponseEntity<?> getUserViewingPartyAsParticipate(
-		@RequestHeader(name = "userId") Long userId,
+		@RequestHeader(name = "Authorization") String accessToken,
 		@PageableDefault(size = 6) Pageable pageable) {
 
+		String kakaoUserId = authService.getKakaoUserId(accessToken);
+
 		GetViewingPartyDto.Response response =
-			myPageService.getUserViewingPartyAsParticipate(userId, pageable);
+			myPageService.getUserViewingPartyAsParticipate(kakaoUserId, pageable);
 
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccess(response));
@@ -118,11 +135,13 @@ public class MyPageController {
 
 	@GetMapping("/viewing-parties/host")
 	public ResponseEntity<?> getUserViewingPartyAsHost(
-		@RequestHeader(name = "userId") Long userId,
+		@RequestHeader(name = "Authorization") String accessToken,
 		@PageableDefault(size = 6) Pageable pageable) {
 
+		String kakaoUserId = authService.getKakaoUserId(accessToken);
+
 		GetViewingPartyDto.Response response =
-			myPageService.getUserViewingPartyAsHost(userId, pageable);
+			myPageService.getUserViewingPartyAsHost(kakaoUserId, pageable);
 
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccess(response));
@@ -130,10 +149,12 @@ public class MyPageController {
 
 	@DeleteMapping("/viewing-parties/participate")
 	public ResponseEntity<?> cancelViewingPartyParticipation(
-		@RequestHeader(name = "userId") Long userId,
+		@RequestHeader(name = "Authorization") String accessToken,
 		@RequestBody @Valid DeleteParticipationDto.Request request) {
 
-		myPageService.cancelViewingPartyParticipation(userId, request);
+		String kakaoUserId = authService.getKakaoUserId(accessToken);
+
+		myPageService.cancelViewingPartyParticipation(kakaoUserId, request);
 
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccessWithNoContent());
@@ -141,10 +162,12 @@ public class MyPageController {
 
 	@DeleteMapping("/viewing-parties/host")
 	public ResponseEntity<?> cancelViewingPartyHosting(
-		@RequestHeader(name = "userId") Long userId,
+		@RequestHeader(name = "Authorization") String accessToken,
 		@RequestBody @Valid DeleteViewingPartyDto.Request request) {
 
-		myPageService.cancelViewingPartyHosting(userId, request);
+		String kakaoUserId = authService.getKakaoUserId(accessToken);
+
+		myPageService.cancelViewingPartyHosting(kakaoUserId, request);
 
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccessWithNoContent());
