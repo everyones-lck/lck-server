@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,7 +24,7 @@ public class MatchController {
 	private final MatchService matchService;
 
 	@GetMapping("/today/information")
-	public ResponseEntity<?> getTodayMatches() { // 오늘 경기정보 반환
+	public ResponseEntity<?> getTodayMatches(@RequestHeader("Authorization") String token) { // 오늘 경기정보 반환
 		List<MatchInfoDto.TodayMatchResponse> responses = matchService.todayMatchInfo();
 
 		return ResponseEntity.ok()
