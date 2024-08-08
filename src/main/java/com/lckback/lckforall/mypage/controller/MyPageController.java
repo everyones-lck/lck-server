@@ -107,7 +107,7 @@ public class MyPageController {
 	}
 
 	@GetMapping("/comments")
-	public ResponseEntity<?> getUseComment(
+	public ResponseEntity<?> getUserComment(
 		@RequestHeader(name = "Authorization") String accessToken,
 		@PageableDefault(size = 6) Pageable pageable) {
 
