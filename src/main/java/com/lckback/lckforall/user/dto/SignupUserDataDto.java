@@ -1,7 +1,7 @@
 package com.lckback.lckforall.user.dto;
 
-import com.lckback.lckforall.base.type.UserRole;
-import com.lckback.lckforall.base.type.UserStatus;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.lckback.lckforall.team.model.Team;
 
 import lombok.Builder;
@@ -13,15 +13,10 @@ public class SignupUserDataDto {
     @Builder
     public static class SignupUserData {
 
-        private Long id;
         private String kakaoUserId;
         private String nickName;
-        private String profileImageUrl;
-        private UserRole role;
-        private UserStatus status;
-        private Team team;
+        private String role;
+        private Long teamId;
     }
 
 }
-
-

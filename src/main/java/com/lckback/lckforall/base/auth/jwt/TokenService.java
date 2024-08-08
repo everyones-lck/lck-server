@@ -36,33 +36,33 @@ public class TokenService {
     public String createRefreshToken(String userId, String role) {
 
         String refreshToken = jwtUtil.createToken(userId, role, refreshTokenExpiration);
-        saveRefreshToken(userId, refreshToken, refreshTokenExpiration);
+        // saveRefreshToken(userId, refreshToken, refreshTokenExpiration);
         return refreshToken;
     }
 
-    // RefreshToken Redis에 저장
-    public void saveRefreshToken(String userId, String token, long durationMs) {
+    // // RefreshToken Redis에 저장
+    // public void saveRefreshToken(String userId, String token, long durationMs) {
+    //
+    //     redisTemplate.opsForValue().set(REFRESH_TOKEN_PREFIX + userId, token, durationMs, TimeUnit.MILLISECONDS);
+    // }
 
-        redisTemplate.opsForValue().set(REFRESH_TOKEN_PREFIX + userId, token, durationMs, TimeUnit.MILLISECONDS);
-    }
-
-    // Redis에서 RefreshToken 가져옴
-    public String getRefreshToken(String userId) {
-
-        return (String) redisTemplate.opsForValue().get(REFRESH_TOKEN_PREFIX + userId);
-    }
-
-    // Redis에 저장된 RefreshToken 유효성 검사
-    public boolean validateRefreshToken(String userId, String refreshToken) {
-
-        String storedToken = getRefreshToken(userId);
-        return storedToken != null && storedToken.equals(refreshToken) && !jwtUtil.isTokenExpired(refreshToken);
-    }
-
-    // Redis에서 RefreshToken 삭제
-    public void deleteRefreshToken(String userId) {
-
-        redisTemplate.delete(REFRESH_TOKEN_PREFIX + userId);
-    }
+    // // Redis에서 RefreshToken 가져옴
+    // public String getRefreshToken(String userId) {
+    //
+    //     return (String) redisTemplate.opsForValue().get(REFRESH_TOKEN_PREFIX + userId);
+    // }
+    //
+    // // Redis에 저장된 RefreshToken 유효성 검사
+    // public boolean validateRefreshToken(String userId, String refreshToken) {
+    //
+    //     String storedToken = getRefreshToken(userId);
+    //     return storedToken != null && storedToken.equals(refreshToken) && !jwtUtil.isTokenExpired(refreshToken);
+    // }
+    //
+    // // Redis에서 RefreshToken 삭제
+    // public void deleteRefreshToken(String userId) {
+    //
+    //     redisTemplate.delete(REFRESH_TOKEN_PREFIX + userId);
+    // }
 }
 

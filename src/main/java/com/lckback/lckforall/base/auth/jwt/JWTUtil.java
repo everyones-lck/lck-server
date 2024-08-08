@@ -2,15 +2,24 @@ package com.lckback.lckforall.base.auth.jwt;
 
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import com.lckback.lckforall.base.api.error.TokenErrorCode;
+import com.lckback.lckforall.base.api.exception.RestApiException;
+import com.lckback.lckforall.base.config.CustomAuthenticationToken;
+
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import lombok.Getter;
 
 @Component
@@ -39,9 +48,12 @@ public class JWTUtil {
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
+        } catch (MalformedJwtException e) {
+            throw new RestApiException(TokenErrorCode.MALFORMED_JWT);
+        } catch (ExpiredJwtException e) {
+            throw new RestApiException(TokenErrorCode.EXPIRED_ACCESS_TOKEN);
         } catch (Exception e) {
-
-            return null;
+            throw new RestApiException(TokenErrorCode.INVALID_ACCESS_TOKEN);
         }
     }
 
@@ -54,20 +66,17 @@ public class JWTUtil {
                 .parseSignedClaims(token)
                 .getPayload()
                 .get("role", String.class);
+        } catch (MalformedJwtException e) {
+            throw new RestApiException(TokenErrorCode.MALFORMED_JWT);
+        } catch (ExpiredJwtException e) {
+            throw new RestApiException(TokenErrorCode.EXPIRED_ACCESS_TOKEN);
         } catch (Exception e) {
-
-            return null;
+            throw new RestApiException(TokenErrorCode.INVALID_ACCESS_TOKEN);
         }
     }
 
     // 토큰 만료 여부 확인
     public boolean isTokenExpired(String token) {
-
-        // 토큰이 null이거나 빈 문자열이면 만료된 것으로 처리
-        if (token == null || token.trim().isEmpty()) {
-
-            return true;
-        }
 
         try {
             return Jwts.parser().verifyWith(secretKey)
@@ -76,15 +85,19 @@ public class JWTUtil {
                 .getPayload()
                 .getExpiration()
                 .before(new Date());
+        } catch (MalformedJwtException e) {
+            throw new RestApiException(TokenErrorCode.MALFORMED_JWT);
+        } catch (ExpiredJwtException e) {
+            throw new RestApiException(TokenErrorCode.EXPIRED_ACCESS_TOKEN);
         } catch (Exception e) {
-
-            return true;
+            throw new RestApiException(TokenErrorCode.INVALID_ACCESS_TOKEN);
         }
 
     }
 
     // 토큰 생성
     public String createToken(String userId, String role, Long expiredMs) {
+
         return Jwts.builder()
             .claim("sub", userId)
             .claim("role", role)
@@ -97,21 +110,36 @@ public class JWTUtil {
     // 토큰 검증
     public boolean validateToken(String token) {
 
-        // 토큰이 null이거나 빈 문자열이면 만료된 것으로 처리
-        if (token == null || token.trim().isEmpty()) {
-
-            return false;
-        }
-
         try {
             Jwts.parser().verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token);
             return true;
 
+        } catch (MalformedJwtException e) {
+            throw new RestApiException(TokenErrorCode.MALFORMED_JWT);
+        } catch (ExpiredJwtException e) {
+            throw new RestApiException(TokenErrorCode.EXPIRED_ACCESS_TOKEN);
         } catch (Exception e) {
+            throw new RestApiException(TokenErrorCode.INVALID_ACCESS_TOKEN);
+        }
 
-            return false;
+    }
+
+    public void validateRefreshToken(String token) {
+
+        try {
+            Jwts.parser().verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token);
+            return;
+
+        } catch (MalformedJwtException e) {
+            throw new RestApiException(TokenErrorCode.MALFORMED_JWT);
+        } catch (ExpiredJwtException e) {
+            throw new RestApiException(TokenErrorCode.EXPIRED_REFRESH_TOKEN);
+        } catch (Exception e) {
+            throw new RestApiException(TokenErrorCode.INVALID_REFRESH_TOKEN);
         }
 
     }
@@ -119,6 +147,14 @@ public class JWTUtil {
     public String formatDate(long timestamp) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(new Date(timestamp));
+    }
+
+    // 토큰에서 사용자 정보를 추출하고 CustomAuthenticationToken을 생성
+    public Authentication getAuthentication(String token) {
+        String kakaoUserId = getUserId(token);
+        String role = getRole(token);
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.startsWith("ROLE_") ? role : "ROLE_" + role);
+        return new CustomAuthenticationToken(kakaoUserId, null, role, Collections.singleton(authority));
     }
 
 }

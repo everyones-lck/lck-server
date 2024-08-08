@@ -27,11 +27,13 @@ public class SecurityConfig {
 	public RoleHierarchy roleHierarchy() {
 
 		return RoleHierarchyImpl.fromHierarchy("""
-			ROLE_ADMIN > ROLE_USER
-			""");
+         ROLE_ADMIN > ROLE_USER
+         """);
 	}
 
 	private final JWTFilter jwtFilter;
+	private final CustomAccessDeniedHandler customAccessDeniedHandler;
+	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -51,10 +53,10 @@ public class SecurityConfig {
 		http
 			.authorizeHttpRequests((auth) -> auth
 				.requestMatchers("/auth/login", "/auth/signup", "/auth/refresh").permitAll() // 인증 없이 접근 가능
-				.requestMatchers("/").hasRole("USER")
-				.requestMatchers("/admin/**").hasRole("ADMIN")
 				.requestMatchers(HttpMethod.GET,
 					"/swagger-ui/*", "/v3/api-docs/swagger-config", "/api/logistics", "/v3/api-docs").permitAll()
+				.requestMatchers("/auth/users/**").hasRole("USER")
+				.requestMatchers("/auth/admin/**").hasRole("ADMIN")
 				.anyRequest().authenticated()); // 나머지 경로는 인증 필요
 
 		// 세션 설정 : STATELESS
@@ -64,6 +66,11 @@ public class SecurityConfig {
 
 		http
 			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+		http
+			.exceptionHandling((handler) -> handler
+				.authenticationEntryPoint(customAuthenticationEntryPoint)
+				.accessDeniedHandler(customAccessDeniedHandler));
 
 		return http.build();
 	}
