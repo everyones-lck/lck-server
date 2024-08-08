@@ -30,7 +30,9 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private static final List<String> EXCLUDE_URLS = Arrays.asList(
         "/auth/signup",
-        "/auth/login");
+        "/auth/login",
+        "/swagger-ui/",
+        "/v3/");
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws
@@ -40,7 +42,7 @@ public class JWTFilter extends OncePerRequestFilter {
         try {
             if (shouldExclude(request)) {
 
-                log.info("shouldExclude: {}", request.getRequestURI());
+                // log.info("shouldExclude: {}", request.getRequestURI());
                 filterChain.doFilter(request, response);
 
                 return;
@@ -93,7 +95,10 @@ public class JWTFilter extends OncePerRequestFilter {
     }
 
     private boolean shouldExclude(HttpServletRequest request) {
+        // log.info("shouldExclude: {}", request.getRequestURI());
+        // return EXCLUDE_URLS.stream().anyMatch(url -> request.getRequestURI().equals(url));
+        String requestURI = request.getRequestURI();
 
-        return EXCLUDE_URLS.stream().anyMatch(url -> request.getRequestURI().equals(url));
+        return EXCLUDE_URLS.stream().anyMatch(url -> requestURI.startsWith(url));
     }
 }
