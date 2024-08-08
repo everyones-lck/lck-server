@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.lckback.lckforall.s3.service.S3Service;
 import com.lckback.lckforall.base.api.ApiResponse;
 import com.lckback.lckforall.base.api.error.TeamErrorCode;
 import com.lckback.lckforall.base.api.error.TokenErrorCode;
@@ -44,16 +45,18 @@ public class AuthService {
 	private final TeamRepository teamRepository;
 	private final RefreshTokenRepository refreshTokenRepository;
 
+	private final S3Service s3Service;
+
 	public AuthResponseDto signup(MultipartFile profileImage, SignupUserDataDto.SignupUserData signupUserData) {
 		if (userRepository.existsByKakaoUserId(signupUserData.getKakaoUserId())) {
 			throw new RestApiException(UserErrorCode.USER_ALREADY_EXISTS);
 		}
 
-		String profileImageUrl = "temp"; // s3 도입 전까지 임시
+		//String profileImageUrl = "temp"; // s3 도입 전까지 임시
+
+		String profileImageUrl = s3Service.upload(profileImage);
 
 		if (!profileImage.isEmpty()) {
-			// 프로필 이미지를 저장하고 URL을 얻는 로직 추가 필요
-			// 예: profileImageUrl = s3Service.uploadFile(profileImage);
 		}
 
 		Team team = teamRepository.findById(signupUserData.getTeamId()).orElseThrow(() -> new RestApiException(
