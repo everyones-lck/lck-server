@@ -22,6 +22,7 @@ public class ViewingPartyConverter {
 
     public static ViewingPartyListDTO.Response toPartyResponse(ViewingParty viewingParty) {
         return ViewingPartyListDTO.Response.builder()
+                .id(viewingParty.getId())
                 .name(viewingParty.getName())
                 .userName(viewingParty.getUser().getNickname())
                 .photoURL(viewingParty.getUser().getProfileImageUrl())

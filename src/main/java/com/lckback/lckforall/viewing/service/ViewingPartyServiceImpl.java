@@ -33,16 +33,16 @@ public class ViewingPartyServiceImpl implements ViewingPartyService {
 
     @Override
     @Transactional(readOnly = true)
-    public ViewingPartyListDTO.ResponseList getViewingPartyList(Long userId, Integer page, Integer size) {
-        userRepository.findById(userId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
+    public ViewingPartyListDTO.ResponseList getViewingPartyList(String kakaoUserId, Integer page, Integer size) {
+        userRepository.findByKakaoUserId(kakaoUserId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
         Page<ViewingParty> viewingPartyList = viewingPartyRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(page, size));
         return ViewingPartyConverter.toPartyListResponse(viewingPartyList);
     }
 
     @Override
     @Transactional
-    public GetViewingPartyDetailDTO.Response getViewingPartyDetail(Long userId, Long viewingId) {
-        userRepository.findById(userId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
+    public GetViewingPartyDetailDTO.Response getViewingPartyDetail(String kakaoUserId, Long viewingId) {
+        userRepository.findByKakaoUserId(kakaoUserId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
         ViewingParty viewingPartyDetail = viewingPartyRepository.findById(viewingId).orElseThrow(() -> new RestApiException(ViewingPartyErrorCode.PARTY_NOT_FOUND));
         return ViewingPartyConverter.toResponse(viewingPartyDetail);
 
@@ -50,8 +50,8 @@ public class ViewingPartyServiceImpl implements ViewingPartyService {
 
     @Override
     @Transactional
-    public GetViewingPartyDetailDTO.ParticipateResponse createParticipant(Long userId, Long viewingPartyId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
+    public GetViewingPartyDetailDTO.ParticipateResponse createParticipant(String kakaoUserId, Long viewingPartyId) {
+        User user = userRepository.findByKakaoUserId(kakaoUserId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
         ViewingParty viewingParty = viewingPartyRepository.findById(viewingPartyId).orElseThrow(() -> new RestApiException(ViewingPartyErrorCode.PARTY_NOT_FOUND));
         Optional<Participate> findParticipate = participateRepository.findByUserAndViewingParty(user, viewingParty);
         if(findParticipate.isEmpty()){
@@ -65,8 +65,8 @@ public class ViewingPartyServiceImpl implements ViewingPartyService {
 
     @Override
     @Transactional
-    public ParticipantListDTO.ResponseList getParticipantList(Long userId, Long viewingPartyId, Integer page, Integer size) {
-        userRepository.findById(userId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
+    public ParticipantListDTO.ResponseList getParticipantList(String kakaoUserId, Long viewingPartyId, Integer page, Integer size) {
+        userRepository.findByKakaoUserId(kakaoUserId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
         ViewingParty viewingParty = viewingPartyRepository.findById(viewingPartyId).orElseThrow(() -> new RestApiException(ViewingPartyErrorCode.PARTY_NOT_FOUND));
         List<User> userList = viewingParty.getParticipates().stream().map(Participate::getUser).toList();
         PageRequest pageRequest = PageRequest.of(page, size);

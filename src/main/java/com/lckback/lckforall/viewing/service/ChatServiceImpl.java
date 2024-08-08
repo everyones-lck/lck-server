@@ -48,10 +48,10 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     @Transactional
-    public ChatDTO.ChatRoomResponse createChatRoom(Long userId, Long viewingPartyId) {
+    public ChatDTO.ChatRoomResponse createChatRoom(String kakaoUserId, Long viewingPartyId) {
         // 생성한 사람
         User maker;
-        User user = userRepository.findById(userId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findByKakaoUserId(kakaoUserId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
         ViewingParty viewingParty = viewingPartyRepository.findById(viewingPartyId).orElseThrow(() -> new RestApiException(ViewingPartyErrorCode.PARTY_NOT_FOUND));
 
         // 참여자 입장에서 채팅에 참여
@@ -60,7 +60,7 @@ public class ChatServiceImpl implements ChatService {
             maker = optionalParticipant.get().getUser();
         }
         // 개최자가 개최한 파티에서 채팅에 참여
-        else if(viewingParty.getUser().getId().equals(userId)){
+        else if(viewingParty.getUser().equals(user)){
             maker = viewingParty.getUser();
         }
         // 두 가지 모두 해당 안될시 에러 발생
@@ -85,9 +85,9 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     @Transactional
-    public ChatDTO.ChatMessageListResponse getChatMessage(Long userId, Long roomId, Integer page, Integer size) {
+    public ChatDTO.ChatMessageListResponse getChatMessage(String kakaoUserId, Long roomId, Integer page, Integer size) {
         User receiver;
-        User sender = userRepository.findById(userId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
+        User sender = userRepository.findByKakaoUserId(kakaoUserId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new RestApiException(ChatErrorCode.CHAT_NOT_FOUND));
         User owner = chatRoom.getViewingParty().getUser();
         if(owner == sender) {

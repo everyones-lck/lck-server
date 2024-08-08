@@ -6,11 +6,11 @@ import com.lckback.lckforall.viewing.model.ChatRoom;
 import org.springframework.web.socket.WebSocketSession;
 
 public interface ChatService {
-    ChatDTO.ChatRoomResponse createChatRoom(Long userId, Long viewingPartyId);
+    ChatDTO.ChatRoomResponse createChatRoom(String kakaoUserId, Long viewingPartyId);
 
     public <T> void sendMessage(WebSocketSession session, T message);
 
-    ChatDTO.ChatMessageListResponse getChatMessage(Long userId, Long roomId, Integer page, Integer size);
+    ChatDTO.ChatMessageListResponse getChatMessage(String kakaoUserId, Long roomId, Integer page, Integer size);
 
     User findUserOfChat(ChatDTO.Message chatMessage);
 
