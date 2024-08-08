@@ -1,6 +1,5 @@
 package com.lckback.lckforall.viewing.dto;
 
-import com.lckback.lckforall.viewing.service.ChatService;
 import lombok.*;
 import org.springframework.web.socket.WebSocketSession;
 

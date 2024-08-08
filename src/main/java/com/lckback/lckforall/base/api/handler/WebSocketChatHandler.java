@@ -1,17 +1,12 @@
 package com.lckback.lckforall.base.api.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lckback.lckforall.base.api.error.ChatErrorCode;
-import com.lckback.lckforall.base.api.error.UserErrorCode;
-import com.lckback.lckforall.base.api.exception.RestApiException;
+
 import com.lckback.lckforall.user.model.User;
-import com.lckback.lckforall.user.respository.UserRepository;
-import com.lckback.lckforall.viewing.converter.ChatConverter;
+
 import com.lckback.lckforall.viewing.dto.ChatDTO;
-import com.lckback.lckforall.viewing.model.ChatMessage;
 import com.lckback.lckforall.viewing.model.ChatRoom;
-import com.lckback.lckforall.viewing.repository.ChatMessageRepository;
-import com.lckback.lckforall.viewing.repository.ChatRoomRepository;
+
 import com.lckback.lckforall.viewing.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

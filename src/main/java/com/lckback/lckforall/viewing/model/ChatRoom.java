@@ -1,7 +1,6 @@
 package com.lckback.lckforall.viewing.model;
 
 import com.lckback.lckforall.base.model.BaseEntity;
-import com.lckback.lckforall.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
