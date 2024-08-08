@@ -2,9 +2,12 @@ package com.lckback.lckforall.mypage.service;
 
 import com.lckback.lckforall.base.api.error.CommonErrorCode;
 import com.lckback.lckforall.base.api.error.TeamErrorCode;
+import com.lckback.lckforall.base.api.error.TokenErrorCode;
 import com.lckback.lckforall.base.api.error.UserErrorCode;
 import com.lckback.lckforall.base.api.error.ViewingPartyErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
+import com.lckback.lckforall.base.auth.jwt.model.RefreshToken;
+import com.lckback.lckforall.base.auth.jwt.repository.RefreshTokenRepository;
 import com.lckback.lckforall.community.model.Comment;
 import com.lckback.lckforall.community.model.Post;
 import com.lckback.lckforall.community.repository.CommentRepository;
@@ -56,6 +59,8 @@ public class MyPageService {
 	private final ParticipateRepository participateRepository;
 
 	private final ViewingPartyRepository viewingPartyRepository;
+
+	private final RefreshTokenRepository refreshTokenRepository;
 
 	public GetUserProfileDto.Response getUserProfile(String kakaoUserId) {
 
@@ -171,7 +176,8 @@ public class MyPageService {
 			.build();
 	}
 
-	public GetViewingPartyDto.Response getUserViewingPartyAsHost(String kakaoUserId, Pageable pageable) {
+	public GetViewingPartyDto.Response getUserViewingPartyAsHost(String kakaoUserId,
+		Pageable pageable) {
 
 		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
@@ -216,6 +222,18 @@ public class MyPageService {
 		}
 
 		viewingPartyRepository.delete(viewingParty);
+	}
+
+	public void logout(String kakaoUserId, String refreshToken) {
+
+		RefreshToken findRefreshToken = refreshTokenRepository.findById(kakaoUserId)
+			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+
+		if (!refreshToken.equals(findRefreshToken.getRefreshToken())) {
+			throw new RestApiException(TokenErrorCode.NOT_EXISTS_REFRESH_TOKEN);
+		}
+
+		refreshTokenRepository.delete(findRefreshToken);
 	}
 
 	private List<GetUserPostDto.Information> convertToPostInformation(Page<Post> posts) {
