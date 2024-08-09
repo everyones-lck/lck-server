@@ -1,6 +1,7 @@
 package com.lckback.lckforall.viewing.controller;
 
 import com.lckback.lckforall.base.api.ApiResponse;
+import com.lckback.lckforall.base.auth.service.AuthService;
 import com.lckback.lckforall.viewing.dto.ChangeViewingPartyDTO;
 import com.lckback.lckforall.viewing.service.ViewingPartyChangeServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class ViewingChangeController {
 
     private final ViewingPartyChangeServiceImpl viewingPartyChangeService;
+    private final AuthService authService;
     @PostMapping("/create")
     @Operation(summary = "뷰잉파티 개최 API", description = "뷰잉파티를 개최하는 API입니다.")
     @ApiResponses({
@@ -25,11 +27,12 @@ public class ViewingChangeController {
 
     })
     @Parameters({
-            @Parameter(name = "user_id", description = "RequestHeader - 로그인한 사용자 아이디(accessToken으로 변경 예정)"),
+            @Parameter(name = "Authorization", description = "RequestHeader - 로그인한 사용자 토큰"),
     })
-    public ApiResponse<?> createViewingParty(@RequestHeader(name = "user_id") Long userId,
+    public ApiResponse<?> createViewingParty(@RequestHeader(name = "Authorization") String accessToken,
                                              @RequestBody @Valid ChangeViewingPartyDTO.CreateViewingPartyRequest request){
-        return ApiResponse.createSuccess(viewingPartyChangeService.createViewingParty(userId, request));
+        String kakaoUserId = authService.getKakaoUserId(accessToken);
+        return ApiResponse.createSuccess(viewingPartyChangeService.createViewingParty(kakaoUserId, request));
     }
 
     @PatchMapping("/{viewing_party_id}/update")
@@ -41,13 +44,14 @@ public class ViewingChangeController {
 
     })
     @Parameters({
-            @Parameter(name = "user_id", description = "RequestHeader - 로그인한 사용자 아이디(accessToken으로 변경 예정)"),
+            @Parameter(name = "Authorization", description = "RequestHeader - 로그인한 사용자 토큰"),
             @Parameter(name = "viewing_party_id", description = "query string(RequestParam) - 해당 뷰잉파티 글의 ID"),
     })
-    public ApiResponse<?> updateViewingParty(@RequestHeader(name = "user_id") Long userId,
+    public ApiResponse<?> updateViewingParty(@RequestHeader(name = "Authorization") String accessToken,
                                              @PathVariable(name = "viewing_party_id") Long viewingPartyId,
                                              @RequestBody @Valid ChangeViewingPartyDTO.CreateViewingPartyRequest request){
-        return ApiResponse.createSuccess(viewingPartyChangeService.updateViewingParty(userId, viewingPartyId, request));
+        String kakaoUserId = authService.getKakaoUserId(accessToken);
+        return ApiResponse.createSuccess(viewingPartyChangeService.updateViewingParty(kakaoUserId, viewingPartyId, request));
     }
 
     @DeleteMapping("/{viewing_party_id}/delete")
@@ -59,11 +63,12 @@ public class ViewingChangeController {
 
     })
     @Parameters({
-            @Parameter(name = "user_id", description = "RequestHeader - 로그인한 사용자 아이디(accessToken으로 변경 예정)"),
+            @Parameter(name = "Authorization", description = "RequestHeader - 로그인한 사용자 토큰"),
             @Parameter(name = "viewing_party_id", description = "query string(RequestParam) - 해당 뷰잉파티 글의 ID"),
     })
-    public ApiResponse<?> deleteViewingParty(@RequestHeader(name = "user_id") Long userId,
+    public ApiResponse<?> deleteViewingParty(@RequestHeader(name = "Authorization") String accessToken,
                                              @PathVariable(name = "viewing_party_id") Long viewingPartyId){
-        return ApiResponse.createSuccess(viewingPartyChangeService.deleteViewingParty(userId, viewingPartyId));
+        String kakaoUserId = authService.getKakaoUserId(accessToken);
+        return ApiResponse.createSuccess(viewingPartyChangeService.deleteViewingParty(kakaoUserId, viewingPartyId));
     }
 }

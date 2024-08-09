@@ -13,17 +13,21 @@ import java.util.stream.Collectors;
 
 public class ViewingPartyConverter {
 
-    public static ViewingPartyListDTO.ResponseList toPartyListResponse(Page<ViewingParty> viewingPartyPage) {
+    public static ViewingPartyListDTO.ResponseList toPartyListResponse(Page<ViewingParty> viewingPartyPage, Boolean isLast, Integer totalPage) {
         List<ViewingPartyListDTO.Response> partyList = viewingPartyPage.stream().map(ViewingPartyConverter::toPartyResponse).collect(Collectors.toList());
         return ViewingPartyListDTO.ResponseList.builder()
+                .isLast(isLast)
+                .totalPage(totalPage)
                 .partyList(partyList)
                 .build();
     }
 
     public static ViewingPartyListDTO.Response toPartyResponse(ViewingParty viewingParty) {
         return ViewingPartyListDTO.Response.builder()
+                .id(viewingParty.getId())
                 .name(viewingParty.getName())
                 .userName(viewingParty.getUser().getNickname())
+                .teamName(viewingParty.getUser().getTeam().getTeamName())
                 .photoURL(viewingParty.getUser().getProfileImageUrl())
                 .partyDate(viewingParty.getDate())
                 .latitude(viewingParty.getLatitude())
@@ -39,6 +43,8 @@ public class ViewingPartyConverter {
                 .ownerImage(viewingParty.getUser().getProfileImageUrl())
                 .qualify(viewingParty.getPartyQualify())
                 .partyDate(viewingParty.getDate())
+                .latitude(viewingParty.getLatitude())
+                .longitude(viewingParty.getLongitude())
                 .location(viewingParty.getLocation())
                 .price(viewingParty.getPrice())
                 .lowParticipate(viewingParty.getLowParticipate())
