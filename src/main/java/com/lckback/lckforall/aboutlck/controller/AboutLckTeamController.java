@@ -1,6 +1,7 @@
 package com.lckback.lckforall.aboutlck.controller;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,7 @@ import com.lckback.lckforall.base.type.PlayerRole;
 import lombok.RequiredArgsConstructor;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/aboutlck/team")
 @RequiredArgsConstructor
 public class AboutLckTeamController {

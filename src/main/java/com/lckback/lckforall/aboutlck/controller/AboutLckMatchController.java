@@ -2,6 +2,7 @@ package com.lckback.lckforall.aboutlck.controller;
 
 import java.time.LocalDate;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,6 +15,7 @@ import com.lckback.lckforall.base.api.ApiResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/aboutlck/match")
 @RequiredArgsConstructor
 public class AboutLckMatchController {
