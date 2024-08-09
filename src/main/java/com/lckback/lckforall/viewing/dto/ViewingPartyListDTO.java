@@ -28,6 +28,7 @@ public class ViewingPartyListDTO {
         Long id;
         String name;
         String userName;
+        String teamName;
         String photoURL;
         LocalDateTime partyDate;
         Double latitude;

@@ -20,6 +20,8 @@ public class GetViewingPartyDetailDTO {
         String qualify;
         LocalDateTime partyDate;
         String location;
+        Double latitude;
+        Double longitude;
         Integer price;
         Integer lowParticipate;
         Integer highParticipate;
