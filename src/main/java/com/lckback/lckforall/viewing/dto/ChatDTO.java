@@ -17,13 +17,13 @@ public class ChatDTO {
     public static class Message {
 
         public enum MessageType {
-            // 입장, 채팅
+            // 입장, 채팅, 나가기
             ENTER, TALK, OUT
         }
 
         private Message.MessageType type;
         private Long chatRoomId;
-        private Long senderId;
+        private String senderId;
         private String message;
     }
 
