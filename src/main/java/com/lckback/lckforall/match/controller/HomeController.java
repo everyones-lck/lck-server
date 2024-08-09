@@ -1,6 +1,7 @@
 package com.lckback.lckforall.match.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Tag(name = "Home", description = "Home 화면 관련 api")
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/home")
 public class HomeController {
 	private final HomeService homeService;
