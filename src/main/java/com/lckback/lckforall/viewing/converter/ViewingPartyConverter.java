@@ -13,9 +13,11 @@ import java.util.stream.Collectors;
 
 public class ViewingPartyConverter {
 
-    public static ViewingPartyListDTO.ResponseList toPartyListResponse(Page<ViewingParty> viewingPartyPage) {
+    public static ViewingPartyListDTO.ResponseList toPartyListResponse(Page<ViewingParty> viewingPartyPage, Boolean isLast, Integer totalPage) {
         List<ViewingPartyListDTO.Response> partyList = viewingPartyPage.stream().map(ViewingPartyConverter::toPartyResponse).collect(Collectors.toList());
         return ViewingPartyListDTO.ResponseList.builder()
+                .isLast(isLast)
+                .totalPage(totalPage)
                 .partyList(partyList)
                 .build();
     }

@@ -36,7 +36,12 @@ public class ViewingPartyServiceImpl implements ViewingPartyService {
     public ViewingPartyListDTO.ResponseList getViewingPartyList(String kakaoUserId, Integer page, Integer size) {
         userRepository.findByKakaoUserId(kakaoUserId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
         Page<ViewingParty> viewingPartyList = viewingPartyRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(page, size));
-        return ViewingPartyConverter.toPartyListResponse(viewingPartyList);
+        int totalPage = viewingPartyList.getTotalPages();
+        boolean isLast = false;
+        if(page == totalPage - 1){
+            isLast = true;
+        }
+        return ViewingPartyConverter.toPartyListResponse(viewingPartyList, isLast, totalPage);
     }
 
     @Override
@@ -45,7 +50,6 @@ public class ViewingPartyServiceImpl implements ViewingPartyService {
         userRepository.findByKakaoUserId(kakaoUserId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
         ViewingParty viewingPartyDetail = viewingPartyRepository.findById(viewingId).orElseThrow(() -> new RestApiException(ViewingPartyErrorCode.PARTY_NOT_FOUND));
         return ViewingPartyConverter.toResponse(viewingPartyDetail);
-
     }
 
     @Override

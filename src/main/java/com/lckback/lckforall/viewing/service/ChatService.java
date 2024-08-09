@@ -16,5 +16,5 @@ public interface ChatService {
 
     ChatRoom findChatRoom(ChatDTO.Message chatMessage);
 
-    void saveMessage(ChatDTO.Message chatMessage);
+    void saveMessage(ChatDTO.Message chatMessage, String kakaoUserId);
 }

@@ -23,7 +23,7 @@ public class ChatDTO {
 
         private Message.MessageType type;
         private Long chatRoomId;
-        private String senderId;
+        private String senderName;
         private String message;
     }
 

@@ -108,7 +108,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     @Transactional
     public User findUserOfChat(ChatDTO.Message chatMessage) {
-        return userRepository.findByKakaoUserId(chatMessage.getSenderId()).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
+        return userRepository.findByKakaoUserId(chatMessage.getSenderName()).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
     }
 
     @Override
@@ -119,8 +119,8 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     @Transactional
-    public void saveMessage(ChatDTO.Message chatMessage) {
-        User user = userRepository.findByKakaoUserId(chatMessage.getSenderId()).get();
+    public void saveMessage(ChatDTO.Message chatMessage, String kakaoUserId) {
+        User user = userRepository.findByKakaoUserId(kakaoUserId).get();
         ChatRoom chatRoom = chatRoomRepository.findById(chatMessage.getChatRoomId()).get();
         ChatMessage saveMessage = ChatConverter.toChatMessage(chatMessage);
         saveMessage.setUser(user);

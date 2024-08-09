@@ -15,6 +15,8 @@ public class ViewingPartyListDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ResponseList {
+        Boolean isLast;
+        Integer totalPage;
         List<Response> partyList;
     }
 
