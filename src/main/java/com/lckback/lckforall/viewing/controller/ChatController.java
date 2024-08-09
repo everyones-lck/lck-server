@@ -19,7 +19,7 @@ public class ChatController {
     private final ChatService chatService;
     private final AuthService authService;
 
-    @PostMapping("/chatroom/{viewing_party_id}")
+    @PostMapping("/{viewing_party_id}/chatroom")
     @Operation(summary = "뷰잉파티 채팅 생성 API", description = "뷰잉파티 채팅방을 생성하는 API 입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
