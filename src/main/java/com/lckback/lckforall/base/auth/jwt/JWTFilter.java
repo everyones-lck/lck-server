@@ -31,6 +31,7 @@ public class JWTFilter extends OncePerRequestFilter {
     private static final List<String> EXCLUDE_URLS = Arrays.asList(
         "/auth/signup",
         "/auth/login",
+        "/auth/refresh",
         "/swagger-ui/",
         "/v3/");
 
