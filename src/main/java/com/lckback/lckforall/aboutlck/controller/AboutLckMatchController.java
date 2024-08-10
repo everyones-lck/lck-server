@@ -22,7 +22,7 @@ public class AboutLckMatchController {
 
 	private final AboutLckMatchService aboutLckMatchService;
 
-	@GetMapping("/")
+	@GetMapping
 	public ApiResponse<FindMatchesByDateDto.Response> findMatchInformationByDate(
 		@RequestParam("searchDate") LocalDate searchDate) {
 		FindMatchesByDateDto.Parameter param = FindMatchesByDateDto.Parameter.builder().searchDate(searchDate).build();
