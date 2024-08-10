@@ -75,7 +75,7 @@ public class AuthController {
 
         AuthResponseDto authResponseDto = authService.login(request);
 
-        log.info("AuthResponseDto: {}", authResponseDto);
+        // log.info("AuthResponseDto: {}", authResponseDto);
 
         return ResponseEntity.ok(com.lckback.lckforall.base.api.ApiResponse.createSuccess(authResponseDto));
     }
@@ -95,7 +95,7 @@ public class AuthController {
 
         AuthResponseDto authResponseDto = authService.refresh(request);
 
-
+        // log.info("AuthResponseDto: {}", authResponseDto);
 
         return ResponseEntity.ok(com.lckback.lckforall.base.api.ApiResponse.createSuccess(authResponseDto));
     }
