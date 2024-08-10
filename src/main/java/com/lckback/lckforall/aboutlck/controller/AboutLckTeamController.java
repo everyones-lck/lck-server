@@ -16,11 +16,13 @@ import com.lckback.lckforall.aboutlck.service.AboutLckTeamService;
 import com.lckback.lckforall.base.api.ApiResponse;
 import com.lckback.lckforall.base.type.PlayerRole;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/aboutlck/team")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "JWT Token")
 public class AboutLckTeamController {
 
 	private final AboutLckTeamService aboutLckTeamService;
