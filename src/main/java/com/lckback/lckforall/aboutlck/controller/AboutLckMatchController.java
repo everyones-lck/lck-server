@@ -15,7 +15,6 @@ import com.lckback.lckforall.base.api.ApiResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@CrossOrigin("*")
 @RequestMapping("/aboutlck/match")
 @RequiredArgsConstructor
 public class AboutLckMatchController {

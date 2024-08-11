@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Tag(name = "Home", description = "Home 화면 관련 api")
 @RestController
-@CrossOrigin("*")
 @RequestMapping("/home")
 public class HomeController {
 	private final HomeService homeService;

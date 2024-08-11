@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "Match", description = "Today's Match 관련 api")
 @RestController
-@CrossOrigin("*")
 @RequestMapping("/match")
 public class MatchController {
 

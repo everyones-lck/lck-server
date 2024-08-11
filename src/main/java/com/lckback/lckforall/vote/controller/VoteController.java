@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Tag(name = "Vote", description = "Today's Match 투표 관련 api")
 @RestController
-@CrossOrigin("*")
 @RequestMapping("/votes")
 public class VoteController {
 	private final VoteService voteService;

@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "POG", description = "POG 관련 api")
 @RestController
-@CrossOrigin("*")
 @RequestMapping("/pog")
 public class PogController {
 

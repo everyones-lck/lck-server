@@ -35,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Tag(name = "Auth" , description = "회원가입 및 로그인, 토큰재발행 관련")
 @Slf4j
-@CrossOrigin("*")
 public class AuthController {
 
     private final AuthService authService;

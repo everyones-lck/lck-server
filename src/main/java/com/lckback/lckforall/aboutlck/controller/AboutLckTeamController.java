@@ -20,7 +20,6 @@ import com.lckback.lckforall.base.type.PlayerRole;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@CrossOrigin("*")
 @RequestMapping("/aboutlck/team")
 @RequiredArgsConstructor
 public class AboutLckTeamController {
