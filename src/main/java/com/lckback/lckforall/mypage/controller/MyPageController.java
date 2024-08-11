@@ -41,7 +41,7 @@ public class MyPageController {
 	private final AuthService authService;
 
 	@GetMapping("/profiles")
-	public ResponseEntity<?> getUserProfile(
+	public ResponseEntity<ApiResponse<GetUserProfileDto.Response>> getUserProfile(
 		@RequestHeader(name = "Authorization") String accessToken) {
 
 		String kakaoUserId = authService.getKakaoUserId(accessToken);
@@ -54,7 +54,7 @@ public class MyPageController {
 	}
 
 	@PatchMapping("/withdrawal")
-	public ResponseEntity<?> withdrawFromAccount(
+	public ResponseEntity<ApiResponse<Void>> withdrawFromAccount(
 		@RequestHeader(name = "Authorization") String accessToken) {
 
 		String kakaoUserId = authService.getKakaoUserId(accessToken);
@@ -66,7 +66,7 @@ public class MyPageController {
 	}
 
 	@PatchMapping("/profiles")
-	public ResponseEntity<?> updateUserProfile(
+	public ResponseEntity<ApiResponse<UpdateUserProfileDto.Response>> updateUserProfile(
 		@RequestHeader(name = "Authorization") String accessToken,
 		@RequestPart(required = false) MultipartFile profileImage,
 		@RequestPart @Valid UpdateUserProfileDto.Request request) {
@@ -81,7 +81,7 @@ public class MyPageController {
 	}
 
 	@PatchMapping("/my-team")
-	public ResponseEntity<?> updateMyTeam(
+	public ResponseEntity<ApiResponse<Void>> updateMyTeam(
 		@RequestHeader(name = "Authorization") String accessToken,
 		@RequestBody @Valid UpdateMyTeamDto.Request request) {
 
@@ -94,7 +94,7 @@ public class MyPageController {
 	}
 
 	@GetMapping("/posts")
-	public ResponseEntity<?> getUserPost(
+	public ResponseEntity<ApiResponse<GetUserPostDto.Response>> getUserPost(
 		@RequestHeader(name = "Authorization") String accessToken,
 		@PageableDefault(size = 6) Pageable pageable) {
 
@@ -107,7 +107,7 @@ public class MyPageController {
 	}
 
 	@GetMapping("/comments")
-	public ResponseEntity<?> getUserComment(
+	public ResponseEntity<ApiResponse<GetUserCommentDto.Response>> getUserComment(
 		@RequestHeader(name = "Authorization") String accessToken,
 		@PageableDefault(size = 6) Pageable pageable) {
 
@@ -120,7 +120,7 @@ public class MyPageController {
 	}
 
 	@GetMapping("/viewing-parties/participate")
-	public ResponseEntity<?> getUserViewingPartyAsParticipate(
+	public ResponseEntity<ApiResponse<GetViewingPartyDto.Response>> getUserViewingPartyAsParticipate(
 		@RequestHeader(name = "Authorization") String accessToken,
 		@PageableDefault(size = 6) Pageable pageable) {
 
@@ -134,7 +134,7 @@ public class MyPageController {
 	}
 
 	@GetMapping("/viewing-parties/host")
-	public ResponseEntity<?> getUserViewingPartyAsHost(
+	public ResponseEntity<ApiResponse<GetViewingPartyDto.Response>> getUserViewingPartyAsHost(
 		@RequestHeader(name = "Authorization") String accessToken,
 		@PageableDefault(size = 6) Pageable pageable) {
 
@@ -148,7 +148,7 @@ public class MyPageController {
 	}
 
 	@DeleteMapping("/viewing-parties/participate")
-	public ResponseEntity<?> cancelViewingPartyParticipation(
+	public ResponseEntity<ApiResponse<Void>> cancelViewingPartyParticipation(
 		@RequestHeader(name = "Authorization") String accessToken,
 		@RequestBody @Valid DeleteParticipationDto.Request request) {
 
@@ -161,7 +161,7 @@ public class MyPageController {
 	}
 
 	@DeleteMapping("/viewing-parties/host")
-	public ResponseEntity<?> cancelViewingPartyHosting(
+	public ResponseEntity<ApiResponse<Void>> cancelViewingPartyHosting(
 		@RequestHeader(name = "Authorization") String accessToken,
 		@RequestBody @Valid DeleteViewingPartyDto.Request request) {
 
@@ -172,8 +172,9 @@ public class MyPageController {
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccessWithNoContent());
 	}
+
 	@DeleteMapping("/logout")
-	public ResponseEntity<?> logout(
+	public ResponseEntity<ApiResponse<Void>> logout(
 		@RequestHeader(name = "Authorization") String accessToken,
 		@RequestHeader(name = "Refresh") String refreshToken) {
 
