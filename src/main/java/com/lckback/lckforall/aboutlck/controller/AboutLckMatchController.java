@@ -12,16 +12,22 @@ import com.lckback.lckforall.aboutlck.dto.match.FindMatchesByDateDto;
 import com.lckback.lckforall.aboutlck.service.AboutLckMatchService;
 import com.lckback.lckforall.base.api.ApiResponse;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/aboutlck/match")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "JWT Token")
+@Tag(name = "AboutLckMatch", description = "AboutLck 경기 정보 조회 API")
 public class AboutLckMatchController {
 
 	private final AboutLckMatchService aboutLckMatchService;
 
-	@GetMapping("/")
+	@Operation(summary = "경기 정보 조회 API", description = "특정 날짜의 경기 정보를 조회합니다.")
+	@GetMapping
 	public ApiResponse<FindMatchesByDateDto.Response> findMatchInformationByDate(
 		@RequestParam("searchDate") LocalDate searchDate) {
 		FindMatchesByDateDto.Parameter param = FindMatchesByDateDto.Parameter.builder().searchDate(searchDate).build();

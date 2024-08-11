@@ -3,6 +3,7 @@ package com.lckback.lckforall.player.model;
 import com.lckback.lckforall.base.model.BaseEntity;
 import com.lckback.lckforall.team.model.SeasonTeam;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,6 +28,9 @@ public class SeasonTeamPlayer extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@Column(nullable = false)
+	private Boolean isCaptain;
 
 	@ManyToOne
 	@JoinColumn(name = "SEASON_TEAM_ID", nullable = false)

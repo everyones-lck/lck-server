@@ -4,7 +4,7 @@ on:
   # release 브랜치에 대해 pr close 시 동작
   pull_request:
     branches:
-      - test
+      - release
     types: [closed]
 jobs:
 

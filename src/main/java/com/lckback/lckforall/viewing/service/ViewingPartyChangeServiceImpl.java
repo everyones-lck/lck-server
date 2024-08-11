@@ -23,8 +23,8 @@ public class ViewingPartyChangeServiceImpl implements ViewingPartyChangeService 
 
     @Override
     @Transactional
-    public ChangeViewingPartyDTO.Response createViewingParty(Long userId, ChangeViewingPartyDTO.CreateViewingPartyRequest request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
+    public ChangeViewingPartyDTO.Response createViewingParty(String kakaoUserId, ChangeViewingPartyDTO.CreateViewingPartyRequest request) {
+        User user = userRepository.findByKakaoUserId(kakaoUserId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
         ViewingParty viewingParty = ViewingPartyChangeConverter.toViewingParty(request);
         viewingParty.setUser(user);
         ViewingParty save = viewingPartyRepository.save(viewingParty);
@@ -33,8 +33,8 @@ public class ViewingPartyChangeServiceImpl implements ViewingPartyChangeService 
 
     @Override
     @Transactional
-    public ChangeViewingPartyDTO.Response updateViewingParty(Long userId, Long viewingPartyId, ChangeViewingPartyDTO.CreateViewingPartyRequest request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
+    public ChangeViewingPartyDTO.Response updateViewingParty(String kakaoUserId, Long viewingPartyId, ChangeViewingPartyDTO.CreateViewingPartyRequest request) {
+        User user = userRepository.findByKakaoUserId(kakaoUserId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
         // 글 작성자 본인이 아닐경우 에러발생
         ViewingParty viewingParty = viewingPartyRepository.findByIdAndUser(viewingPartyId, user).orElseThrow(() -> new RestApiException(ViewingPartyErrorCode.OWNER_VIEWING_PARTY_NOT_FOUND));
         ViewingParty viewingPartyRequest = ViewingPartyChangeConverter.toViewingParty(request);
@@ -53,8 +53,8 @@ public class ViewingPartyChangeServiceImpl implements ViewingPartyChangeService 
 
     @Override
     @Transactional
-    public ChangeViewingPartyDTO.Response deleteViewingParty(Long userId, Long viewingPartyId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
+    public ChangeViewingPartyDTO.Response deleteViewingParty(String kakaoUserId, Long viewingPartyId) {
+        User user = userRepository.findByKakaoUserId(kakaoUserId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
         ViewingParty viewingParty = viewingPartyRepository.findByIdAndUser(viewingPartyId, user).orElseThrow(() -> new RestApiException(ViewingPartyErrorCode.OWNER_VIEWING_PARTY_NOT_FOUND));
         viewingPartyRepository.delete(viewingParty);
         return ViewingPartyChangeConverter.toResponse(viewingParty);

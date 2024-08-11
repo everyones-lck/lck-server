@@ -52,8 +52,6 @@ public class AuthService {
 			throw new RestApiException(UserErrorCode.USER_ALREADY_EXISTS);
 		}
 
-		//String profileImageUrl = "temp"; // s3 도입 전까지 임시
-
 		String profileImageUrl = s3Service.upload(profileImage);
 
 		if (!profileImage.isEmpty()) {
@@ -115,6 +113,9 @@ public class AuthService {
 
 	public AuthResponseDto refresh(GetRefreshTokenDto.Request request) {
 
+		User user = userRepository.findByKakaoUserId(request.getKakaoUserId())
+			.orElseThrow(() -> new RestApiException(UserErrorCode.INVALID_KAKAO_USER_ID));
+
 		jwtUtil.validateRefreshToken(request.getRefreshToken());
 
 		RefreshToken findRefreshToken = refreshTokenRepository.findById(request.getKakaoUserId())
@@ -124,9 +125,6 @@ public class AuthService {
 
 			throw new RestApiException(TokenErrorCode.INVALID_REFRESH_TOKEN);
 		}
-
-		User user = userRepository.findByKakaoUserId(request.getKakaoUserId())
-			.orElseThrow(() -> new RestApiException(UserErrorCode.INVALID_KAKAO_USER_ID));
 
 		String role = user.getRole().name();
 		String newAccessToken = tokenService.createAccessToken(request.getKakaoUserId(), role);
@@ -167,6 +165,7 @@ public class AuthService {
 	// 카카오 유저 아이디 가져옴
 	public String getKakaoUserId(String accessToken) {
 		String actualToken = accessToken.substring(7);
+
 		return jwtUtil.getUserId(actualToken);
 	}
 

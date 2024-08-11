@@ -57,6 +57,7 @@ public class SecurityConfig {
 					"/swagger-ui/*", "/v3/api-docs/swagger-config", "/api/logistics", "/v3/api-docs").permitAll()
 				.requestMatchers("/auth/users/**").hasRole("USER")
 				.requestMatchers("/auth/admin/**").hasRole("ADMIN")
+					.requestMatchers("/ws/**").permitAll() // 웹소켓 허용
 				.anyRequest().authenticated()); // 나머지 경로는 인증 필요
 
 		// 세션 설정 : STATELESS

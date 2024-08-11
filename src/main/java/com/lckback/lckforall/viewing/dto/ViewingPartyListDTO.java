@@ -15,6 +15,8 @@ public class ViewingPartyListDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ResponseList {
+        Boolean isLast;
+        Integer totalPage;
         List<Response> partyList;
     }
 
@@ -26,6 +28,7 @@ public class ViewingPartyListDTO {
         Long id;
         String name;
         String userName;
+        String teamName;
         String photoURL;
         LocalDateTime partyDate;
         Double latitude;
