@@ -142,25 +142,27 @@ public class AuthService {
 
 		return AuthResponseConverter.convertToAuthResponseDto(newAccessToken, newRefreshToken, accessTokenExpirationTime, refreshTokenExpirationTime);
 	}
+	
+	// AuthController에서와 마찬가지의 이유로 주석 처리
 
-	public ResponseEntity<?> testToken(String token) {
-		try {
-			// 토큰에서 Bearer 제거
-			String actualToken = token.substring(7);
-			// 토큰 검증
-			if (jwtUtil.isTokenExpired(actualToken)) {
-				throw new RestApiException(TokenErrorCode.EXPIRED_TOKEN);
-			}
-
-			Authentication authentication = jwtUtil.getAuthentication(actualToken);
-			SecurityContextHolder.getContext().setAuthentication(authentication);
-
-			return ResponseEntity.ok(ApiResponse.createSuccess("Token is valid"));
-
-		} catch (Exception e) {
-			throw new RestApiException(TokenErrorCode.INVALID_ACCESS_TOKEN);
-		}
-	}
+	// public ResponseEntity<?> testToken(String token) {
+	// 	try {
+	// 		// 토큰에서 Bearer 제거
+	// 		String actualToken = token.substring(7);
+	// 		// 토큰 검증
+	// 		if (jwtUtil.isTokenExpired(actualToken)) {
+	// 			throw new RestApiException(TokenErrorCode.EXPIRED_TOKEN);
+	// 		}
+	//
+	// 		Authentication authentication = jwtUtil.getAuthentication(actualToken);
+	// 		SecurityContextHolder.getContext().setAuthentication(authentication);
+	//
+	// 		return ResponseEntity.ok(ApiResponse.createSuccess("Token is valid"));
+	//
+	// 	} catch (Exception e) {
+	// 		throw new RestApiException(TokenErrorCode.INVALID_ACCESS_TOKEN);
+	// 	}
+	// }
 
 	// 카카오 유저 아이디 가져옴
 	public String getKakaoUserId(String accessToken) {
