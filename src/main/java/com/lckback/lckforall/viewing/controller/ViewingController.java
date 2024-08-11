@@ -3,6 +3,7 @@ package com.lckback.lckforall.viewing.controller;
 import com.lckback.lckforall.base.api.ApiResponse;
 import com.lckback.lckforall.base.auth.service.AuthService;
 import com.lckback.lckforall.viewing.dto.GetViewingPartyDetailDTO;
+import com.lckback.lckforall.viewing.dto.ParticipantListDTO;
 import com.lckback.lckforall.viewing.dto.ViewingPartyListDTO;
 import com.lckback.lckforall.viewing.service.ViewingPartyService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,7 +49,7 @@ public class ViewingController {
     })
     @Parameters({
             @Parameter(name = "Authorization", description = "RequestHeader - 로그인한 사용자 토큰"),
-            @Parameter(name = "viewing_party_id", description = "query string(RequestParam) - 해당 뷰잉파티 글의 ID"),
+            @Parameter(name = "viewing_party_id", description = "PathVariable - 해당 뷰잉파티 글의 ID"),
     })
     public ApiResponse<GetViewingPartyDetailDTO.Response> getViewingPartyList(@RequestHeader(name = "Authorization") String accessToken,
                                                                               @PathVariable(name = "viewing_party_id") Long viewingId) {
@@ -56,7 +57,7 @@ public class ViewingController {
         return ApiResponse.createSuccess(viewingPartyService.getViewingPartyDetail(kakaoUserId, viewingId));
     }
 
-    @PostMapping("/{viewing_party_id}/detail")
+    @PostMapping("/{viewing_party_id}/join")
     @Operation(summary = "뷰잉파티 참여하기 API", description = "뷰잉파티에 참여하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
@@ -67,12 +68,12 @@ public class ViewingController {
     })
     @Parameters({
             @Parameter(name = "Authorization", description = "RequestHeader - 로그인한 사용자 토큰"),
-            @Parameter(name = "viewing_party_id", description = "query string(RequestParam) - 해당 뷰잉파티 글의 ID"),
+            @Parameter(name = "viewing_party_id", description = "PathVariable - 해당 뷰잉파티 글의 ID"),
     })
-    public ApiResponse<?> createParticipant(@RequestHeader(name = "Authorization") String accessToken,
+    public ApiResponse<GetViewingPartyDetailDTO.ParticipateResponse> createParticipant(@RequestHeader(name = "Authorization") String accessToken,
                                             @PathVariable(name = "viewing_party_id") Long viewingPartyId) {
         String kakaoUserId = authService.getKakaoUserId(accessToken);
-        return ApiResponse.createSuccess(viewingPartyService.createParticipant(kakaoUserId, viewingPartyId));
+        return ApiResponse.createSuccess(viewingPartyService.createParticipate(kakaoUserId, viewingPartyId));
     }
 
     @GetMapping("/{viewing_party_id}/participants")
@@ -86,14 +87,14 @@ public class ViewingController {
     })
     @Parameters({
             @Parameter(name = "Authorization", description = "RequestHeader - 로그인한 사용자 토큰"),
-            @Parameter(name = "viewing_party_id", description = "query string(RequestParam) - 해당 뷰잉파티 글의 ID"),
+            @Parameter(name = "viewing_party_id", description = "PathVariable - 해당 뷰잉파티 글의 ID"),
             @Parameter(name = "page", description = "query string(RequestParam) - 몇번째 페이지인지 가리키는 page 변수 (0부터 시작)"),
             @Parameter(name = "size", description = "query string(RequestParam) - 몇 개씩 불러올지 개수를 세는 변수 (1 이상 자연수로 설정)")
     })
-    public ApiResponse<?> getParticipantList(@RequestHeader(name = "Authorization") String accessToken,
-                                             @PathVariable(name = "viewing_party_id") Long viewingPartyId,
-                                             @RequestParam(name = "page") Integer page,
-                                             @RequestParam(name = "size") Integer size) {
+    public ApiResponse<ParticipantListDTO.ResponseList> getParticipantList(@RequestHeader(name = "Authorization") String accessToken,
+                                                              @PathVariable(name = "viewing_party_id") Long viewingPartyId,
+                                                              @RequestParam(name = "page") Integer page,
+                                                              @RequestParam(name = "size") Integer size) {
         String kakaoUserId = authService.getKakaoUserId(accessToken);
         return ApiResponse.createSuccess(viewingPartyService.getParticipantList(kakaoUserId, viewingPartyId, page, size));
     }

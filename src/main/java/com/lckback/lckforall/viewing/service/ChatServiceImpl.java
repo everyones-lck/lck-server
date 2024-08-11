@@ -48,29 +48,41 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     @Transactional
-    public ChatDTO.ChatRoomResponse createChatRoom(String kakaoUserId, Long viewingPartyId) {
-        // 생성한 사람
-        User maker;
+    public ChatDTO.ChatRoomResponse createParticipantChatRoom(String kakaoUserId, Long viewingPartyId) {
+
         User user = userRepository.findByKakaoUserId(kakaoUserId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
         ViewingParty viewingParty = viewingPartyRepository.findById(viewingPartyId).orElseThrow(() -> new RestApiException(ViewingPartyErrorCode.PARTY_NOT_FOUND));
+        Participate participate = participateRepository.findByUserAndViewingParty(user, viewingParty).orElseThrow(() -> new RestApiException(ViewingPartyErrorCode.PARTICIPATE_NOT_FOUND));
 
-        // 참여자 입장에서 채팅에 참여
-        Optional<Participate> optionalParticipant= participateRepository.findByUserAndViewingParty(user, viewingParty);
-        if(optionalParticipant.isPresent()) {
-            maker = optionalParticipant.get().getUser();
+        if(participate.getChatRoom() != null){
+            return ChatConverter.toChatRoomResponse(participate.getChatRoom(), true);
         }
-        // 개최자가 개최한 파티에서 채팅에 참여
-        else if(viewingParty.getUser().equals(user)){
-            maker = viewingParty.getUser();
-        }
-        // 두 가지 모두 해당 안될시 에러 발생
-        else {
-            throw new RestApiException(ViewingPartyErrorCode.PARTICIPATE_NOT_FOUND);
-        }
+
         ChatRoom chatRoom = ChatConverter.toChatRoom();
         chatRoom.setViewingParty(viewingParty);
+        participate.setChatRoom(chatRoom);
         chatRoomRepository.save(chatRoom);
-        return ChatConverter.toChatRoomResponse(chatRoom);
+        return ChatConverter.toChatRoomResponse(chatRoom, false);
+    }
+
+    @Override
+    @Transactional
+    public ChatDTO.ChatRoomResponse createOwnerChatRoom(String kakaoUserId, Long viewingPartyId, String participantKakaoUserId) {
+        User owner = userRepository.findByKakaoUserId(kakaoUserId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
+        User participant = userRepository.findByKakaoUserId(participantKakaoUserId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
+        ViewingParty viewingParty = viewingPartyRepository.findById(viewingPartyId).orElseThrow(() -> new RestApiException(ViewingPartyErrorCode.PARTY_NOT_FOUND));
+        Participate participate = participateRepository.findByUserAndViewingParty(participant, viewingParty).orElseThrow(() -> new RestApiException(ViewingPartyErrorCode.PARTICIPATE_NOT_FOUND));
+
+        if(participate.getChatRoom() != null){
+            return ChatConverter.toChatRoomResponse(participate.getChatRoom(), true);
+        }
+
+        ChatRoom chatRoom = ChatConverter.toChatRoom();
+        chatRoom.setViewingParty(viewingParty);
+        participate.setChatRoom(chatRoom);
+        chatRoomRepository.save(chatRoom);
+        return ChatConverter.toChatRoomResponse(chatRoom, false);
+
     }
 
     @Override

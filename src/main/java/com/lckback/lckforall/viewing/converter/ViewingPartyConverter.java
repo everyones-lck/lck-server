@@ -35,8 +35,9 @@ public class ViewingPartyConverter {
                 .location(viewingParty.getLocation())
                 .build();
     }
-    public static GetViewingPartyDetailDTO.Response toResponse(ViewingParty viewingParty) {
+    public static GetViewingPartyDetailDTO.Response toResponse(ViewingParty viewingParty, Boolean participated) {
         return GetViewingPartyDetailDTO.Response.builder()
+                .participated(participated)
                 .name(viewingParty.getName())
                 .ownerName(viewingParty.getUser().getNickname())
                 .ownerTeam(viewingParty.getUser().getTeam().getTeamName())

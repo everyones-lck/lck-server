@@ -47,14 +47,15 @@ public class ViewingPartyServiceImpl implements ViewingPartyService {
     @Override
     @Transactional
     public GetViewingPartyDetailDTO.Response getViewingPartyDetail(String kakaoUserId, Long viewingId) {
-        userRepository.findByKakaoUserId(kakaoUserId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findByKakaoUserId(kakaoUserId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
         ViewingParty viewingPartyDetail = viewingPartyRepository.findById(viewingId).orElseThrow(() -> new RestApiException(ViewingPartyErrorCode.PARTY_NOT_FOUND));
-        return ViewingPartyConverter.toResponse(viewingPartyDetail);
+        boolean participated = participateRepository.findByViewingPartyAndUser(viewingPartyDetail, user).isPresent();
+        return ViewingPartyConverter.toResponse(viewingPartyDetail, participated);
     }
 
     @Override
     @Transactional
-    public GetViewingPartyDetailDTO.ParticipateResponse createParticipant(String kakaoUserId, Long viewingPartyId) {
+    public GetViewingPartyDetailDTO.ParticipateResponse createParticipate(String kakaoUserId, Long viewingPartyId) {
         User user = userRepository.findByKakaoUserId(kakaoUserId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
         ViewingParty viewingParty = viewingPartyRepository.findById(viewingPartyId).orElseThrow(() -> new RestApiException(ViewingPartyErrorCode.PARTY_NOT_FOUND));
         Optional<Participate> findParticipate = participateRepository.findByUserAndViewingParty(user, viewingParty);
@@ -63,6 +64,9 @@ public class ViewingPartyServiceImpl implements ViewingPartyService {
             newParticipate.setUser(user);
             Participate save = participateRepository.save(newParticipate);
             return ViewingPartyConverter.toParticipateResponse(save);
+        }
+        else if (user == viewingParty.getUser()) {
+            throw new RestApiException(ViewingPartyErrorCode.PARTICIPATE_FORBIDDEN_OWNER);
         }
         return ViewingPartyConverter.toParticipateResponse(findParticipate.get());
     }

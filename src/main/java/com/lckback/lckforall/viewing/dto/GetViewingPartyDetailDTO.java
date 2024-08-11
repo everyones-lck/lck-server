@@ -13,6 +13,7 @@ public class GetViewingPartyDetailDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Response {
+        Boolean participated;
         String name;
         String ownerName;
         String ownerTeam;

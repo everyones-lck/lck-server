@@ -22,6 +22,7 @@ public class ChangeViewingPartyDTO {
         Double latitude;
         @NotNull(message = "장소를 생략할수 없습니다.")
         Double longitude;
+        String location;
         @NotBlank(message = "비용을 생략할수 없습니다.")
         Integer price;
         @NotBlank(message = "최소인원을 생략할수 없습니다.")
