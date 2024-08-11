@@ -12,11 +12,13 @@ import com.lckback.lckforall.aboutlck.dto.player.FindPlayerWinningHistoryDto;
 import com.lckback.lckforall.aboutlck.service.AboutLckPlayerService;
 import com.lckback.lckforall.base.api.ApiResponse;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/aboutlck/player")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "JWT Token")
 public class AboutLckPlayerController {
 
 	private final AboutLckPlayerService aboutLckPlayerService;
