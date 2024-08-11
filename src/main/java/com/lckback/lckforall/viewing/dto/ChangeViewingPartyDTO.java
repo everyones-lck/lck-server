@@ -17,7 +17,7 @@ public class ChangeViewingPartyDTO {
         @NotBlank(message = "이름을 생략할수 없습니다.")
         @Size(min = 1, max = 20, message = "이름은 1자이상 20자이하여야 합니다.")
         String name;
-        LocalDateTime date;
+        String date;
         @NotNull(message = "장소를 생략할수 없습니다.")
         Double latitude;
         @NotNull(message = "장소를 생략할수 없습니다.")
