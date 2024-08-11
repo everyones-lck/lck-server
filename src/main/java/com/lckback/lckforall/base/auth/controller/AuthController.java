@@ -1,13 +1,9 @@
 package com.lckback.lckforall.base.auth.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,8 +18,6 @@ import com.lckback.lckforall.base.auth.service.AuthService;
 import com.lckback.lckforall.user.dto.SignupUserDataDto;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -102,20 +96,6 @@ public class AuthController {
 
     // 아래는 테스트 코드(user, admin 권한 데모데이 전까지는 불필요해서 주석처리)
 
-    // @Operation(summary = "테스트 API", description = "테스트 API")
-    // @ApiResponses({
-    //     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON201", description = "OK, 성공"),
-    //     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "TOKEN4001", description = "BAD_REQUEST, 잘못된 JWT 토큰입니다."),
-    //     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "TOKEN4001", description = "UNAUTHORIZED, 유효하지 않은 JWT 서명입니다."),
-    //     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "TOKEN4001", description = "BAD_REQUEST, Authorization 헤더가 존재하지 않습니다."),
-    //     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "TOKEN4001", description = "BAD_REQUEST, Bearer로 시작하지 않는 토큰입니다."),
-    // })
-    // @GetMapping("/test")
-    // public ResponseEntity<?> test(@RequestHeader("Authorization") String token) {
-    //
-    //     return authService.testToken(token);
-    // }
-    //
     // @Operation(summary = "유저 권한 접근 API", description = "유저 권한 접근 API")
     // @ApiResponses({
     //     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON201", description = "OK, 성공"),
