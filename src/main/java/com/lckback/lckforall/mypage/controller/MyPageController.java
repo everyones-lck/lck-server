@@ -2,6 +2,7 @@ package com.lckback.lckforall.mypage.controller;
 
 import com.lckback.lckforall.base.api.ApiResponse;
 import com.lckback.lckforall.base.auth.service.AuthService;
+import com.lckback.lckforall.base.setting.SwaggerPageable;
 import com.lckback.lckforall.mypage.dto.DeleteParticipationDto;
 import com.lckback.lckforall.mypage.dto.DeleteViewingPartyDto;
 import com.lckback.lckforall.mypage.dto.GetUserCommentDto;
@@ -12,6 +13,7 @@ import com.lckback.lckforall.mypage.dto.UpdateMyTeamDto;
 import com.lckback.lckforall.mypage.dto.UpdateUserProfileDto;
 import com.lckback.lckforall.mypage.service.MyPageService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@SecurityRequirement(name = "JWT Token")
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/my-pages")
@@ -93,6 +96,7 @@ public class MyPageController {
 			.body(ApiResponse.createSuccessWithNoContent());
 	}
 
+	@SwaggerPageable
 	@GetMapping("/posts")
 	public ResponseEntity<ApiResponse<GetUserPostDto.Response>> getUserPost(
 		@RequestHeader(name = "Authorization") String accessToken,
@@ -106,6 +110,7 @@ public class MyPageController {
 			.body(ApiResponse.createSuccess(response));
 	}
 
+	@SwaggerPageable
 	@GetMapping("/comments")
 	public ResponseEntity<ApiResponse<GetUserCommentDto.Response>> getUserComment(
 		@RequestHeader(name = "Authorization") String accessToken,
@@ -119,6 +124,7 @@ public class MyPageController {
 			.body(ApiResponse.createSuccess(response));
 	}
 
+	@SwaggerPageable
 	@GetMapping("/viewing-parties/participate")
 	public ResponseEntity<ApiResponse<GetViewingPartyDto.Response>> getUserViewingPartyAsParticipate(
 		@RequestHeader(name = "Authorization") String accessToken,
@@ -133,6 +139,7 @@ public class MyPageController {
 			.body(ApiResponse.createSuccess(response));
 	}
 
+	@SwaggerPageable
 	@GetMapping("/viewing-parties/host")
 	public ResponseEntity<ApiResponse<GetViewingPartyDto.Response>> getUserViewingPartyAsHost(
 		@RequestHeader(name = "Authorization") String accessToken,
