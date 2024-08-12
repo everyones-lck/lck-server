@@ -10,6 +10,7 @@ import com.lckback.lckforall.base.api.ApiResponse;
 import com.lckback.lckforall.match.dto.MatchInfoDto;
 import com.lckback.lckforall.match.service.HomeService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -17,11 +18,12 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Home", description = "Home 화면 관련 api")
 @RestController
 @RequestMapping("/home")
+@SecurityRequirement(name = "JWT Token")
 public class HomeController {
 	private final HomeService homeService;
 
 	@GetMapping("/today/information")
-	public ResponseEntity<?> getTodayMatches(@RequestHeader("Authorization") String token) {
+	public ResponseEntity<ApiResponse<MatchInfoDto.HomePageResponse>> getTodayMatches(@RequestHeader("Authorization") String token) {
 		MatchInfoDto.HomePageResponse response = homeService.getHomePageInformation();
 
 		return ResponseEntity.ok()

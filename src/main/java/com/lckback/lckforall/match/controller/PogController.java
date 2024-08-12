@@ -4,6 +4,7 @@ import com.lckback.lckforall.base.api.ApiResponse;
 import com.lckback.lckforall.match.dto.PogInfoDto;
 import com.lckback.lckforall.match.service.PogService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -19,12 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "POG", description = "POG 관련 api")
 @RestController
 @RequestMapping("/pog")
+@SecurityRequirement(name = "JWT Token")
 public class PogController {
 
 	private final PogService pogService;
 
 	@PostMapping("/match")
-	public ResponseEntity<?> getMatchPog( // match의 pog 투표 결과 선정된 player를 반환
+	public ResponseEntity<ApiResponse<PogInfoDto.PogResponse>> getMatchPog( // match의 pog 투표 결과 선정된 player를 반환
 		@RequestHeader("Authorization") String token,
 		@RequestBody PogInfoDto.MatchPogRequest request) {
 		PogInfoDto.PogResponse response = pogService.findMatchPog(request.toDto());
@@ -34,7 +36,7 @@ public class PogController {
 	}
 
 	@PostMapping("/set")
-	public ResponseEntity<?> getSetPog(// match의 pog 투표 결과 선정된 player를 반환
+	public ResponseEntity<ApiResponse<PogInfoDto.PogResponse>> getSetPog(// match의 pog 투표 결과 선정된 player를 반환
 		@RequestHeader("Authorization") String token,
 		@RequestParam("set") Integer setIndex,
 		@RequestBody PogInfoDto.MatchPogRequest request) {
