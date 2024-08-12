@@ -1,0 +1,3 @@
+[submodule "config"]
+	path = config
+	url = git@github.com:everyones-lck/config.git

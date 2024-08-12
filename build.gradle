@@ -1,0 +1,81 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.1'
+    id 'io.spring.dependency-management' version '1.1.5'
+}
+
+group = 'com.lckback'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.session:spring-session-core'
+    // 스웨거 의존성
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
+    // jwt 0.12.3
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // s3
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// 서브모듈에서 설정 파일을 리소스 디렉토리로 복사하는 작업
+tasks.register('copySecret', Copy) {
+    from 'config' // 서브 모듈 디렉토리 경로
+    include "*.yml"  // 설정 파일 복사
+    into 'src/main/resources/privates'  // 붙여넣을 위치
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE // 중복 파일 처리 전략 설정
+}
+
+// `processResources` 작업이 `copySecret` 작업에 의존하도록 설정
+tasks.named('processResources') {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE // 중복 파일 처리 전략 설정
+    dependsOn 'copySecret' // copySecret 작업이 먼저 실행되도록 설정
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs "config"
+        }
+    }
+}
