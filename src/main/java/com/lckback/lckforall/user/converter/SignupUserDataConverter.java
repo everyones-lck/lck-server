@@ -21,6 +21,7 @@ public class SignupUserDataConverter {
             .nickname(signupUserData.getNickName())
             .profileImageUrl(profileImageUrl)
             .role(role)
+            .tier(signupUserData.getTier())
             .status(UserStatus.ACTIVE)
             .team(team)
             .build();
