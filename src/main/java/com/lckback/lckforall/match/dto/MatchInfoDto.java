@@ -1,6 +1,7 @@
 package com.lckback.lckforall.match.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,14 @@ import java.util.List;
 import com.lckback.lckforall.base.type.MatchResult;
 
 public class MatchInfoDto {
+
+	@Getter
+	@Builder
+	public static class Response {
+		private List<TodayMatchResponse> matchResponses;
+		private Integer matchResponseSize;
+	}
+
 	@Getter
 	@NoArgsConstructor
 	@AllArgsConstructor

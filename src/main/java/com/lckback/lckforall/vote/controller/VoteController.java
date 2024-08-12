@@ -15,6 +15,7 @@ import com.lckback.lckforall.vote.dto.MatchVoteDto;
 import com.lckback.lckforall.vote.dto.SetVoteDto;
 import com.lckback.lckforall.vote.service.VoteService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -22,13 +23,14 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Vote", description = "Today's Match 투표 관련 api")
 @RestController
 @RequestMapping("/votes")
+@SecurityRequirement(name = "JWT Token")
 public class VoteController {
 	private final VoteService voteService;
 
 	private final AuthService authService;
 
 	@GetMapping("/match/candidates")
-	public ResponseEntity<?> getCandidateMatchVote(
+	public ResponseEntity<ApiResponse<MatchVoteDto.MatchPredictionCandidateResponse>> getCandidateMatchVote(
 		@RequestHeader("Authorization") String token,
 		@RequestParam("match-id") Long matchId) {
 		String kakaoUserId = authService.getKakaoUserId(token);
@@ -39,7 +41,7 @@ public class VoteController {
 	}
 
 	@PostMapping("/match/making")
-	public ResponseEntity<?> makeMatchVote(
+	public ResponseEntity<ApiResponse<Void>> makeMatchVote(
 		@RequestHeader("Authorization") String token,
 		@RequestBody MatchVoteDto.MatchPredictionRequest request) {
 		String kakaoUserId = authService.getKakaoUserId(token);
@@ -49,7 +51,7 @@ public class VoteController {
 	}
 
 	@GetMapping("/match-pog/candidates")
-	public ResponseEntity<?> getCandidateMatchPogVote(
+	public ResponseEntity<ApiResponse<MatchVoteDto.MatchPogVoteCandidateResponse>> getCandidateMatchPogVote(
 		@RequestHeader("Authorization") String token,
 		@RequestParam("match-id") Long matchId) {
 		String kakaoUserId = authService.getKakaoUserId(token);
@@ -59,7 +61,7 @@ public class VoteController {
 	}
 
 	@PostMapping("match-pog/making")
-	public ResponseEntity<?> makeMatchPogVote(
+	public ResponseEntity<ApiResponse<Void>> makeMatchPogVote(
 		@RequestHeader("Authorization") String token,
 		@RequestBody MatchVoteDto.MatchPogVoteRequest request) {
 		String kakaoUserId = authService.getKakaoUserId(token);
@@ -69,7 +71,7 @@ public class VoteController {
 	}
 
 	@GetMapping("/set-pog/candidates")
-	public ResponseEntity<?> getCandidateSetPogVote(
+	public ResponseEntity<ApiResponse<SetVoteDto.SetPogVoteCandidateResponse>> getCandidateSetPogVote(
 		@RequestHeader("Authorization") String token,
 		@RequestParam("match-id") Long matchId,
 		@RequestParam("set-index") Integer setIndex) {
@@ -80,7 +82,7 @@ public class VoteController {
 	}
 
 	@PostMapping("set-pog/making")
-	public ResponseEntity<?> makeSetPogVote(
+	public ResponseEntity<ApiResponse<Void>> makeSetPogVote(
 		@RequestHeader("Authorization") String token,
 		@RequestBody SetVoteDto.SetPogVoteRequest request) {
 		String kakaoUserId = authService.getKakaoUserId(token);

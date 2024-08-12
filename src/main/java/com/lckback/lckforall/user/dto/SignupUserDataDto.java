@@ -23,8 +23,6 @@
 
 package com.lckback.lckforall.user.dto;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import lombok.Builder;
 import lombok.Getter;
 
@@ -37,6 +35,7 @@ public class SignupUserDataDto {
         private String kakaoUserId;
         private String nickName;
         private String role;
+        private String tier;
         private Long teamId;
     }
 

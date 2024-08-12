@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.lckback.lckforall.base.auth.dto.GetNicknameDto;
 import com.lckback.lckforall.s3.service.S3Service;
 import com.lckback.lckforall.base.api.error.TeamErrorCode;
 import com.lckback.lckforall.base.api.error.TokenErrorCode;
@@ -43,6 +44,16 @@ public class AuthService {
 	private final RefreshTokenRepository refreshTokenRepository;
 
 	private final S3Service s3Service;
+
+	// 닉네임 중복 여부 확인 메서드
+	public Boolean isNicknameAvailable(GetNicknameDto.Request request) {
+		if (userRepository.existsByNickname(request.getNickname())) {
+
+			throw new RestApiException(UserErrorCode.ALREADY_EXIST_NICKNAME);
+		}
+
+		return true;
+	}
 
 	public AuthResponseDto signup(MultipartFile profileImage, SignupUserDataDto.SignupUserData signupUserData) {
 		if (userRepository.existsByKakaoUserId(signupUserData.getKakaoUserId())) {
@@ -139,7 +150,7 @@ public class AuthService {
 
 		return AuthResponseConverter.convertToAuthResponseDto(newAccessToken, newRefreshToken, accessTokenExpirationTime, refreshTokenExpirationTime);
 	}
-	
+
 	// AuthController에서와 마찬가지의 이유로 주석 처리
 
 	// public ResponseEntity<?> testToken(String token) {
