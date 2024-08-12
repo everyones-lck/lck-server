@@ -15,10 +15,11 @@ public class ChatConverter {
         return ChatRoom.builder().build();
     }
 
-    public static ChatDTO.ChatRoomResponse toChatRoomResponse(ChatRoom chatRoom){
+    public static ChatDTO.ChatRoomResponse toChatRoomResponse(ChatRoom chatRoom, Boolean isExist){
         return ChatDTO.ChatRoomResponse.builder()
                 .roomId(chatRoom.getId())
                 .viewingPartyName(chatRoom.getViewingParty().getName())
+                .isExist(isExist)
                 .build();
     }
 

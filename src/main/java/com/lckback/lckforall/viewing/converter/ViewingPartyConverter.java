@@ -29,20 +29,21 @@ public class ViewingPartyConverter {
                 .userName(viewingParty.getUser().getNickname())
                 .teamName(viewingParty.getUser().getTeam().getTeamName())
                 .photoURL(viewingParty.getUser().getProfileImageUrl())
-                .partyDate(viewingParty.getDate())
+                .partyDate(viewingParty.getDate().toString())
                 .latitude(viewingParty.getLatitude())
                 .longitude(viewingParty.getLongitude())
                 .location(viewingParty.getLocation())
                 .build();
     }
-    public static GetViewingPartyDetailDTO.Response toResponse(ViewingParty viewingParty) {
+    public static GetViewingPartyDetailDTO.Response toResponse(ViewingParty viewingParty, Boolean participated) {
         return GetViewingPartyDetailDTO.Response.builder()
+                .participated(participated)
                 .name(viewingParty.getName())
                 .ownerName(viewingParty.getUser().getNickname())
                 .ownerTeam(viewingParty.getUser().getTeam().getTeamName())
                 .ownerImage(viewingParty.getUser().getProfileImageUrl())
                 .qualify(viewingParty.getPartyQualify())
-                .partyDate(viewingParty.getDate())
+                .partyDate(viewingParty.getDate().toString())
                 .latitude(viewingParty.getLatitude())
                 .longitude(viewingParty.getLongitude())
                 .location(viewingParty.getLocation())

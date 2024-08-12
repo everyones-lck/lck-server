@@ -24,6 +24,9 @@ public class ChatRoom extends BaseEntity {
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     private List<ChatMessage> messages = new ArrayList<>();
 
+    @OneToOne(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    private Participate participants;
+
     public void setViewingParty(ViewingParty viewingParty) {
         if(this.viewingParty != null) {
             viewingParty.getChatRooms().remove(this);

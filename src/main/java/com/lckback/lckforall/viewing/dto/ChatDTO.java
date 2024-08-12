@@ -31,12 +31,14 @@ public class ChatDTO {
     public static class ChatRoomResponse {
         private Long roomId;
         private String viewingPartyName;
+        private Boolean isExist;
         private Set<WebSocketSession> sessions = new HashSet<>();
 
         @Builder
-        public ChatRoomResponse(Long roomId, String viewingPartyName) {
+        public ChatRoomResponse(Long roomId, String viewingPartyName, Boolean isExist) {
             this.roomId = roomId;
             this.viewingPartyName = viewingPartyName;
+            this.isExist = isExist;
         }
     }
 

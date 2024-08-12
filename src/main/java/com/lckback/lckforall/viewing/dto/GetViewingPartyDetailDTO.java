@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 
 public class GetViewingPartyDetailDTO {
     @Builder
@@ -13,12 +12,13 @@ public class GetViewingPartyDetailDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Response {
+        Boolean participated;
         String name;
         String ownerName;
         String ownerTeam;
         String ownerImage;
         String qualify;
-        LocalDateTime partyDate;
+        String partyDate;
         String location;
         Double latitude;
         Double longitude;

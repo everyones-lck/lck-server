@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class ViewingPartyListDTO {
@@ -30,7 +29,7 @@ public class ViewingPartyListDTO {
         String userName;
         String teamName;
         String photoURL;
-        LocalDateTime partyDate;
+        String partyDate;
         Double latitude;
         Double longitude;
         String location;

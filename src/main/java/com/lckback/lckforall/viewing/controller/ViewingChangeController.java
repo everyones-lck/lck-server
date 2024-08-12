@@ -29,7 +29,7 @@ public class ViewingChangeController {
     @Parameters({
             @Parameter(name = "Authorization", description = "RequestHeader - 로그인한 사용자 토큰"),
     })
-    public ApiResponse<?> createViewingParty(@RequestHeader(name = "Authorization") String accessToken,
+    public ApiResponse<ChangeViewingPartyDTO.Response> createViewingParty(@RequestHeader(name = "Authorization") String accessToken,
                                              @RequestBody @Valid ChangeViewingPartyDTO.CreateViewingPartyRequest request){
         String kakaoUserId = authService.getKakaoUserId(accessToken);
         return ApiResponse.createSuccess(viewingPartyChangeService.createViewingParty(kakaoUserId, request));
@@ -45,9 +45,9 @@ public class ViewingChangeController {
     })
     @Parameters({
             @Parameter(name = "Authorization", description = "RequestHeader - 로그인한 사용자 토큰"),
-            @Parameter(name = "viewing_party_id", description = "query string(RequestParam) - 해당 뷰잉파티 글의 ID"),
+            @Parameter(name = "viewing_party_id", description = "PathVariable - 해당 뷰잉파티 글의 ID"),
     })
-    public ApiResponse<?> updateViewingParty(@RequestHeader(name = "Authorization") String accessToken,
+    public ApiResponse<ChangeViewingPartyDTO.Response> updateViewingParty(@RequestHeader(name = "Authorization") String accessToken,
                                              @PathVariable(name = "viewing_party_id") Long viewingPartyId,
                                              @RequestBody @Valid ChangeViewingPartyDTO.CreateViewingPartyRequest request){
         String kakaoUserId = authService.getKakaoUserId(accessToken);
@@ -64,9 +64,9 @@ public class ViewingChangeController {
     })
     @Parameters({
             @Parameter(name = "Authorization", description = "RequestHeader - 로그인한 사용자 토큰"),
-            @Parameter(name = "viewing_party_id", description = "query string(RequestParam) - 해당 뷰잉파티 글의 ID"),
+            @Parameter(name = "viewing_party_id", description = "PathVariable - 해당 뷰잉파티 글의 ID"),
     })
-    public ApiResponse<?> deleteViewingParty(@RequestHeader(name = "Authorization") String accessToken,
+    public ApiResponse<ChangeViewingPartyDTO.Response> deleteViewingParty(@RequestHeader(name = "Authorization") String accessToken,
                                              @PathVariable(name = "viewing_party_id") Long viewingPartyId){
         String kakaoUserId = authService.getKakaoUserId(accessToken);
         return ApiResponse.createSuccess(viewingPartyChangeService.deleteViewingParty(kakaoUserId, viewingPartyId));

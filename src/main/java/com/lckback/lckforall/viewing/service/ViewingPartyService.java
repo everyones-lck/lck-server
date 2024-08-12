@@ -9,7 +9,7 @@ public interface ViewingPartyService {
 
     GetViewingPartyDetailDTO.Response getViewingPartyDetail(String kakaoUserId, Long viewingId);
 
-    GetViewingPartyDetailDTO.ParticipateResponse createParticipant(String kakaoUserId, Long viewingPartyId);
+    GetViewingPartyDetailDTO.ParticipateResponse createParticipate(String kakaoUserId, Long viewingPartyId);
 
     ParticipantListDTO.ResponseList getParticipantList(String kakaoUserId, Long viewingPartyId, Integer page, Integer size);
 
