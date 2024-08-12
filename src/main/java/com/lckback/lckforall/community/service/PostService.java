@@ -3,13 +3,16 @@ package com.lckback.lckforall.community.service;
 import com.lckback.lckforall.base.api.error.PostErrorCode;
 import com.lckback.lckforall.base.api.error.UserErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
+import com.lckback.lckforall.community.dto.CommentDto;
 import com.lckback.lckforall.community.dto.PostDto;
+import com.lckback.lckforall.community.model.Comment;
 import com.lckback.lckforall.community.model.Post;
 import com.lckback.lckforall.community.model.PostFile;
 import com.lckback.lckforall.community.model.PostType;
 import com.lckback.lckforall.community.repository.PostFileRepository;
 import com.lckback.lckforall.community.repository.PostRepository;
 import com.lckback.lckforall.community.repository.PostTypeRepository;
+import com.lckback.lckforall.s3.service.S3Service;
 import com.lckback.lckforall.user.model.User;
 import com.lckback.lckforall.user.respository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -19,8 +22,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -31,6 +34,7 @@ public class PostService {
     private final PostTypeRepository postTypeRepository;
     private final PostFileRepository postFileRepository;
     private final UserRepository userRepository;
+    private final S3Service s3Service;
 
     public PostDto.PostListResponse findPosts(Pageable pageable, String postType) {
         PostType foundPostType = postTypeRepository.findByType(postType).
@@ -57,27 +61,27 @@ public class PostService {
         User user = userRepository.findByKakaoUserId(kakaoUserId)
                 .orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
-        //title content postType userx
+        PostType postType = postTypeRepository.findByType(request.getPostType())
+                .orElseThrow(() -> new RestApiException(PostErrorCode.POST_TYPE_NOT_FOUND));
+
         Post post = Post.builder()
                 .user(user)
                 .title(request.getPostTitle())
                 .content(request.getPostContent())
-                .postType(request.getPostType())
+                .postType(postType)
                 .build();
 
         postRepository.save(post);
 
-        List<PostFile> postFiles = new ArrayList<>();
         //controller에서 받은 파일을 업로드를 하고 그 url을 가져와야함.
         for (MultipartFile file : files) {
-            String fileUrl = s3Service.upload(); //url이 담겨있음
+            String fileUrl = s3Service.upload(file); //url이 담겨있음
             PostFile postFile = PostFile.builder()
                     .url(fileUrl)
                     .post(post)
                     .build();
             postFileRepository.save(postFile);
         }
-        //그리고 request에서 포스트와 합쳐.
     }
 
     public PostDto.PostTypeListResponse getPostTypes() {
@@ -85,5 +89,39 @@ public class PostService {
         List<PostType> postTypes = postTypeRepository.findAll();
         List<String> postTypeList = postTypes.stream().map(PostType::getType).toList();
         return PostDto.PostTypeListResponse.builder().postTypeList(postTypeList).build();
+    }
+
+   //PostDetailResponse
+
+    public PostDto.PostDetailResponse getPostDetail(Long postId) {
+        Post post = postRepository.findById(postId).
+                orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
+
+        List<PostFile> postFiles = post.getPostFiles();
+        List<String> postFileList = postFiles.stream().map(PostFile::getUrl).toList();
+
+        List<Comment> comments = post.getComments();
+        List<CommentDto.CommentDetailDto> commentList = comments.stream().map(
+                comment -> new CommentDto.CommentDetailDto(
+                        comment.getUser().getProfileImageUrl(),
+                        comment.getUser().getNickname(),
+                        comment.getUser().getTeam().getTeamLogoUrl(),
+                        comment.getContent(),
+                        comment.getCreatedAt())
+        ).collect(Collectors.toList());
+
+
+        PostDto.PostDetailResponse postDetailResponse = PostDto.PostDetailResponse.builder()
+                        .postType(post.getPostType().getType())
+                .writerProfileUrl(post.getUser().getProfileImageUrl())
+                .writerNickname(post.getUser().getNickname())
+                .writerTeam(post.getUser().getTeam().getTeamName())
+                .postTitle(post.getTitle())
+                .postCreatedAt(post.getCreatedAt())
+                .content(post.getContent())
+                .fileList(postFileList)
+                .commentList(commentList).build();
+
+        return postDetailResponse;
     }
 }
