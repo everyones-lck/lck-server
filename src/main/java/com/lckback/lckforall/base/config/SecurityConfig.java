@@ -52,7 +52,7 @@ public class SecurityConfig {
 		// 경로별 인가 작업
 		http
 			.authorizeHttpRequests((auth) -> auth
-				.requestMatchers("/auth/login", "/auth/signup", "/auth/refresh").permitAll() // 인증 없이 접근 가능
+				.requestMatchers("/auth/login", "/auth/signup", "/auth/refresh", "/auth/nickname").permitAll() // 인증 없이 접근 가능
 				.requestMatchers(HttpMethod.GET,
 					"/swagger-ui/*", "/v3/api-docs/swagger-config", "/api/logistics", "/v3/api-docs").permitAll()
 				.requestMatchers("/auth/users/**").hasRole("USER")
