@@ -65,7 +65,6 @@ public class User extends BaseEntity {
 	private UserRole role;
 
 	@Column(nullable = false)
-	@ColumnDefault("bronze")
 	private String tier;
 
 	@Column(nullable = false)
