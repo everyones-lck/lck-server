@@ -4,6 +4,7 @@ import com.lckback.lckforall.base.api.ApiResponse;
 import com.lckback.lckforall.base.auth.service.AuthService;
 import com.lckback.lckforall.community.dto.PostDto;
 import com.lckback.lckforall.community.service.PostService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class PostController {
      * http://localhost:8080/posts?page=10&sort=createDate
      */
     @GetMapping("/list")
-    public ResponseEntity<?> getPosts(Pageable pageable, @RequestParam String postType) {
+    public ResponseEntity<ApiResponse<PostDto.PostListResponse>> getPosts(Pageable pageable, @RequestParam String postType) {
 
         PostDto.PostListResponse data = postService.findPosts(pageable, postType);
 
@@ -35,9 +36,9 @@ public class PostController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createPost(
+    public ResponseEntity<ApiResponse<Void>> createPost(
             @RequestPart List<MultipartFile> files,
-            @RequestBody PostDto.CreatePostRequest request,
+            @RequestPart @Valid PostDto.CreatePostRequest request,
             @RequestHeader("Authorization") String token) {
         String kakaoUserId = authService.getKakaoUserId(token);
         postService.createPost(files, request, kakaoUserId);
@@ -47,12 +48,23 @@ public class PostController {
     }
 
     @GetMapping("/type-list")
-    public ResponseEntity<?> getPostTypes(
+    public ResponseEntity<ApiResponse<PostDto.PostTypeListResponse>> getPostTypes(
             @RequestHeader("Authorization") String token) {
         PostDto.PostTypeListResponse response = postService.getPostTypes();
         return ResponseEntity.ok()
                 .body(ApiResponse.createSuccess(response));
 
+    }
+
+    @GetMapping("/detail")
+    public ResponseEntity<ApiResponse<PostDto.PostDetailResponse>> getPostDetail(
+            @RequestHeader("Authorization") String token,
+            //title, content, 파일, iD 응원팀, 댓글 날짜
+            @RequestParam Long postId
+    ) {
+        PostDto.PostDetailResponse response = postService.getPostDetail(postId);
+        return ResponseEntity.ok()
+                .body(ApiResponse.createSuccess(response));
     }
 
 }
