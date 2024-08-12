@@ -6,6 +6,7 @@ import com.lckback.lckforall.base.api.ApiResponse;
 import com.lckback.lckforall.match.dto.MatchInfoDto;
 import com.lckback.lckforall.match.service.MatchService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -24,8 +25,9 @@ public class MatchController {
 
 	private final MatchService matchService;
 
+	@Operation(summary = "오늘의 매치 정보 조회 API", description = "오늘의 매치 정보를 조회합니다")
 	@GetMapping("/today/information")
-	public ResponseEntity<?> getTodayMatches(@RequestHeader("Authorization") String token) { // 오늘 경기정보 반환
+	public ResponseEntity<ApiResponse<List<MatchInfoDto.TodayMatchResponse>>> getTodayMatches(@RequestHeader("Authorization") String token) { // 오늘 경기정보 반환
 		List<MatchInfoDto.TodayMatchResponse> responses = matchService.todayMatchInfo();
 
 		return ResponseEntity.ok()
