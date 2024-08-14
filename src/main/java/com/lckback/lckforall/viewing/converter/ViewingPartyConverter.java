@@ -9,6 +9,8 @@ import com.lckback.lckforall.viewing.model.ViewingParty;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ViewingPartyConverter {
@@ -22,7 +24,25 @@ public class ViewingPartyConverter {
                 .build();
     }
 
+
+    // 정규식을 사용하여 "~시 ~동" 형식의 주소를 추출하는 메서드
+    public static String extractCityAndDistrict(String fullAddress) {
+        // 정규식 패턴: ~시와 ~동 사이의 문자를 매칭
+        String regex = "(\\S+시)\\s(\\S+동)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(fullAddress);
+
+        if (matcher.find()) {
+            // 첫 번째 그룹은 "~시", 두 번째 그룹은 "~동"
+            return matcher.group(1) + " " + matcher.group(2);
+        }
+
+        // 매칭되지 않는 경우 원본 주소 반환
+        return fullAddress;
+    }
+
     public static ViewingPartyListDTO.Response toPartyResponse(ViewingParty viewingParty) {
+
         return ViewingPartyListDTO.Response.builder()
                 .id(viewingParty.getId())
                 .name(viewingParty.getName())
@@ -33,6 +53,7 @@ public class ViewingPartyConverter {
                 .latitude(viewingParty.getLatitude())
                 .longitude(viewingParty.getLongitude())
                 .location(viewingParty.getLocation())
+                .shortLocation(extractCityAndDistrict(viewingParty.getLocation()))
                 .build();
     }
     public static GetViewingPartyDetailDTO.Response toResponse(ViewingParty viewingParty, Boolean participated) {
