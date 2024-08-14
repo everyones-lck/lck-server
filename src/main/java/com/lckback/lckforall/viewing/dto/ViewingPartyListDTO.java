@@ -33,5 +33,6 @@ public class ViewingPartyListDTO {
         Double latitude;
         Double longitude;
         String location;
+        String shortLocation;
     }
 }
