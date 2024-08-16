@@ -67,11 +67,11 @@ public class PostDto {
     @Getter
     @Builder
     public static class PostModifyRequest {
-        // title content postType postFiles
+        // title content postType
+        // postFiles은 따로 받아
         private String postTitle;
         private String postContent;
         private String postType;
-        private List<String> postFiles; //이거 맞는지 나중에 확인
 
     }
 

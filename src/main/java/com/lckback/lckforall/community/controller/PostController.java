@@ -75,7 +75,7 @@ public class PostController {
     ) {
         String kakaoUserId = authService.getKakaoUserId(token);
         postService.deletePost(postId, kakaoUserId);
-        return null; //바꿔 나중에.
+        return null;
     }
 
     //게시글 수정
@@ -83,11 +83,11 @@ public class PostController {
     public ResponseEntity<ApiResponse<Void>> modifyPost(
             @RequestHeader("Authorization") String token,
             @RequestParam Long postId,
-            @RequestBody PostDto.PostModifyRequest request
+            @RequestBody PostDto.PostModifyRequest request,
+            @RequestPart List<MultipartFile> files
     ) {
-
         String kakaoUserId = authService.getKakaoUserId(token);
-        postService.updatePost(request, postId, kakaoUserId);
+        postService.updatePost(files, request, postId, kakaoUserId);
         return null; //바꿔 나중에
     }
 

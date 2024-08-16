@@ -51,6 +51,5 @@ public class Post extends BaseEntity {
 		this.title = title;
 		this.content = content;
 		this.postType = postType;
-		//this.postFiles = postFiles;
 	}
 }

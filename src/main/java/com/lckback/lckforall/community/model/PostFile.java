@@ -25,4 +25,12 @@ public class PostFile extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "POST_ID", nullable = false)
     private Post post;
+
+    public void setPost(Post post) {
+        if (this.post != null) {
+            post.getPostFiles().remove(this);
+        }
+        this.post = post;
+        post.getPostFiles().add(this);
+    }
 }

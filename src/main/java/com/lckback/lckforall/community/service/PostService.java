@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -126,7 +127,8 @@ public class PostService {
     }
 
 
-    public void updatePost(PostDto.PostModifyRequest request, Long postId, String kakaoUserId) {
+    public void updatePost(List<MultipartFile> files, PostDto.PostModifyRequest request, Long postId, String kakaoUserId) {
+
         //post 작성자와 kakaoUserId 일치하는지 확인
         Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
         if(!post.getUser().getKakaoUserId().equals(kakaoUserId)){
@@ -136,8 +138,20 @@ public class PostService {
         String postTypeName = request.getPostType();
         PostType postType = postTypeRepository.findByType(postTypeName).orElseThrow(() -> new RestApiException(PostErrorCode.POST_TYPE_NOT_FOUND));
 
-        // 파일 업데이트는 모르겠음. 질문. 파라미터에서 파일은 빼고 했어
+        //아마존s3 클라우드 서비스. 파일 저장소(멀티파트)
+        files.forEach(f -> {
+            String url = s3Service.upload(f);
+            Optional<PostFile> optionalFile = postFileRepository.findByUrl(url);
+            if (optionalFile.isEmpty()) {
+                optionalFile.get().setPost(post);
+            }
+            optionalFile.get().setPost(post);
+        })
+        ;
+
+
         post.update(request.getPostTitle(),request.getPostContent(), postType);
+        postRepository.save(post);
     }
 
 
