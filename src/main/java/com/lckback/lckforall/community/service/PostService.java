@@ -124,4 +124,38 @@ public class PostService {
 
         return postDetailResponse;
     }
+
+
+    public void updatePost(PostDto.PostModifyRequest request, Long postId, String kakaoUserId) {
+        //post 작성자와 kakaoUserId 일치하는지 확인
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
+        if(!post.getUser().getKakaoUserId().equals(kakaoUserId)){
+            throw new RestApiException(UserErrorCode.NOT_EXIST_USER);
+        }
+
+        String postTypeName = request.getPostType();
+        PostType postType = postTypeRepository.findByType(postTypeName).orElseThrow(() -> new RestApiException(PostErrorCode.POST_TYPE_NOT_FOUND));
+
+        // 파일 업데이트는 모르겠음. 질문. 파라미터에서 파일은 빼고 했어
+        post.update(request.getPostTitle(),request.getPostContent(), postType);
+    }
+
+
+    public void deletePost(Long postId, String kakaoUserId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
+
+        validate(kakaoUserId, post);
+        postRepository.delete(post);
+    }
+
+    private void validate(String kakaoUserId, Post post) {
+        String findKakaoUserId = post.getUser().getKakaoUserId();
+        if(!findKakaoUserId.equals(kakaoUserId)){
+            throw new RestApiException(UserErrorCode.NOT_EXIST_USER);
+        }
+
+    }
 }
+
+

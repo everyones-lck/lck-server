@@ -28,5 +28,19 @@ public class CommentController {
                 .body(ApiResponse.createSuccessWithNoContent());
     }
 
+    //누가 코멘트를 삭제할 수 있는가 -> 본인이 작성한 코멘트, post작성자
+    @DeleteMapping("/delete/")
+    public ResponseEntity<ApiResponse<Void>> deleteComment(
+            @RequestHeader("Authorization") String token,
+            @RequestParam Long commentId) {
+        String kakaoUserId = authService.getKakaoUserId(token);
+        commentService.deleteComment(commentId, kakaoUserId);
+
+
+        return null;
+    }
+
+
+
 
 }

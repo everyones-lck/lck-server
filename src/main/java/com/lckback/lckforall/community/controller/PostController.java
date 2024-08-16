@@ -19,7 +19,6 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
-
     private final AuthService authService;
 
     /**
@@ -59,12 +58,37 @@ public class PostController {
     @GetMapping("/detail")
     public ResponseEntity<ApiResponse<PostDto.PostDetailResponse>> getPostDetail(
             @RequestHeader("Authorization") String token,
-            //title, content, 파일, iD 응원팀, 댓글 날짜
+            //title, content, 파일, iD 응원팀, 댓글 날짜 -> dto 만들어서
             @RequestParam Long postId
     ) {
         PostDto.PostDetailResponse response = postService.getPostDetail(postId);
         return ResponseEntity.ok()
                 .body(ApiResponse.createSuccess(response));
+    }
+
+
+    //게시글 삭제하기
+    @DeleteMapping("/delete")
+    public ResponseEntity<ApiResponse<Void>> deletePost(
+            @RequestHeader("Authorization") String token,
+            @RequestParam Long postId
+    ) {
+        String kakaoUserId = authService.getKakaoUserId(token);
+        postService.deletePost(postId, kakaoUserId);
+        return null; //바꿔 나중에.
+    }
+
+    //게시글 수정
+    @PatchMapping("/modify")
+    public ResponseEntity<ApiResponse<Void>> modifyPost(
+            @RequestHeader("Authorization") String token,
+            @RequestParam Long postId,
+            @RequestBody PostDto.PostModifyRequest request
+    ) {
+
+        String kakaoUserId = authService.getKakaoUserId(token);
+        postService.updatePost(request, postId, kakaoUserId);
+        return null; //바꿔 나중에
     }
 
 }

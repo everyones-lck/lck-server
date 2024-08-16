@@ -62,8 +62,18 @@ public class PostDto {
         private List<String> fileList;
         private List<CommentDto.CommentDetailDto> commentList;
 
+    }
 
-
+    @Getter
+    @Builder
+    public static class PostModifyRequest {
+        // title content postType postFiles
+        private String postTitle;
+        private String postContent;
+        private String postType;
+        private List<String> postFiles; //이거 맞는지 나중에 확인
 
     }
+
+
 }

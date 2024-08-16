@@ -43,4 +43,14 @@ public class Post extends BaseEntity {
 
 	@OneToMany(mappedBy = "post")
 	private List<PostReport> postReports = new ArrayList<>();
+
+
+	// 파일은 파라미터로 일단 안받았음. 어떻게 하는지 모르겠어 질문
+	public void update(String title, String content,PostType postType) {
+		//유의미한 이름을 가진 메서드를 만들어
+		this.title = title;
+		this.content = content;
+		this.postType = postType;
+		//this.postFiles = postFiles;
+	}
 }
