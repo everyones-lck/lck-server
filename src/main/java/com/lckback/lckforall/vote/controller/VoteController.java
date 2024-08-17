@@ -15,6 +15,7 @@ import com.lckback.lckforall.vote.dto.MatchVoteDto;
 import com.lckback.lckforall.vote.dto.SetVoteDto;
 import com.lckback.lckforall.vote.service.VoteService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class VoteController {
 
 	private final AuthService authService;
 
+	@Operation(summary = "승부예측 후보 API", description = "해당 매치의 승부예측 후보 팀을 조회합니다")
 	@GetMapping("/match/candidates")
 	public ResponseEntity<ApiResponse<MatchVoteDto.MatchPredictionCandidateResponse>> getCandidateMatchVote(
 		@RequestHeader("Authorization") String token,
@@ -40,6 +42,7 @@ public class VoteController {
 			.body(ApiResponse.createSuccess(response));
 	}
 
+	@Operation(summary = "승부예측 투표 API", description = "해당 매치의 승부예측 투표를 시행합니다")
 	@PostMapping("/match/making")
 	public ResponseEntity<ApiResponse<Void>> makeMatchVote(
 		@RequestHeader("Authorization") String token,
@@ -50,6 +53,7 @@ public class VoteController {
 			.body(ApiResponse.createSuccessWithNoContent());
 	}
 
+	@Operation(summary = "매치 pog 후보 API", description = "매치 pog 투표 후보 선수를 출력합니다")
 	@GetMapping("/match-pog/candidates")
 	public ResponseEntity<ApiResponse<MatchVoteDto.MatchPogVoteCandidateResponse>> getCandidateMatchPogVote(
 		@RequestHeader("Authorization") String token,
@@ -60,6 +64,7 @@ public class VoteController {
 		return ResponseEntity.ok().body(ApiResponse.createSuccess(response));
 	}
 
+	@Operation(summary = "매치 pog 선수 투표 API", description = "매치 pog 선수 투표를 시행합니다")
 	@PostMapping("match-pog/making")
 	public ResponseEntity<ApiResponse<Void>> makeMatchPogVote(
 		@RequestHeader("Authorization") String token,
@@ -70,6 +75,7 @@ public class VoteController {
 			.body(ApiResponse.createSuccessWithNoContent());
 	}
 
+	@Operation(summary = "세트 pog 후보 API", description = "세트 pog 선수 투표를 시행합니다")
 	@GetMapping("/set-pog/candidates")
 	public ResponseEntity<ApiResponse<SetVoteDto.SetPogVoteCandidateResponse>> getCandidateSetPogVote(
 		@RequestHeader("Authorization") String token,
@@ -81,6 +87,7 @@ public class VoteController {
 		return ResponseEntity.ok().body(ApiResponse.createSuccess(response));
 	}
 
+	@Operation(summary = "세트 pog 선수 투표 API", description = "세트 pog 선수 투표를 시행합니다")
 	@PostMapping("set-pog/making")
 	public ResponseEntity<ApiResponse<Void>> makeSetPogVote(
 		@RequestHeader("Authorization") String token,
