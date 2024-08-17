@@ -15,6 +15,7 @@ public class ViewingPartyChangeConverter {
                 .latitude(createViewingPartyRequest.getLatitude())
                 .longitude(createViewingPartyRequest.getLongitude())
                 .location(createViewingPartyRequest.getLocation())
+                .shortLocation(createViewingPartyRequest.getShortLocation())
                 .price(createViewingPartyRequest.getPrice())
                 .lowParticipate(createViewingPartyRequest.getLowParticipate())
                 .highParticipate(createViewingPartyRequest.getHighParticipate())
