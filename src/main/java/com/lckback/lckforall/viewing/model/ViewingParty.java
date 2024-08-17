@@ -62,6 +62,9 @@ public class ViewingParty extends BaseEntity {
 	@Column(length = 30)
 	private String location;
 
+	@Column(length = 30)
+	private String shortLocation;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "USER_ID", nullable = false)
 	private User user;
