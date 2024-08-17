@@ -46,7 +46,7 @@ public class Player extends BaseEntity {
 	@Column(nullable = false)
 	private LocalDate birth;
 
-	@Column(nullable = false, length = 100)
+	@Column(nullable = false)
 	private String ProfileImageUrl;
 
 	@Column(nullable = false)
