@@ -4,6 +4,7 @@ import com.lckback.lckforall.base.api.ApiResponse;
 import com.lckback.lckforall.match.dto.PogInfoDto;
 import com.lckback.lckforall.match.service.PogService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class PogController {
 
 	private final PogService pogService;
 
+	@Operation(summary = "매치 pog 반환 API", description = "해당 매치의 pog를 반환합니다")
 	@PostMapping("/match")
 	public ResponseEntity<ApiResponse<PogInfoDto.PogResponse>> getMatchPog( // match의 pog 투표 결과 선정된 player를 반환
 		@RequestHeader("Authorization") String token,
@@ -35,6 +37,7 @@ public class PogController {
 			.body(ApiResponse.createSuccess(response));
 	}
 
+	@Operation(summary = "세트 pog 반환 API", description = "해당 세트의 pog를 반환합니다")
 	@PostMapping("/set")
 	public ResponseEntity<ApiResponse<PogInfoDto.PogResponse>> getSetPog(// match의 pog 투표 결과 선정된 player를 반환
 		@RequestHeader("Authorization") String token,
