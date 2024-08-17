@@ -41,7 +41,7 @@ public class PogController {
 	@PostMapping("/set")
 	public ResponseEntity<ApiResponse<PogInfoDto.PogResponse>> getSetPog(// match의 pog 투표 결과 선정된 player를 반환
 		@RequestHeader("Authorization") String token,
-		@RequestParam("set") Integer setIndex,
+		@RequestParam("set-index") Integer setIndex,
 		@RequestBody PogInfoDto.MatchPogRequest request) {
 		PogInfoDto.PogResponse response = pogService.findSetPog(request.toDto(), setIndex);
 
