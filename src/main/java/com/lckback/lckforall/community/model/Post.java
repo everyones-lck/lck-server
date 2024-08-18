@@ -35,13 +35,13 @@ public class Post extends BaseEntity {
 	@JoinColumn(name = "USER_ID", nullable = false)
 	private User user;
 
-	@OneToMany(mappedBy = "post")
+	@OneToMany(mappedBy = "post", orphanRemoval = true)
 	private List<Comment> comments = new ArrayList<>();
 
-	@OneToMany(mappedBy = "post")
+	@OneToMany(mappedBy = "post", orphanRemoval = true)
 	private List<PostFile> postFiles = new ArrayList<>();
 
-	@OneToMany(mappedBy = "post")
+	@OneToMany(mappedBy = "post", orphanRemoval = true)
 	private List<PostReport> postReports = new ArrayList<>();
 
 

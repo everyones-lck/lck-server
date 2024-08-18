@@ -24,11 +24,11 @@ public class CommentService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
 
-    public void createComment(CommentDto.createCommentRequest request, String kakaoUserId) {
+    public void createComment(Long postId, CommentDto.createCommentRequest request, String kakaoUserId) {
         User user = userRepository.findByKakaoUserId(kakaoUserId)
                 .orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
-        Post post = postRepository.findById(request.getPostId())
+        Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
 
         Comment comment = Comment.builder()
@@ -40,20 +40,26 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
-    public void deleteComment(Long commentId, String kakaoUserId) {
+    public void deleteComment(Long postId, Long commentId, String kakaoUserId) {
+        User user = userRepository.findByKakaoUserId(kakaoUserId)
+                .orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
+
         //kakaoUserId와 commentId의 작성자가 일치하는지 확인하고 commentRepository에서 삭제.
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RestApiException(CommentErrorCode.COMMENT_NOT_FOUND));
 
-        validateCommentUser(kakaoUserId, comment);
+
+        validateCommentUser(user, comment);
         commentRepository.delete(comment);
     }
 
-    private static void validateCommentUser(String kakaoUserId, Comment comment) {
-        String findKakaoUserId = comment.getUser().getKakaoUserId();
-
-        if (!findKakaoUserId.equals(kakaoUserId)) {
-            throw new RestApiException(UserErrorCode.NOT_EXIST_USER);
+    // 나중에 비활성 유저 체크 로직 추가
+    private void validateCommentUser(User user, Comment comment) {
+        if (!user.getComments().contains(comment)) {
+            throw new RestApiException(CommentErrorCode.COMMENT_NOT_VALIDATE);
         }
     }
 }

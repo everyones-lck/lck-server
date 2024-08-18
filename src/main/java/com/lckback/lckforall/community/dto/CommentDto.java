@@ -12,7 +12,6 @@ public class CommentDto {
     @AllArgsConstructor
     @Builder
     public static class createCommentRequest {
-        private Long postId;
         private String content;
     }
 

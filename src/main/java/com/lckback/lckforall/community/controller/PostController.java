@@ -2,6 +2,7 @@ package com.lckback.lckforall.community.controller;
 
 import com.lckback.lckforall.base.api.ApiResponse;
 import com.lckback.lckforall.base.auth.service.AuthService;
+import com.lckback.lckforall.base.setting.SwaggerPageable;
 import com.lckback.lckforall.community.dto.PostDto;
 import com.lckback.lckforall.community.service.PostService;
 import jakarta.validation.Valid;
@@ -26,6 +27,7 @@ public class PostController {
      * http://localhost:8080/posts?page=10&sort=createDate
      */
     @GetMapping("/list")
+    @SwaggerPageable
     public ResponseEntity<ApiResponse<PostDto.PostListResponse>> getPosts(Pageable pageable, @RequestParam String postType) {
 
         PostDto.PostListResponse data = postService.findPosts(pageable, postType);
@@ -36,7 +38,7 @@ public class PostController {
 
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<Void>> createPost(
-            @RequestPart List<MultipartFile> files,
+            @RequestPart(required = false) List<MultipartFile> files,
             @RequestPart @Valid PostDto.CreatePostRequest request,
             @RequestHeader("Authorization") String token) {
         String kakaoUserId = authService.getKakaoUserId(token);
@@ -50,45 +52,49 @@ public class PostController {
     public ResponseEntity<ApiResponse<PostDto.PostTypeListResponse>> getPostTypes(
             @RequestHeader("Authorization") String token) {
         PostDto.PostTypeListResponse response = postService.getPostTypes();
+
         return ResponseEntity.ok()
                 .body(ApiResponse.createSuccess(response));
-
     }
 
-    @GetMapping("/detail")
+
+    @GetMapping("/{postId}/detail")
     public ResponseEntity<ApiResponse<PostDto.PostDetailResponse>> getPostDetail(
             @RequestHeader("Authorization") String token,
             //title, content, 파일, iD 응원팀, 댓글 날짜 -> dto 만들어서
-            @RequestParam Long postId
-    ) {
+            @PathVariable Long postId) {
         PostDto.PostDetailResponse response = postService.getPostDetail(postId);
+
         return ResponseEntity.ok()
                 .body(ApiResponse.createSuccess(response));
     }
 
 
-    //게시글 삭제하기
-    @DeleteMapping("/delete")
+    //post 삭제하기
+    @DeleteMapping("/{postId}/delete")
     public ResponseEntity<ApiResponse<Void>> deletePost(
             @RequestHeader("Authorization") String token,
-            @RequestParam Long postId
-    ) {
+            @PathVariable Long postId)
+    {
         String kakaoUserId = authService.getKakaoUserId(token);
         postService.deletePost(postId, kakaoUserId);
-        return null;
+
+        return ResponseEntity.ok()
+                .body(ApiResponse.createSuccessWithNoContent());
     }
 
-    //게시글 수정
-    @PatchMapping("/modify")
+    //post 수정
+    @PatchMapping("/{postId}/modify")
     public ResponseEntity<ApiResponse<Void>> modifyPost(
             @RequestHeader("Authorization") String token,
-            @RequestParam Long postId,
+            @PathVariable Long postId,
             @RequestBody PostDto.PostModifyRequest request,
-            @RequestPart List<MultipartFile> files
+            @RequestPart(required = false) List<MultipartFile> files
     ) {
         String kakaoUserId = authService.getKakaoUserId(token);
         postService.updatePost(files, request, postId, kakaoUserId);
-        return null; //바꿔 나중에
-    }
 
+        return ResponseEntity.ok()
+                .body(ApiResponse.createSuccessWithNoContent());
+    }
 }

@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -38,19 +37,19 @@ public class PostService {
     private final S3Service s3Service;
 
     public PostDto.PostListResponse findPosts(Pageable pageable, String postType) {
-        PostType foundPostType = postTypeRepository.findByType(postType).
-                orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
+        PostType foundPostType = postTypeRepository.findByType(postType)
+                        .orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
 
         Page<Post> posts = postRepository.findAllByPostType(pageable, foundPostType);
-        List<PostDto.PostDetail> list = posts.stream().map(post ->  PostDto.PostDetail.builder()
-              .postId(post.getId())
-              .postTitle(post.getTitle())
-              .postCreatedAt(post.getCreatedAt().toLocalDate())
-              .userNickname(post.getUser().getNickname())
-              .supportTeamName(post.getUser().getTeam().getTeamName())
-              .postPicture(!post.getPostFiles().isEmpty() ? post.getPostFiles().get(0).getUrl() : null) //default url 나오면 업데이트 예정
-              .commentCounts(post.getComments().size())
-              .build()).toList();
+        List<PostDto.PostDetail> list = posts.stream().map(post -> PostDto.PostDetail.builder()
+                .postId(post.getId())
+                .postTitle(post.getTitle())
+                .postCreatedAt(post.getCreatedAt().toLocalDate())
+                .userNickname(post.getUser().getNickname())
+                .supportTeamName(post.getUser().getTeam().getTeamName())
+                .postPicture(!post.getPostFiles().isEmpty() ? post.getPostFiles().get(0).getUrl() : null) //default url 나오면 업데이트 예정
+                .commentCounts(post.getComments().size())
+                .build()).toList();
 
         return PostDto.PostListResponse.builder()
                 .postDetailList(list)
@@ -92,7 +91,7 @@ public class PostService {
         return PostDto.PostTypeListResponse.builder().postTypeList(postTypeList).build();
     }
 
-   //PostDetailResponse
+    //PostDetailResponse
 
     public PostDto.PostDetailResponse getPostDetail(Long postId) {
         Post post = postRepository.findById(postId).
@@ -113,7 +112,7 @@ public class PostService {
 
 
         PostDto.PostDetailResponse postDetailResponse = PostDto.PostDetailResponse.builder()
-                        .postType(post.getPostType().getType())
+                .postType(post.getPostType().getType())
                 .writerProfileUrl(post.getUser().getProfileImageUrl())
                 .writerNickname(post.getUser().getNickname())
                 .writerTeam(post.getUser().getTeam().getTeamName())
@@ -128,48 +127,51 @@ public class PostService {
 
 
     public void updatePost(List<MultipartFile> files, PostDto.PostModifyRequest request, Long postId, String kakaoUserId) {
-
         //post 작성자와 kakaoUserId 일치하는지 확인
-        Post post = postRepository.findById(postId).orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
-        if(!post.getUser().getKakaoUserId().equals(kakaoUserId)){
-            throw new RestApiException(UserErrorCode.NOT_EXIST_USER);
-        }
-
-        String postTypeName = request.getPostType();
-        PostType postType = postTypeRepository.findByType(postTypeName).orElseThrow(() -> new RestApiException(PostErrorCode.POST_TYPE_NOT_FOUND));
-
-        //아마존s3 클라우드 서비스. 파일 저장소(멀티파트)
-        files.forEach(f -> {
-            String url = s3Service.upload(f);
-            Optional<PostFile> optionalFile = postFileRepository.findByUrl(url);
-            if (optionalFile.isEmpty()) {
-                optionalFile.get().setPost(post);
-            }
-            optionalFile.get().setPost(post);
-        })
-        ;
-
-
-        post.update(request.getPostTitle(),request.getPostContent(), postType);
-        postRepository.save(post);
-    }
-
-
-    public void deletePost(Long postId, String kakaoUserId) {
+        User user = userRepository.findByKakaoUserId(kakaoUserId)
+                .orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
 
-        validate(kakaoUserId, post);
-        postRepository.delete(post);
-    }
+        validate(user, post);
 
-    private void validate(String kakaoUserId, Post post) {
-        String findKakaoUserId = post.getUser().getKakaoUserId();
-        if(!findKakaoUserId.equals(kakaoUserId)){
-            throw new RestApiException(UserErrorCode.NOT_EXIST_USER);
+        String postTypeName = request.getPostType();
+        PostType postType = postTypeRepository.findByType(postTypeName)
+                .orElseThrow(() -> new RestApiException(PostErrorCode.POST_TYPE_NOT_FOUND));
+
+        //아마존s3 클라우드 서비스. 파일 저장소(멀티파트)
+        for (MultipartFile file : files) {
+            String fileUrl = s3Service.upload(file);//url이 담겨있음
+
+            PostFile postFile = PostFile.builder()
+                    .url(fileUrl)
+                    .post(post)
+                    .build();
+            postFileRepository.save(postFile);
         }
 
+        post.update(request.getPostTitle(),request.getPostContent(),postType); //수정되지 않은 원본 내용도 들어가도록
+        postRepository.save(post);
+}
+
+
+public void deletePost(Long postId, String kakaoUserId) {
+    User user = userRepository.findByKakaoUserId(kakaoUserId)
+            .orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
+
+    Post post = postRepository.findById(postId)
+            .orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
+
+    validate(user, post);
+    postRepository.delete(post);
+}
+
+
+private void validate(User user, Post post) {
+    if (!user.getPosts().contains(post)) {
+        throw new RestApiException(PostErrorCode.POST_NOT_VALIDATE);
     }
+}
 }
 
 

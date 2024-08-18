@@ -72,7 +72,6 @@ public class PostDto {
         private String postTitle;
         private String postContent;
         private String postType;
-
     }
 
 
