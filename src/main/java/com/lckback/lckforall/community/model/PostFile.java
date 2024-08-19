@@ -18,12 +18,15 @@ public class PostFile extends BaseEntity {
 
     @Column(nullable = false)
     private String url;
+
+    @Column(nullable = false)
+    private Integer index;
     //사진인지 동영상인지
 //	private String jpg;
 //	private String mov;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "POST_ID", nullable = false)
+    @JoinColumn(name = "POST_ID", nullable = true)
     private Post post;
 
     public void setPost(Post post) {

@@ -28,7 +28,9 @@ public class PostController {
      */
     @GetMapping("/list")
     @SwaggerPageable
-    public ResponseEntity<ApiResponse<PostDto.PostListResponse>> getPosts(Pageable pageable, @RequestParam String postType) {
+    public ResponseEntity<ApiResponse<PostDto.PostListResponse>> getPosts(
+            Pageable pageable,
+            @RequestParam String postType) {
 
         PostDto.PostListResponse data = postService.findPosts(pageable, postType);
 
@@ -36,16 +38,18 @@ public class PostController {
                 .body(ApiResponse.createSuccess(data));
     }
 
+    //파일만 받는게 아니라 파일의 인덱스까지 받아야 함 -> 디비에 넣을때 인덱스까지 넣어주고 매핑해줌 //완료
+    //request dto를 수정해서 파일의 인덱스까지 받을 수 있도록 해야함 예) 이름, 인덱스 map 자료구조를 쓰면 편할듯? //완료
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse<Void>> createPost(
-            @RequestPart(required = false) List<MultipartFile> files,
+    public ResponseEntity<ApiResponse<PostDto.CreatePostResponse>> createPost(
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
             @RequestPart @Valid PostDto.CreatePostRequest request,
             @RequestHeader("Authorization") String token) {
         String kakaoUserId = authService.getKakaoUserId(token);
-        postService.createPost(files, request, kakaoUserId);
+        PostDto.CreatePostResponse response = postService.createPost(files, request, kakaoUserId);
 
         return ResponseEntity.ok()
-                .body(ApiResponse.createSuccessWithNoContent());
+                .body(ApiResponse.createSuccess(response));
     }
 
     @GetMapping("/type-list")
@@ -74,8 +78,7 @@ public class PostController {
     @DeleteMapping("/{postId}/delete")
     public ResponseEntity<ApiResponse<Void>> deletePost(
             @RequestHeader("Authorization") String token,
-            @PathVariable Long postId)
-    {
+            @PathVariable Long postId) {
         String kakaoUserId = authService.getKakaoUserId(token);
         postService.deletePost(postId, kakaoUserId);
 
@@ -84,15 +87,23 @@ public class PostController {
     }
 
     //post 수정
+    /**
+     * TODO:
+     * 1. delete file -> s3 delete & database delete
+     * 2. new file -> s3 upload & database create
+     * 3. file index
+      */
     @PatchMapping("/{postId}/modify")
-    public ResponseEntity<ApiResponse<Void>> modifyPost(
+    public ResponseEntity<ApiResponse<PostDto.modifyPostResponse>> modifyPost(
             @RequestHeader("Authorization") String token,
             @PathVariable Long postId,
             @RequestBody PostDto.PostModifyRequest request,
-            @RequestPart(required = false) List<MultipartFile> files
-    ) {
+            @RequestPart(required = false) List<MultipartFile> newFiles) {
+
         String kakaoUserId = authService.getKakaoUserId(token);
-        postService.updatePost(files, request, postId, kakaoUserId);
+        postService.updatePost(newFiles, request, postId, kakaoUserId);
+
+        PostDto.modifyPostResponse response = postService.updatePost(newFiles, request, postId, kakaoUserId);
 
         return ResponseEntity.ok()
                 .body(ApiResponse.createSuccessWithNoContent());

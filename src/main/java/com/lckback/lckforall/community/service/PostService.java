@@ -1,5 +1,6 @@
 package com.lckback.lckforall.community.service;
 
+import com.lckback.lckforall.base.api.error.CommonErrorCode;
 import com.lckback.lckforall.base.api.error.PostErrorCode;
 import com.lckback.lckforall.base.api.error.UserErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
@@ -17,17 +18,20 @@ import com.lckback.lckforall.user.model.User;
 import com.lckback.lckforall.user.respository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 @Transactional
+@Slf4j
 public class PostService {
 
     private final PostRepository postRepository;
@@ -38,7 +42,7 @@ public class PostService {
 
     public PostDto.PostListResponse findPosts(Pageable pageable, String postType) {
         PostType foundPostType = postTypeRepository.findByType(postType)
-                        .orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
+                .orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
 
         Page<Post> posts = postRepository.findAllByPostType(pageable, foundPostType);
         List<PostDto.PostDetail> list = posts.stream().map(post -> PostDto.PostDetail.builder()
@@ -57,7 +61,11 @@ public class PostService {
                 .build();
     }
 
-    public void createPost(List<MultipartFile> files, PostDto.CreatePostRequest request, String kakaoUserId) {
+
+    /**
+     * 테스트 오류 확인.
+     */
+    public PostDto.CreatePostResponse createPost(List<MultipartFile> files, PostDto.CreatePostRequest request, String kakaoUserId) {
         User user = userRepository.findByKakaoUserId(kakaoUserId)
                 .orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
@@ -73,16 +81,38 @@ public class PostService {
 
         postRepository.save(post);
 
-        //controller에서 받은 파일을 업로드를 하고 그 url을 가져와야함.
+        Map<String, Integer> fileRequest = request.getFileRequestList().
+                stream().
+                collect(Collectors.toMap(PostDto.FileRequest::getFilename, PostDto.FileRequest::getIndex));
+
+        validateFileRequest(fileRequest, files);
+
         for (MultipartFile file : files) {
+            if (file.isEmpty()) {
+                break;
+            }
             String fileUrl = s3Service.upload(file); //url이 담겨있음
             PostFile postFile = PostFile.builder()
                     .url(fileUrl)
+                    .index(fileRequest.get(file.getName()))
                     .post(post)
                     .build();
             postFileRepository.save(postFile);
         }
+
+        return PostDto.CreatePostResponse.builder()
+                .postId(post.getId())
+                .build();
     }
+
+    private void validateFileRequest(Map<String, Integer> fileRequest, List<MultipartFile> files) {
+        boolean isFileNotExist = !files.stream().allMatch(file -> fileRequest.containsKey(file.getName()));
+        boolean isIndexDuplicate =  fileRequest.values().stream().distinct().count() != fileRequest.size();
+        if (isFileNotExist || isIndexDuplicate) {
+            throw new RestApiException(CommonErrorCode.INVALID_PARAMETER);
+        }
+    }
+
 
     public PostDto.PostTypeListResponse getPostTypes() {
 
@@ -98,7 +128,14 @@ public class PostService {
                 orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
 
         List<PostFile> postFiles = post.getPostFiles();
-        List<String> postFileList = postFiles.stream().map(PostFile::getUrl).toList();
+        List<PostDto.FileDetail> postFileList = postFiles.stream()
+                .map(postFile -> PostDto.FileDetail
+                        .builder()
+                        .fileUrl(postFile.getUrl())
+                        .index(postFile.getIndex())
+                        .build())
+                .toList();
+
 
         List<Comment> comments = post.getComments();
         List<CommentDto.CommentDetailDto> commentList = comments.stream().map(
@@ -111,7 +148,7 @@ public class PostService {
         ).collect(Collectors.toList());
 
 
-        PostDto.PostDetailResponse postDetailResponse = PostDto.PostDetailResponse.builder()
+        return PostDto.PostDetailResponse.builder()
                 .postType(post.getPostType().getType())
                 .writerProfileUrl(post.getUser().getProfileImageUrl())
                 .writerNickname(post.getUser().getNickname())
@@ -121,12 +158,10 @@ public class PostService {
                 .content(post.getContent())
                 .fileList(postFileList)
                 .commentList(commentList).build();
-
-        return postDetailResponse;
     }
 
 
-    public void updatePost(List<MultipartFile> files, PostDto.PostModifyRequest request, Long postId, String kakaoUserId) {
+    public PostDto.modifyPostResponse updatePost(List<MultipartFile> files, PostDto.PostModifyRequest request, Long postId, String kakaoUserId) {
         //post 작성자와 kakaoUserId 일치하는지 확인
         User user = userRepository.findByKakaoUserId(kakaoUserId)
                 .orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
@@ -150,28 +185,32 @@ public class PostService {
             postFileRepository.save(postFile);
         }
 
-        post.update(request.getPostTitle(),request.getPostContent(),postType); //수정되지 않은 원본 내용도 들어가도록
+        post.update(request.getPostTitle(), request.getPostContent(), postType); //수정되지 않은 원본 내용도 들어가도록
         postRepository.save(post);
-}
 
-
-public void deletePost(Long postId, String kakaoUserId) {
-    User user = userRepository.findByKakaoUserId(kakaoUserId)
-            .orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
-
-    Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
-
-    validate(user, post);
-    postRepository.delete(post);
-}
-
-
-private void validate(User user, Post post) {
-    if (!user.getPosts().contains(post)) {
-        throw new RestApiException(PostErrorCode.POST_NOT_VALIDATE);
+        return PostDto.modifyPostResponse.builder()
+                .postId(postId)
+                .build();
     }
-}
+
+
+    public void deletePost(Long postId, String kakaoUserId) {
+        User user = userRepository.findByKakaoUserId(kakaoUserId)
+                .orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
+
+        validate(user, post);
+        postRepository.delete(post);
+    }
+
+
+    private void validate(User user, Post post) {
+        if (!user.getPosts().contains(post)) {
+            throw new RestApiException(PostErrorCode.POST_NOT_VALIDATE);
+        }
+    }
 }
 
 

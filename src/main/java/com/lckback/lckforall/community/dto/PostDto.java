@@ -1,5 +1,6 @@
 package com.lckback.lckforall.community.dto;
 
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,8 +28,15 @@ public class PostDto {
         private LocalDate postCreatedAt;
         private String userNickname;
         private String supportTeamName;
-        private String postPicture;
+        private String postPicture; //파일 url
         private Integer commentCounts;
+    }
+
+    @Getter
+    @Builder
+    public static class FileDetail {
+        private String fileUrl;
+        private Integer index;
     }
 
     @Getter
@@ -38,7 +46,21 @@ public class PostDto {
         private String postType;
         private String postTitle;
         private String postContent;
+        private List<FileRequest> fileRequestList;
+    }
 
+    @Getter
+    @Builder
+    public static class FileRequest{
+        private String filename;
+        private Integer index;
+    }
+
+    @Getter
+    @Builder
+    public static class CreatePostResponse {
+        //게시판 생성시 response값 = postId
+        private Long postId;
     }
 
     @Getter
@@ -59,7 +81,7 @@ public class PostDto {
         private String postTitle;
         private LocalDateTime postCreatedAt;
         private String content;
-        private List<String> fileList;
+        private List<FileDetail> fileList;
         private List<CommentDto.CommentDetailDto> commentList;
 
     }
@@ -72,7 +94,15 @@ public class PostDto {
         private String postTitle;
         private String postContent;
         private String postType;
+        @Nullable
+        private List<String> deleteImageUrlList;
     }
 
 
+    @Getter
+    @Builder
+    public static class modifyPostResponse {
+        //게시판 수정시 response값 = postId
+        private Long postId;
+    }
 }
