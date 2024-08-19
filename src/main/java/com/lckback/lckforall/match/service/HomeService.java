@@ -26,7 +26,7 @@ public class HomeService {
 	public MatchInfoDto.HomePageResponse getHomePageInformation() { // today match의 정보를 List 형식으로 리턴
 		//today's match 정보
 		LocalDate todayDate = LocalDate.now();
-		LocalDateTime start = LocalDateTime.of(todayDate.minusDays(1), LocalTime.of(0, 0, 0));
+		LocalDateTime start = LocalDateTime.of(todayDate, LocalTime.of(0, 0, 0));
 		LocalDateTime end = todayDate.atTime(23, 59, 59);
 		List<Match> todayMatches = matchRepository.findMatchesByMatchDateBetween(start, end);
 		List<MatchInfoDto.TodayMatchDto> todayMatchList = todayMatches.stream()
