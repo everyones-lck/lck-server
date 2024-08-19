@@ -31,7 +31,6 @@ public class FindMatchesByDateDto {
 		private String season;
 		private Integer matchNumber;
 		private LocalTime matchTime;
-		private LocalDate matchDate;
 	}
 
 	@Getter
