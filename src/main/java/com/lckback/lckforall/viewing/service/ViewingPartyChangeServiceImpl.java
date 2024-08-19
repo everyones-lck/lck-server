@@ -43,6 +43,7 @@ public class ViewingPartyChangeServiceImpl implements ViewingPartyChangeService 
         viewingParty.setLatitude(viewingPartyRequest.getLatitude());
         viewingParty.setLongitude(viewingPartyRequest.getLongitude());
         viewingParty.setLocation(viewingPartyRequest.getLocation());
+        viewingParty.setShortLocation(viewingPartyRequest.getShortLocation());
         viewingParty.setPrice(viewingPartyRequest.getPrice());
         viewingParty.setLowParticipate(viewingPartyRequest.getLowParticipate());
         viewingParty.setHighParticipate(viewingPartyRequest.getHighParticipate());

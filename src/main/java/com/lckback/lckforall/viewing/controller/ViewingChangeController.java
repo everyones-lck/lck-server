@@ -24,7 +24,6 @@ public class ViewingChangeController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "VIEWING4003", description = "NOT_FOUND, 뷰잉파티 글 생성에 실패했습니다."),
-
     })
     @Parameters({
             @Parameter(name = "Authorization", description = "RequestHeader - 로그인한 사용자 토큰"),
@@ -60,7 +59,6 @@ public class ViewingChangeController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "VIEWING4005", description = "NOT_ACCEPTABLE, 뷰잉파티 글 삭제에 실패했습니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "VIEWING4004", description = "NOT_FOUND, 개최자가 생성한 뷰잉파티 글을 찾을수 없습니다."),
-
     })
     @Parameters({
             @Parameter(name = "Authorization", description = "RequestHeader - 로그인한 사용자 토큰"),

@@ -19,13 +19,15 @@ import com.lckback.lckforall.aboutlck.dto.team.FindTeamPlayerInformationDto;
 import com.lckback.lckforall.aboutlck.dto.team.FindTeamRatingHistoryDto;
 import com.lckback.lckforall.aboutlck.dto.team.FindTeamRatingBySeasonDto;
 import com.lckback.lckforall.aboutlck.dto.team.FindTeamWinningHistoryDto;
+import com.lckback.lckforall.base.api.error.SeasonErrorCode;
+import com.lckback.lckforall.base.api.error.SeasonTeamErrorCode;
+import com.lckback.lckforall.base.api.error.TeamErrorCode;
 import com.lckback.lckforall.player.model.Player;
 import com.lckback.lckforall.player.model.SeasonTeamPlayer;
 import com.lckback.lckforall.player.repository.SeasonTeamPlayerRepository;
 import com.lckback.lckforall.team.repository.SeasonRepository;
 import com.lckback.lckforall.team.repository.SeasonTeamRepository;
 import com.lckback.lckforall.team.repository.TeamRepository;
-import com.lckback.lckforall.base.api.error.CommonErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
 import com.lckback.lckforall.team.model.Season;
 import com.lckback.lckforall.team.model.SeasonTeam;
@@ -45,7 +47,7 @@ public class AboutLckTeamService {
 
 	public FindTeamRatingBySeasonDto.Response findTeamRatingBySeason(FindTeamRatingBySeasonDto.Parameter param) {
 		Season season = seasonRepository.findByName(param.getSeasonName())
-			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+			.orElseThrow(() -> new RestApiException(SeasonErrorCode.NOT_EXIST_SEASON));
 
 		Page<SeasonTeam> seasonTeamList = seasonTeamRepository.findAllBySeasonOrderByRatingAsc(season,
 			param.getPageable());
@@ -88,7 +90,7 @@ public class AboutLckTeamService {
 		Season season = findSeasonBySeasonName(param.getSeasonName());
 
 		SeasonTeam seasonTeam = seasonTeamRepository.findBySeasonAndTeam(season, team)
-			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+			.orElseThrow(() -> new RestApiException(SeasonTeamErrorCode.NOT_EXIST_SEASON_TEAM));
 
 		List<SeasonTeamPlayer> seasonTeamPlayers = seasonTeamPlayerRepository.findAllBySeasonTeam(seasonTeam);
 		List<Player> players = seasonTeamPlayers.stream()
@@ -99,19 +101,17 @@ public class AboutLckTeamService {
 		return FindTeamPlayerInformationConverter.convertToResponse(players);
 	}
 
-	// 에러코드 구체화 필요
 	private Team findTeamByTeamId(Long teamId) {
 		return teamRepository.findById(teamId)
-			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+			.orElseThrow(() -> new RestApiException(TeamErrorCode.NOT_EXISTS_TEAM));
 	}
 
-	// 에러코드 구체화 필요
 	private Season findSeasonBySeasonName(String seasonName) {
 		return seasonRepository.findByName(seasonName)
-			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+			.orElseThrow(() -> new RestApiException(SeasonErrorCode.NOT_EXIST_SEASON));
 	}
 
 	private PageRequest createPageRequestSortBySeasonName(Pageable pageable) {
-		return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("season.name").descending());
+		return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize() * 2, Sort.by("season.name").descending());
 	}
 }

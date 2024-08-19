@@ -16,9 +16,9 @@ public class ViewingPartyChangeConverter {
                 .longitude(createViewingPartyRequest.getLongitude())
                 .location(createViewingPartyRequest.getLocation())
                 .shortLocation(createViewingPartyRequest.getShortLocation())
-                .price(createViewingPartyRequest.getPrice())
-                .lowParticipate(createViewingPartyRequest.getLowParticipate())
-                .highParticipate(createViewingPartyRequest.getHighParticipate())
+                .price(Integer.parseInt(createViewingPartyRequest.getPrice()))
+                .lowParticipate(Integer.parseInt(createViewingPartyRequest.getLowParticipate()))
+                .highParticipate(Integer.parseInt(createViewingPartyRequest.getHighParticipate()))
                 .partyQualify(createViewingPartyRequest.getQualify())
                 .etc(createViewingPartyRequest.getEtc())
                 .build();
