@@ -81,6 +81,11 @@ public class ViewingPartyServiceImpl implements ViewingPartyService {
         int start = (int) pageRequest.getOffset();
         int end = Math.min((start + pageRequest.getPageSize()), userList.size());
         Page<User> userPage = new PageImpl<>(userList.subList(start, end), pageRequest, userList.size());
-        return ViewingPartyConverter.toParticipantListResponse(userPage, viewingParty);
+        int totalPage = userPage.getTotalPages();
+        boolean isLast = false;
+        if(page == totalPage - 1){
+            isLast = true;
+        }
+        return ViewingPartyConverter.toParticipantListResponse(userPage, viewingParty, isLast, totalPage);
     }
 }
