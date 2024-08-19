@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import com.lckback.lckforall.base.model.BaseEntity;
 import com.lckback.lckforall.base.type.UserRole;
 import com.lckback.lckforall.base.type.UserStatus;
@@ -49,11 +51,11 @@ public class User extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-  @Column(nullable = false)
-  private String kakaoUserId;
+	@Column(nullable = false)
+	private String kakaoUserId;
 
-  @Column(nullable = false, length = 20)
-  private String nickname;
+	@Column(nullable = false, length = 20)
+	private String nickname;
 
 	@Column(nullable = false)
 	private String profileImageUrl;
@@ -61,6 +63,9 @@ public class User extends BaseEntity {
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private UserRole role;
+
+	@Column(nullable = false)
+	private String tier;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)

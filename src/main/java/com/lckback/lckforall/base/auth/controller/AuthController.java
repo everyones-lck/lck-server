@@ -1,17 +1,13 @@
 package com.lckback.lckforall.base.auth.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.lckback.lckforall.base.api.ApiResponse;
 import com.lckback.lckforall.base.auth.dto.AuthResponseDto;
 import com.lckback.lckforall.base.auth.dto.GetKakaoUserIdDto;
+import com.lckback.lckforall.base.auth.dto.GetNicknameDto;
 import com.lckback.lckforall.base.auth.dto.GetRefreshTokenDto;
 import com.lckback.lckforall.base.auth.jwt.JWTUtil;
 import com.lckback.lckforall.base.auth.service.AuthService;
@@ -35,15 +31,23 @@ public class AuthController {
     private final AuthService authService;
     private final JWTUtil jWTUtil;
 
-        @PostMapping("/signup")
-        public ResponseEntity<ApiResponse<AuthResponseDto>> signup(
-            @RequestPart(required = false) MultipartFile profileImage,
-            @RequestPart SignupUserDataDto.SignupUserData signupUserData) {
+    @GetMapping("/nickname")
+    @Operation(summary = "닉네임 중복 체크", description = "닉네임이 이미 존재하는지 확인합니다.")
+    public ResponseEntity<ApiResponse<Boolean>> checkNickname(@RequestParam String nickName) {
+        boolean available = authService.isNicknameAvailable(nickName);
 
-            AuthResponseDto authResponseDto = authService.signup(profileImage, signupUserData);
+        return ResponseEntity.ok(ApiResponse.createSuccess(available));
+    }
 
-            return ResponseEntity.status(201).body(ApiResponse.createSuccess(authResponseDto));
-        }
+    @PostMapping("/signup")
+    public ResponseEntity<ApiResponse<AuthResponseDto>> signup(
+        @RequestPart(required = false) MultipartFile profileImage,
+        @RequestPart SignupUserDataDto.SignupUserData signupUserData) {
+
+        AuthResponseDto authResponseDto = authService.signup(profileImage, signupUserData);
+
+        return ResponseEntity.status(201).body(ApiResponse.createSuccess(authResponseDto));
+    }
 
     // @Operation(summary = "회원가입 API", description = "회원가입 API")
     // @ApiResponses({

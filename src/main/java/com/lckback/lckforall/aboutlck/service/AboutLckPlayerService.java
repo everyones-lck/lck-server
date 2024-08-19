@@ -14,6 +14,7 @@ import com.lckback.lckforall.aboutlck.converter.player.FindPlayerWinningHistoryC
 import com.lckback.lckforall.aboutlck.dto.player.FindPlayerInformationDto;
 import com.lckback.lckforall.aboutlck.dto.player.FindPlayerTeamHistoryDto;
 import com.lckback.lckforall.aboutlck.dto.player.FindPlayerWinningHistoryDto;
+import com.lckback.lckforall.base.api.error.PlayerErrorCode;
 import com.lckback.lckforall.player.repository.SeasonTeamPlayerRepository;
 import com.lckback.lckforall.team.repository.SeasonTeamRepository;
 import com.lckback.lckforall.base.api.error.CommonErrorCode;
@@ -75,7 +76,7 @@ public class AboutLckPlayerService {
 
 	private Player findPlayerByPlayerId(Long playerId) {
 		return playerRepository.findById(playerId)
-			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+			.orElseThrow(() -> new RestApiException(PlayerErrorCode.NOT_EXIST_PLAYER));
 	}
 
 	private PageRequest createPageRequestSortBySeasonName(Pageable pageable) {

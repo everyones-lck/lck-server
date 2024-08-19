@@ -62,6 +62,9 @@ public class ViewingParty extends BaseEntity {
 	@Column(length = 30)
 	private String location;
 
+	@Column(length = 30)
+	private String shortLocation;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "USER_ID", nullable = false)
 	private User user;
@@ -69,7 +72,7 @@ public class ViewingParty extends BaseEntity {
 	@OneToMany(mappedBy = "viewingParty", orphanRemoval = true)
 	private List<Participate> participates = new ArrayList<>();
 
-	@OneToMany(mappedBy = "viewingParty")
+	@OneToMany(mappedBy = "viewingParty", orphanRemoval = true)
 	private List<ChatRoom> chatRooms = new ArrayList<>();
 	public void setUser(User user) {
 		if(this.user != null) {

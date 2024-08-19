@@ -23,12 +23,13 @@ public class ChangeViewingPartyDTO {
         @NotNull(message = "장소를 생략할수 없습니다.")
         Double longitude;
         String location;
+        String shortLocation;
         @NotBlank(message = "비용을 생략할수 없습니다.")
-        Integer price;
+        String price;
         @NotBlank(message = "최소인원을 생략할수 없습니다.")
-        Integer lowParticipate;
+        String lowParticipate;
         @NotBlank(message = "최대인원을 생략할수 없습니다.")
-        Integer highParticipate;
+        String highParticipate;
         @NotBlank(message = "참여자격 및 조건을 생략할수 없습니다.")
         @Size(min = 1, max = 100, message = "참여자격 및 조건은 1자이상 100자이하여야 합니다.")
         String qualify;

@@ -29,6 +29,7 @@ public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
 
     private static final List<String> EXCLUDE_URLS = Arrays.asList(
+        "/auth/nickname",
         "/auth/signup",
         "/auth/login",
         "/auth/refresh",
@@ -96,9 +97,10 @@ public class JWTFilter extends OncePerRequestFilter {
     }
 
     private boolean shouldExclude(HttpServletRequest request) {
-        // log.info("shouldExclude: {}", request.getRequestURI());
-        // return EXCLUDE_URLS.stream().anyMatch(url -> request.getRequestURI().equals(url));
+        log.info("shouldExclude: {}", request.getRequestURI());
+        //return EXCLUDE_URLS.stream().anyMatch(url -> request.getRequestURI().equals(url));
         String requestURI = request.getRequestURI();
+        log.info(requestURI);
 
         return EXCLUDE_URLS.stream().anyMatch(url -> requestURI.startsWith(url));
     }

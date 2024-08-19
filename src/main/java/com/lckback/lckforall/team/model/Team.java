@@ -35,7 +35,7 @@ public class Team extends BaseEntity {
     @Column(nullable = false, length = 20)
     private String teamName;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false)
     private String teamLogoUrl;
 
     @OneToMany(mappedBy = "team")

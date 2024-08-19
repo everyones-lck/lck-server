@@ -1,6 +1,7 @@
 package com.lckback.lckforall.aboutlck.dto.match;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import lombok.Builder;
@@ -29,6 +30,7 @@ public class FindMatchesByDateDto {
 		private boolean matchFinished;
 		private String season;
 		private Integer matchNumber;
+		private LocalTime matchTime;
 		private LocalDate matchDate;
 	}
 

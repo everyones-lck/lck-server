@@ -26,6 +26,7 @@ public class AboutMatchConverter {
 				.matchFinished(matchResult != MatchResult.NOT_FINISHED)
 				.matchNumber(match.getMatchNumber())
 				.matchDate(match.getMatchDate().toLocalDate())
+				.matchTime(match.getMatchDate().toLocalTime())
 				.season(match.getSeason().getName())
 				.build();
 		}).toList();

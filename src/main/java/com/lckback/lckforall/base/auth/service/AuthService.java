@@ -2,12 +2,14 @@ package com.lckback.lckforall.base.auth.service;
 
 import java.util.Collections;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.lckback.lckforall.base.auth.dto.GetNicknameDto;
 import com.lckback.lckforall.s3.service.S3Service;
 import com.lckback.lckforall.base.api.error.TeamErrorCode;
 import com.lckback.lckforall.base.api.error.TokenErrorCode;
@@ -44,15 +46,31 @@ public class AuthService {
 
 	private final S3Service s3Service;
 
+	@Value("${default.image.url}")
+	private String defaultImageUrl;
+	// 닉네임 중복 여부 확인 메서드
+	public Boolean isNicknameAvailable(String nickName) {
+		if (userRepository.existsByNickname(nickName)) {
+			return false;
+		}
+
+		return true;
+	}
+
 	public AuthResponseDto signup(MultipartFile profileImage, SignupUserDataDto.SignupUserData signupUserData) {
 		if (userRepository.existsByKakaoUserId(signupUserData.getKakaoUserId())) {
 			throw new RestApiException(UserErrorCode.USER_ALREADY_EXISTS);
 		}
+		String profileImageUrl;
 
-		String profileImageUrl = s3Service.upload(profileImage);
-
-		if (!profileImage.isEmpty()) {
+		// 디폴트 이미지 설정
+		if (profileImage.isEmpty()) {
+			profileImageUrl = defaultImageUrl;
 		}
+		else {
+			profileImageUrl = s3Service.upload(profileImage);
+		}
+
 
 		Team team = teamRepository.findById(signupUserData.getTeamId()).orElseThrow(() -> new RestApiException(
 			TeamErrorCode.NOT_EXISTS_TEAM
@@ -139,7 +157,7 @@ public class AuthService {
 
 		return AuthResponseConverter.convertToAuthResponseDto(newAccessToken, newRefreshToken, accessTokenExpirationTime, refreshTokenExpirationTime);
 	}
-	
+
 	// AuthController에서와 마찬가지의 이유로 주석 처리
 
 	// public ResponseEntity<?> testToken(String token) {
