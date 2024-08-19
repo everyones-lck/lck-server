@@ -59,23 +59,15 @@ public class VoteService {
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 		Long userId = user.getId();
 		Long matchId = dto.getMatchId();
-		Match match = matchRepository.findById(matchId)
-			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
 
 		if (matchVoteRepository.existsByMatchIdAndUserId(matchId, userId)) {
-			Team myVoteTeam = matchVoteRepository.findByMatchIdAndUserId(matchId,userId)
-				.orElseThrow(() -> new RestApiException(VoteErrorCode.NOT_EXIST_VOTE));
-
-			return new MatchVoteDto.MatchPredictionCandidateResponse(match.getSeason().getName(), match.getMatchNumber()
-				, match.getTeam1().getId(), match.getTeam1().getTeamLogoUrl()
-				, match.getTeam2().getId(), match.getTeam2().getTeamLogoUrl()
-				, myVoteTeam.getId());
+			throw new RestApiException(VoteErrorCode.ALREADY_VOTE);
 		}
-
+		Match match = matchRepository.findById(matchId)
+			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
 		return new MatchVoteDto.MatchPredictionCandidateResponse(match.getSeason().getName(), match.getMatchNumber()
 			, match.getTeam1().getId(), match.getTeam1().getTeamLogoUrl()
-			, match.getTeam2().getId(), match.getTeam2().getTeamLogoUrl()
-			, -1L);
+			, match.getTeam2().getId(), match.getTeam2().getTeamLogoUrl());
 	}
 
 	public void doMatchPredictionVote(MatchVoteDto.MatchPredictionDto dto) {
