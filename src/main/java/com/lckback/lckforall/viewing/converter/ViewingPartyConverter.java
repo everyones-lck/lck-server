@@ -8,6 +8,7 @@ import com.lckback.lckforall.viewing.model.Participate;
 import com.lckback.lckforall.viewing.model.ViewingParty;
 import org.springframework.data.domain.Page;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,6 +58,9 @@ public class ViewingPartyConverter {
                 .build();
     }
     public static GetViewingPartyDetailDTO.Response toResponse(ViewingParty viewingParty, Boolean participated) {
+        // Response 포맷팅
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+
         return GetViewingPartyDetailDTO.Response.builder()
                 .participated(participated)
                 .name(viewingParty.getName())
@@ -68,9 +72,9 @@ public class ViewingPartyConverter {
                 .latitude(viewingParty.getLatitude())
                 .longitude(viewingParty.getLongitude())
                 .location(viewingParty.getLocation())
-                .price(viewingParty.getPrice().toString())
-                .lowParticipate(viewingParty.getLowParticipate().toString())
-                .highParticipate(viewingParty.getHighParticipate().toString())
+                .price(decimalFormat.format(viewingParty.getPrice()))
+                .lowParticipate(decimalFormat.format(viewingParty.getLowParticipate()))
+                .highParticipate(decimalFormat.format(viewingParty.getHighParticipate()))
                 .etc(viewingParty.getEtc())
                 .build();
     }
