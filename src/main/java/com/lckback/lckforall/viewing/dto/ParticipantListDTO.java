@@ -13,6 +13,8 @@ public class ParticipantListDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ResponseList {
+        Boolean isLast;
+        Integer totalPage;
         String viewingPartyName;
         String ownerName;
         String ownerTeam;

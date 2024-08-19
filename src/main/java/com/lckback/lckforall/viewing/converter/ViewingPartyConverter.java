@@ -93,9 +93,11 @@ public class ViewingPartyConverter {
                 .build();
     }
 
-    public static ParticipantListDTO.ResponseList toParticipantListResponse(Page<User> users, ViewingParty viewingParty) {
+    public static ParticipantListDTO.ResponseList toParticipantListResponse(Page<User> users, ViewingParty viewingParty, Boolean isLast, Integer totalPage) {
         List<ParticipantListDTO.Response> userList = users.stream().map(ViewingPartyConverter::toParticipantResponse).toList();
         return ParticipantListDTO.ResponseList.builder()
+                .isLast(isLast)
+                .totalPage(totalPage)
                 .viewingPartyName(viewingParty.getName())
                 .ownerName(viewingParty.getUser().getNickname())
                 .ownerTeam(viewingParty.getUser().getTeam().getTeamName())
