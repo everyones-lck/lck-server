@@ -46,10 +46,9 @@ public class AuthService {
 	private final S3Service s3Service;
 
 	// 닉네임 중복 여부 확인 메서드
-	public Boolean isNicknameAvailable(GetNicknameDto.Request request) {
-		if (userRepository.existsByNickname(request.getNickname())) {
-
-			throw new RestApiException(UserErrorCode.ALREADY_EXIST_NICKNAME);
+	public Boolean isNicknameAvailable(String nickName) {
+		if (userRepository.existsByNickname(nickName)) {
+			return false;
 		}
 
 		return true;

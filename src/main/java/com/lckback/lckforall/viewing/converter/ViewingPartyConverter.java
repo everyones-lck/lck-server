@@ -68,9 +68,9 @@ public class ViewingPartyConverter {
                 .latitude(viewingParty.getLatitude())
                 .longitude(viewingParty.getLongitude())
                 .location(viewingParty.getLocation())
-                .price(viewingParty.getPrice())
-                .lowParticipate(viewingParty.getLowParticipate())
-                .highParticipate(viewingParty.getHighParticipate())
+                .price(viewingParty.getPrice().toString())
+                .lowParticipate(viewingParty.getLowParticipate().toString())
+                .highParticipate(viewingParty.getHighParticipate().toString())
                 .etc(viewingParty.getEtc())
                 .build();
     }

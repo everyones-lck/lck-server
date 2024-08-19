@@ -22,9 +22,9 @@ public class GetViewingPartyDetailDTO {
         String location;
         Double latitude;
         Double longitude;
-        Integer price;
-        Integer lowParticipate;
-        Integer highParticipate;
+        String price;
+        String lowParticipate;
+        String highParticipate;
         String etc;
     }
 
