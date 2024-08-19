@@ -20,6 +20,8 @@ public class MatchVoteDto {
 		private Long team2Id;
 
 		private String team2Logo;
+
+		private Long myVoteTeamId;
 	}
 
 	@Getter
