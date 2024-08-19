@@ -33,7 +33,7 @@ public class AuthController {
 
     @GetMapping("/nickname")
     @Operation(summary = "닉네임 중복 체크", description = "닉네임이 이미 존재하는지 확인합니다.")
-    public ResponseEntity<ApiResponse<Boolean>> checkNickname(@PathVariable String nickName) {
+    public ResponseEntity<ApiResponse<Boolean>> checkNickname(@RequestParam String nickName) {
         boolean available = authService.isNicknameAvailable(nickName);
 
         return ResponseEntity.ok(ApiResponse.createSuccess(available));
