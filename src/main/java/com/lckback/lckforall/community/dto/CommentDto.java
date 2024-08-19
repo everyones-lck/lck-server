@@ -24,5 +24,6 @@ public class CommentDto {
         private String supportTeam;
         private String content;
         private LocalDateTime createdAt;
+        private Long commentId;
     }
 }
