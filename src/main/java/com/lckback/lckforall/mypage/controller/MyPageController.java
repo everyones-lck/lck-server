@@ -72,12 +72,12 @@ public class MyPageController {
 	public ResponseEntity<ApiResponse<UpdateUserProfileDto.Response>> updateUserProfile(
 		@RequestHeader(name = "Authorization") String accessToken,
 		@RequestPart(required = false) MultipartFile profileImage,
-		@RequestPart @Valid UpdateUserProfileDto.Request request) {
+		@RequestPart @Valid UpdateUserProfileDto.Request updateProfileRequest) {
 
 		String kakaoUserId = authService.getKakaoUserId(accessToken);
 
 		UpdateUserProfileDto.Response response =
-			myPageService.updateUserProfile(kakaoUserId, profileImage, request);
+			myPageService.updateUserProfile(kakaoUserId, profileImage, updateProfileRequest);
 
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccess(response));
