@@ -23,6 +23,7 @@ public class FindTeamPlayerInformationConverter {
 			.playerId(player.getId())
 			.playerName(player.getName())
 			.playerRole(player.getRole())
+			.position(player.getPosition())
 			.profileImageUrl(player.getProfileImageUrl())
 			.build();
 	}

@@ -2,6 +2,7 @@ package com.lckback.lckforall.aboutlck.dto.team;
 
 import java.util.List;
 
+import com.lckback.lckforall.base.type.PlayerPosition;
 import com.lckback.lckforall.base.type.PlayerRole;
 
 import lombok.Builder;
@@ -29,6 +30,7 @@ public class FindTeamPlayerInformationDto {
 		private Long playerId;
 		private String playerName;
 		private PlayerRole playerRole;
+		private PlayerPosition position;
 		private String profileImageUrl;
 	}
 }
