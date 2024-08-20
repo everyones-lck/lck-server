@@ -15,10 +15,8 @@ import com.lckback.lckforall.community.repository.PostTypeRepository;
 import com.lckback.lckforall.s3.service.S3Service;
 import com.lckback.lckforall.user.model.User;
 import com.lckback.lckforall.user.respository.UserRepository;
-
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -114,7 +112,7 @@ public class PostService {
 			comment -> new CommentDto.CommentDetailDto(
 				comment.getUser().getProfileImageUrl(),
 				comment.getUser().getNickname(),
-				comment.getUser().getTeam().getTeamLogoUrl(),
+				comment.getUser().getTeam().getTeamName(),
 				comment.getContent(),
 				comment.getCreatedAt(),
 				comment.getId())
