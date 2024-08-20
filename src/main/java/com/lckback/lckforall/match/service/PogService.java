@@ -3,6 +3,7 @@ package com.lckback.lckforall.match.service;
 import com.lckback.lckforall.base.api.error.MatchErrorCode;
 import com.lckback.lckforall.base.api.error.PlayerErrorCode;
 import com.lckback.lckforall.base.api.error.SetErrorCode;
+import com.lckback.lckforall.base.api.error.VoteErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
 import com.lckback.lckforall.base.model.BaseVote;
 import com.lckback.lckforall.base.type.PlayerRole;
@@ -35,11 +36,16 @@ public class PogService {
 	private final PlayerRepository playerRepository;
 
 	public PogInfoDto.PogResponse findMatchPog(PogInfoDto.PogServiceDto dto) { // match의 pog 정보를 리턴
+
 		Match match = matchRepository.findById(dto.getMatchId())
 			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
 
 		Player defaultPlayer = playerRepository.findByRole(PlayerRole.DEFAULT)
 			.orElseThrow(() -> new RestApiException(PlayerErrorCode.NOT_EXIST_PLAYER));
+
+		if (match.getMatchPogVotable()) { //아직 투표가 종료되지 않으면 결과 보여주기 X
+			throw new RestApiException(VoteErrorCode.VOTE_NOT_FINISHED_YET);
+		}
 
 		if (match.getPogPlayer() != defaultPlayer) { // match table에 pogPlayer값이 존재한다면 원래 있던 값 리턴
 			Player winner = match.getPogPlayer();
@@ -47,9 +53,12 @@ public class PogService {
 				match.getSeason().getName(), match.getMatchNumber(), match.getMatchDate());
 		}
 
-
 		// match table에 pogPlayer값이 존재하지 않는다면 pogPlayer 계산
 		List<MatchPogVote> voteResult = match.getMatchPogVotes();
+		if (voteResult.isEmpty()) {
+			throw new RestApiException(VoteErrorCode.NOT_EXIST_VOTE);
+		}
+
 		Long winnerId = getMatchPog(voteResult);
 		Player winner = playerRepository.findById(winnerId)
 			.orElseThrow(() -> new RestApiException(PlayerErrorCode.NOT_EXIST_PLAYER));
@@ -63,6 +72,11 @@ public class PogService {
 		Match match = matchRepository.findById(dto.getMatchId())
 			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
 		List<Set> sets = match.getSets();
+
+		if(sets.size() < setIndex){
+			throw new RestApiException(SetErrorCode.NOT_EXIST_SET);
+		}
+
 		Set nowSet = sets.get(setIndex - 1); // 해당 세트 탐색
 
 		if (!nowSet.getSetIndex().equals(setIndex))
@@ -71,6 +85,10 @@ public class PogService {
 		Player noPlayer = playerRepository.findByRole(PlayerRole.DEFAULT)
 			.orElseThrow(() -> new RestApiException(PlayerErrorCode.NOT_EXIST_PLAYER));
 
+		if (nowSet.getVotable()) { //아직 투표가 종료되지 않으면 결과 보여주기 X
+			throw new RestApiException(VoteErrorCode.VOTE_NOT_FINISHED_YET);
+		}
+
 		if (nowSet.getPogPlayer() != noPlayer) { // set table에 pogPlayer값이 존재한다면 원래 있던 값 리턴
 			Player winner = nowSet.getPogPlayer();
 			return PogInfoDto.PogResponse.create(winner.getId(), winner.getName(), winner.getProfileImageUrl(),
@@ -78,6 +96,11 @@ public class PogService {
 		}
 		// set table에 pogPlayer값이 존재하지 않는다면 pogPlayer 계산
 		List<SetPogVote> voteResult = nowSet.getSetPogVotes();
+
+		if (voteResult.isEmpty()) {
+			throw new RestApiException(VoteErrorCode.NOT_EXIST_VOTE);
+		}
+
 		Long winnerId = getSetPog(voteResult);
 		Player winner = playerRepository.findById(winnerId)
 			.orElseThrow(() -> new RestApiException(PlayerErrorCode.NOT_EXIST_PLAYER));

@@ -92,4 +92,11 @@ public class MatchInfoDto {
 		List<TodayMatchDto> todayMatches;
 		List<RecentMatchResultDto> recentMatchResults;
 	}
+
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class setCountResponse {
+		private Integer setCount;
+	}
 }
