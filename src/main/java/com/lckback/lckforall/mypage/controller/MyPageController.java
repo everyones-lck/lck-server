@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -157,11 +158,11 @@ public class MyPageController {
 	@DeleteMapping("/viewing-parties/participate")
 	public ResponseEntity<ApiResponse<Void>> cancelViewingPartyParticipation(
 		@RequestHeader(name = "Authorization") String accessToken,
-		@RequestBody @Valid DeleteParticipationDto.Request request) {
+		@RequestParam Long viewingPartyId) {
 
 		String kakaoUserId = authService.getKakaoUserId(accessToken);
 
-		myPageService.cancelViewingPartyParticipation(kakaoUserId, request);
+		myPageService.cancelViewingPartyParticipation(kakaoUserId, viewingPartyId);
 
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccessWithNoContent());
@@ -170,11 +171,11 @@ public class MyPageController {
 	@DeleteMapping("/viewing-parties/host")
 	public ResponseEntity<ApiResponse<Void>> cancelViewingPartyHosting(
 		@RequestHeader(name = "Authorization") String accessToken,
-		@RequestBody @Valid DeleteViewingPartyDto.Request request) {
+		@RequestParam Long viewingPartyId) {
 
 		String kakaoUserId = authService.getKakaoUserId(accessToken);
 
-		myPageService.cancelViewingPartyHosting(kakaoUserId, request);
+		myPageService.cancelViewingPartyHosting(kakaoUserId, viewingPartyId);
 
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccessWithNoContent());

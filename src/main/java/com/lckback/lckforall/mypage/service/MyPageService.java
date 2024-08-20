@@ -73,8 +73,8 @@ public class MyPageService {
 		return GetUserProfileDto.Response.builder()
 			.nickname(user.getNickname())
 			.profileImageUrl(user.getProfileImageUrl())
-			.teamLogoUrl(user.getTeam().getTeamLogoUrl())
-			.tier("temp")
+			.teamId(user.getTeam().getId())
+			.tier("bronze")
 			.build();
 	}
 
@@ -195,12 +195,12 @@ public class MyPageService {
 
 	public void cancelViewingPartyParticipation(
 		String kakaoUserId,
-		DeleteParticipationDto.Request request) {
+		Long viewingPartyId) {
 
 		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
-		ViewingParty viewingParty = viewingPartyRepository.findById(request.getViewingPartyId())
+		ViewingParty viewingParty = viewingPartyRepository.findById(viewingPartyId)
 			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
 		Participate participate =
@@ -212,12 +212,12 @@ public class MyPageService {
 
 	public void cancelViewingPartyHosting(
 		String kakaoUserId,
-		DeleteViewingPartyDto.Request request) {
+		Long viewingPartyId) {
 
 		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
-		ViewingParty viewingParty = viewingPartyRepository.findById(request.getViewingPartyId())
+		ViewingParty viewingParty = viewingPartyRepository.findById(viewingPartyId)
 			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
 		if (!viewingParty.getUser().equals(user)) {

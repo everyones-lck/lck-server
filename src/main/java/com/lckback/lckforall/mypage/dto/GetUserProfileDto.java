@@ -11,7 +11,7 @@ public class GetUserProfileDto {
 
         private String nickname;
         private String profileImageUrl;
-        private String teamLogoUrl;
+        private Long teamId;
         private String tier;
     }
 }
