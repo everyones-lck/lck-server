@@ -73,7 +73,6 @@ public class PostDto {
 	@Builder
 	public static class PostModifyRequest {
 		// title content postType
-		// postFiles은 따로 받아
 		private String postTitle;
 		private String postContent;
 		private String postType;
