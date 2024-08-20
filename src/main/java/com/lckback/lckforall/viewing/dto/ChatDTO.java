@@ -3,6 +3,7 @@ package com.lckback.lckforall.viewing.dto;
 import lombok.*;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,6 +49,8 @@ public class ChatDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ChatMessageListResponse{
+        Boolean isLast;
+        Integer totalPage;
         String viewingPartyName;
         String receiverName;
         String receiverTeam;
@@ -59,7 +62,8 @@ public class ChatDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ChatMessageResponse{
-        Long senderId;
+        LocalDateTime createdAt;
+        String senderName;
         String message;
     }
 }

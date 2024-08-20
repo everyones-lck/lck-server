@@ -29,9 +29,11 @@ public class ChatConverter {
                 .build();
     }
 
-    public static ChatDTO.ChatMessageListResponse toChatMessageListResponse(Page<ChatMessage> chatMessageList, User user, ChatRoom chatRoom) {
+    public static ChatDTO.ChatMessageListResponse toChatMessageListResponse(Page<ChatMessage> chatMessageList, User user, ChatRoom chatRoom, Boolean isLast, Integer totalPage) {
         List<ChatDTO.ChatMessageResponse> chatList = chatMessageList.stream().map(ChatConverter::toChatMessageResponse).toList();
         return ChatDTO.ChatMessageListResponse.builder()
+                .isLast(isLast)
+                .totalPage(totalPage)
                 .viewingPartyName(chatRoom.getViewingParty().getName())
                 .receiverName(user.getNickname())
                 .receiverTeam(user.getTeam().getTeamName())
@@ -41,7 +43,8 @@ public class ChatConverter {
 
     public static ChatDTO.ChatMessageResponse toChatMessageResponse(ChatMessage chatMessage) {
         return ChatDTO.ChatMessageResponse.builder()
-                .senderId(chatMessage.getUser().getId())
+                .createdAt(chatMessage.getCreatedAt())
+                .senderName(chatMessage.getUser().getNickname())
                 .message(chatMessage.getContent())
                 .build();
     }
