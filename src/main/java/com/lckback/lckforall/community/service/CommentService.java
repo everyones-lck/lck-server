@@ -44,6 +44,7 @@ public class CommentService {
 		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
+
 		//kakaoUserId와 commentId의 작성자가 일치하는지 확인하고 commentRepository에서 삭제.
 		Comment comment = commentRepository.findById(commentId)
 			.orElseThrow(() -> new RestApiException(CommentErrorCode.COMMENT_NOT_FOUND));
