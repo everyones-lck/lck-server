@@ -22,7 +22,6 @@ import com.lckback.lckforall.aboutlck.dto.team.FindTeamWinningHistoryDto;
 import com.lckback.lckforall.base.api.error.SeasonErrorCode;
 import com.lckback.lckforall.base.api.error.SeasonTeamErrorCode;
 import com.lckback.lckforall.base.api.error.TeamErrorCode;
-import com.lckback.lckforall.player.model.Player;
 import com.lckback.lckforall.player.model.SeasonTeamPlayer;
 import com.lckback.lckforall.player.repository.SeasonTeamPlayerRepository;
 import com.lckback.lckforall.team.repository.SeasonRepository;
@@ -92,13 +91,12 @@ public class AboutLckTeamService {
 		SeasonTeam seasonTeam = seasonTeamRepository.findBySeasonAndTeam(season, team)
 			.orElseThrow(() -> new RestApiException(SeasonTeamErrorCode.NOT_EXIST_SEASON_TEAM));
 
-		List<SeasonTeamPlayer> seasonTeamPlayers = seasonTeamPlayerRepository.findAllBySeasonTeam(seasonTeam);
-		List<Player> players = seasonTeamPlayers.stream()
-			.map(SeasonTeamPlayer::getPlayer)
-			.filter(player -> player.getRole().equals(param.getPlayerRole()))
+		List<SeasonTeamPlayer> seasonTeamPlayers = seasonTeamPlayerRepository.findAllBySeasonTeam(seasonTeam)
+			.stream()
+			.filter(seasonTeamPlayer -> seasonTeamPlayer.getPlayer().getRole().equals(param.getPlayerRole()))
 			.toList();
 
-		return FindTeamPlayerInformationConverter.convertToResponse(players);
+		return FindTeamPlayerInformationConverter.convertToResponse(seasonTeamPlayers);
 	}
 
 	private Team findTeamByTeamId(Long teamId) {
@@ -112,6 +110,7 @@ public class AboutLckTeamService {
 	}
 
 	private PageRequest createPageRequestSortBySeasonName(Pageable pageable) {
-		return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize() * 2, Sort.by("season.name").descending());
+		return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize() * 2,
+			Sort.by("season.name").descending());
 	}
 }
