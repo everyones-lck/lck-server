@@ -11,10 +11,8 @@ import com.lckback.lckforall.community.repository.CommentRepository;
 import com.lckback.lckforall.community.repository.PostRepository;
 import com.lckback.lckforall.user.model.User;
 import com.lckback.lckforall.user.respository.UserRepository;
-
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -34,10 +32,10 @@ public class CommentService {
 			.orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
 
 		Comment comment = Comment.builder()
-			.user(user)
-			.content(request.getContent())
-			.post(post)
-			.build();
+				.user(user)
+				.content(request.getContent())
+				.post(post)
+				.build();
 
 		commentRepository.save(comment);
 	}

@@ -3,13 +3,16 @@ package com.lckback.lckforall.community.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 public class CommentDto {
 
+
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor
     @Builder
     public static class createCommentRequest {
         private String content;
