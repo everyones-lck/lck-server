@@ -49,8 +49,7 @@ public class PostService {
 			.postCreatedAt(post.getCreatedAt().toLocalDate())
 			.userNickname(post.getUser().getNickname())
 			.supportTeamName(post.getUser().getTeam().getTeamName())
-			.postPicture(
-				!post.getPostFiles().isEmpty() ? post.getPostFiles().get(0).getUrl() : null) //default url 나오면 업데이트 예정
+			.postPicture(post.getUser().getProfileImageUrl())
 			.commentCounts(post.getComments().size())
 			.build()).toList();
 
