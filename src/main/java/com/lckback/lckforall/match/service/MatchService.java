@@ -1,7 +1,11 @@
 package com.lckback.lckforall.match.service;
 
+import com.lckback.lckforall.base.api.error.MatchErrorCode;
+import com.lckback.lckforall.base.api.error.PlayerErrorCode;
+import com.lckback.lckforall.base.api.exception.RestApiException;
 import com.lckback.lckforall.match.dto.MatchInfoDto;
 import com.lckback.lckforall.match.model.Match;
+import com.lckback.lckforall.match.model.Set;
 import com.lckback.lckforall.match.repository.MatchRepository;
 import com.lckback.lckforall.vote.model.MatchVote;
 
@@ -59,4 +63,11 @@ public class MatchService {
 		return (totalVotes > 0) ? (teamVotes / (double)totalVotes) * 100 : 0.0;
 	}
 
+	public MatchInfoDto.setCountResponse getSetCount(Long matchId) {
+		Match match = matchRepository.findById(matchId)
+			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
+		List<Set> sets = match.getSets();
+		MatchInfoDto.setCountResponse response = new MatchInfoDto.setCountResponse(sets.size());
+		return response;
+	}
 }

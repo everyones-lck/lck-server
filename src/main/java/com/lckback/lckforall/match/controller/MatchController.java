@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -34,4 +35,16 @@ public class MatchController {
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccess(responses));
 	}
+
+	@Operation(summary = "해당 match의 set 수 리턴", description = "해당 match의 set수를 리턴합니다")
+	@GetMapping("/set-count")
+	public ResponseEntity<ApiResponse<MatchInfoDto.setCountResponse>> getTodayMatches
+		(@RequestHeader("Authorization") String token,
+		@RequestParam("match-id") Long matchId) { // 오늘 경기정보 반환
+		MatchInfoDto.setCountResponse response = matchService.getSetCount(matchId);
+
+		return ResponseEntity.ok()
+			.body(ApiResponse.createSuccess(response));
+	}
+
 }
