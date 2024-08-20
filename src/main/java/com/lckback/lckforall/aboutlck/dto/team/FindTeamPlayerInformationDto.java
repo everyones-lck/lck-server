@@ -32,5 +32,6 @@ public class FindTeamPlayerInformationDto {
 		private PlayerRole playerRole;
 		private PlayerPosition position;
 		private String profileImageUrl;
+		private Boolean isCaptain;
 	}
 }
