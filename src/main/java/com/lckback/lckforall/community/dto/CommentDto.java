@@ -3,16 +3,18 @@ package com.lckback.lckforall.community.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 public class CommentDto {
 
+
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor
     @Builder
     public static class createCommentRequest {
-        private Long postId;
         private String content;
     }
 
@@ -25,5 +27,6 @@ public class CommentDto {
         private String supportTeam;
         private String content;
         private LocalDateTime createdAt;
+        private Long commentId;
     }
 }

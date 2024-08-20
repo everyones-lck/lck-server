@@ -1,21 +1,11 @@
 package com.lckback.lckforall.community.model;
 
+import com.lckback.lckforall.base.model.BaseEntity;
+import jakarta.persistence.*;
+import lombok.*;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.lckback.lckforall.base.model.BaseEntity;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
@@ -29,7 +19,7 @@ public class PostType extends BaseEntity {
 	private Long id;
 
 	@Column(nullable = false, length = 20)
-	private String type;
+	private String type; //잡담, 응원, 질문, FA, 후기, 거래
 
 	@OneToMany(mappedBy = "postType")
 	private List<Post> posts = new ArrayList<>();
