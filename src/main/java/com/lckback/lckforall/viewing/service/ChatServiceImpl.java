@@ -28,7 +28,6 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -114,7 +113,12 @@ public class ChatServiceImpl implements ChatService {
             receiver = owner;
         }
         Page<ChatMessage> messages = chatMessageRepository.findAllByChatRoomOrderByCreatedAtDesc(chatRoom, PageRequest.of(page, size));
-        return ChatConverter.toChatMessageListResponse(messages, receiver, chatRoom);
+        int totalPage = messages.getTotalPages();
+        boolean isLast = false;
+        if(page == totalPage - 1){
+            isLast = true;
+        }
+        return ChatConverter.toChatMessageListResponse(messages, receiver, chatRoom, isLast, totalPage);
     }
 
     @Override
