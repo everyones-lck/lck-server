@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 
 import com.lckback.lckforall.aboutlck.dto.team.FindTeamPlayerHistoryDto;
-import com.lckback.lckforall.base.type.PlayerRole;
 import com.lckback.lckforall.player.model.Player;
 import com.lckback.lckforall.team.model.SeasonTeam;
 
@@ -37,7 +36,6 @@ public class FindTeamPlayerHistoryConverter {
 		List<FindTeamPlayerHistoryDto.PlayerDetail> playerDetailList = seasonTeam
 			.getSeasonTeamPlayers()
 			.stream()
-			.filter(seasonTeamPlayer -> seasonTeamPlayer.getPlayer().getRole().equals(PlayerRole.LCK_ROSTER))
 			.map(seasonTeamPlayer -> convertToPlayerDetail(seasonTeamPlayer.getPlayer()))
 			.toList();
 
