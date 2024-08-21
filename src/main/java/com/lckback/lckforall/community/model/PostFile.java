@@ -19,9 +19,8 @@ public class PostFile extends BaseEntity {
     @Column(nullable = false)
     private String url;
 
-    //사진인지 동영상인지
-//	private String jpg;
-//	private String mov;
+    @Column(nullable = false)
+    private Boolean isImage;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "POST_ID", nullable = false)
