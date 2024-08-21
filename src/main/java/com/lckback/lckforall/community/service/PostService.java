@@ -62,7 +62,8 @@ public class PostService {
 			.build();
 	}
 
-	public PostDto.CreatePostResponse createPost(List<MultipartFile> files, PostDto.CreatePostRequest request,
+	public PostDto.CreatePostResponse createPost(List<MultipartFile> files,
+		PostDto.CreatePostRequest request,
 		String kakaoUserId) {
 		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
@@ -84,9 +85,11 @@ public class PostService {
 				break;
 			}
 			String fileUrl = s3Service.upload(file); //url이 담겨있음
+
 			PostFile postFile = PostFile.builder()
 				.url(fileUrl)
 				.post(post)
+				.isImage(s3Service.isImage(file))
 				.build();
 			postFileRepository.save(postFile);
 		}

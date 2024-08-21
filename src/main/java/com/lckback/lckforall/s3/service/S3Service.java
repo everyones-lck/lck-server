@@ -78,6 +78,21 @@ public class S3Service {
 		}
 	}
 
+	public boolean isImage(MultipartFile file) throws RestApiException {
+		try {
+			String originalFilename = file.getOriginalFilename();
+			File checkFile = new File(originalFilename);
+			String type = Files.probeContentType(checkFile.toPath());
+
+			if (type.startsWith("image")) {
+				return true;
+			}
+			return false;
+		}catch (IOException e ){
+			throw new RestApiException(CommonErrorCode.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	private String uploadImageToS3(MultipartFile file) throws IOException {
 		String originalFilename = file.getOriginalFilename();
 		String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
