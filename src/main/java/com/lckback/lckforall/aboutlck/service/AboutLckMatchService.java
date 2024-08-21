@@ -26,7 +26,8 @@ public class AboutLckMatchService {
 		LocalDate searchDate = param.getSearchDate();
 		LocalDateTime start = LocalDateTime.of(searchDate, LocalTime.of(0, 0, 0));
 		LocalDateTime end = searchDate.atTime(23, 59, 59);
-		List<Match> matches = matchRepository.findMatchesByMatchDateBetween(start, end);
+
+		List<Match> matches = matchRepository.findAll();
 		return AboutMatchConverter.convertToAboutMatchResponse(matches);
 	}
 }
