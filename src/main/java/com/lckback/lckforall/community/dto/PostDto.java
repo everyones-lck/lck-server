@@ -14,6 +14,7 @@ public class PostDto {
 	@AllArgsConstructor
 	@Builder
 	public static class PostListResponse {
+
 		List<PostDetail> postDetailList;
 		Boolean isLast;
 	}
@@ -21,6 +22,7 @@ public class PostDto {
 	@Getter
 	@Builder
 	public static class PostDetail {
+
 		private Long postId;
 		private String postTitle;
 		private LocalDate postCreatedAt;
@@ -33,6 +35,7 @@ public class PostDto {
 	@Getter
 	@Builder
 	public static class CreatePostRequest {
+
 		//게시판 타입, 제목, 내용, 사진 영상 및 업로드
 		private String postType;
 		private String postTitle;
@@ -43,6 +46,7 @@ public class PostDto {
 	@Getter
 	@Builder
 	public static class CreatePostResponse {
+
 		//게시판 생성시 response값 = postId
 		private Long postId;
 	}
@@ -50,12 +54,14 @@ public class PostDto {
 	@Getter
 	@Builder
 	public static class PostTypeListResponse {
+
 		List<String> postTypeList;
 	}
 
 	@Getter
 	@Builder
 	public static class PostDetailResponse {
+
 		//타입, 작성자 사진(writer profile url),작성자 닉네임, 작성자 응원팀(writer team), 포스트제목, 날짜, 내용, 파일리스트, 댓글리스트
 		private String postType;
 		private String writerProfileUrl;
@@ -64,14 +70,23 @@ public class PostDto {
 		private String postTitle;
 		private LocalDateTime postCreatedAt;
 		private String content;
-		private List<String> fileUrlList;
+		private List<FileDetail> fileList;
 		private List<CommentDto.CommentDetailDto> commentList;
 
 	}
 
 	@Getter
 	@Builder
+	public static class FileDetail {
+
+		private String fileUrl;
+		private Boolean isImage;
+	}
+
+	@Getter
+	@Builder
 	public static class PostModifyRequest {
+
 		// title content postType
 		private String postTitle;
 		private String postContent;
@@ -81,6 +96,7 @@ public class PostDto {
 	@Getter
 	@Builder
 	public static class modifyPostResponse {
+
 		//게시판 수정시 response값 = postId
 		private Long postId;
 	}
