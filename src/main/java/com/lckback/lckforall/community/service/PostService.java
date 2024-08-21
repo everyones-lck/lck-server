@@ -111,8 +111,11 @@ public class PostService {
 			orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
 
 		List<PostFile> postFiles = post.getPostFiles();
-		List<String> postFileUrlList = postFiles.stream()
-			.map(PostFile::getUrl)
+		List<PostDto.FileDetail> postFileUrlList = postFiles.stream()
+			.map(postFile -> PostDto.FileDetail.builder()
+				.fileUrl(postFile.getUrl())
+				.isImage(postFile.getIsImage())
+				.build())
 			.toList();
 
 		List<Comment> comments = post.getComments();
@@ -134,7 +137,7 @@ public class PostService {
 			.postTitle(post.getTitle())
 			.postCreatedAt(post.getCreatedAt())
 			.content(post.getContent())
-			.fileUrlList(postFileUrlList)
+			.fileList(postFileUrlList)
 			.commentList(commentList).build();
 	}
 
