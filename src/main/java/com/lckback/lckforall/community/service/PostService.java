@@ -18,7 +18,9 @@ import com.lckback.lckforall.user.respository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,7 +42,10 @@ public class PostService {
 		PostType foundPostType = postTypeRepository.findByType(postType)
 			.orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
 
-		Page<Post> posts = postRepository.findAllByPostType(pageable, foundPostType);
+		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+			Sort.by("createdAt").descending());
+
+		Page<Post> posts = postRepository.findAllByPostType(pageRequest, foundPostType);
 		List<PostDto.PostDetail> list = posts.stream().map(post -> PostDto.PostDetail.builder()
 			.postId(post.getId())
 			.postTitle(post.getTitle())
