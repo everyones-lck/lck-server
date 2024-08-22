@@ -108,6 +108,7 @@ public class ViewingPartyConverter {
 
     public static ParticipantListDTO.Response toParticipantResponse(User user) {
         return ParticipantListDTO.Response.builder()
+                .kakaoUserId(user.getKakaoUserId())
                 .id(user.getId())
                 .name(user.getNickname())
                 .team(user.getTeam().getTeamName())
