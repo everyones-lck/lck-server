@@ -27,6 +27,7 @@ public class ParticipantListDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Response {
+        String kakaoUserId;
         Long id;
         String name;
         String team;
