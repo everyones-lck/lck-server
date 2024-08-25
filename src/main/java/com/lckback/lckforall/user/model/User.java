@@ -78,34 +78,34 @@ public class User extends BaseEntity {
 	@Column(nullable = false)
 	private LocalDateTime lastUpdatedMyTeam;
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", orphanRemoval = true)
 	private List<Post> posts = new ArrayList<>();
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", orphanRemoval = true)
 	private List<PostReport> postReports = new ArrayList<>();
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", orphanRemoval = true)
 	private List<Comment> comments = new ArrayList<>();
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", orphanRemoval = true)
 	private List<CommentReport> commentReports = new ArrayList<>();
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", orphanRemoval = true)
 	private List<Participate> participatingViewingParties = new ArrayList<>();
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", orphanRemoval = true)
 	private List<ViewingParty> hostingViewingParties = new ArrayList<>();
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", orphanRemoval = true)
 	private List<MatchVote> matchVotes = new ArrayList<>();
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", orphanRemoval = true)
 	private List<MatchPogVote> matchPogVotes = new ArrayList<>();
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", orphanRemoval = true)
 	private List<SetPogVote> setPogVotes = new ArrayList<>();
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", orphanRemoval = true)
 	private List<ChatMessage> chatMessages = new ArrayList<>();
 
 	public void updateNickname(String nickname) {
