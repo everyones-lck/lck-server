@@ -57,7 +57,7 @@ public class MyPageController {
 			.body(ApiResponse.createSuccess(response));
 	}
 
-	@PatchMapping("/withdrawal")
+	@DeleteMapping("/withdrawal")
 	public ResponseEntity<ApiResponse<Void>> withdrawFromAccount(
 		@RequestHeader(name = "Authorization") String accessToken) {
 
