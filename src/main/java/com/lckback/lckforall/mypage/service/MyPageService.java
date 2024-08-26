@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class MyPageService {
 
+	@Value("${default.image.url}")
+	private String defaultImageUrl;
 	private final UserRepository userRepository;
 
 	private final TeamRepository teamRepository;
@@ -83,7 +86,7 @@ public class MyPageService {
 		User user = userRepository.findByKakaoUserId(kakaoUserId)
 			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
-		user.withdrawFromAccount();
+		userRepository.delete(user);
 	}
 
 	public UpdateUserProfileDto.Response updateUserProfile(
@@ -104,7 +107,7 @@ public class MyPageService {
 		}
 
 		if (request.isDefaultImage() && profileImage.isEmpty()) {
-			user.updateProfileImageUrl("defaultImage");
+			user.updateProfileImageUrl(defaultImageUrl);
 		}
 
 		if (!request.isDefaultImage() && !profileImage.isEmpty()) {
