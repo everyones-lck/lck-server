@@ -37,21 +37,24 @@ public class PogService {
 
 	public PogInfoDto.PogResponse findMatchPog(PogInfoDto.PogServiceDto dto) { // match의 pog 정보를 리턴
 
+		System.out.println("now");
 		Match match = matchRepository.findById(dto.getMatchId())
 			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
 
 		Player defaultPlayer = playerRepository.findByRole(PlayerRole.DEFAULT)
 			.orElseThrow(() -> new RestApiException(PlayerErrorCode.NOT_EXIST_PLAYER));
 
-		if (match.getMatchPogVotable()) { //아직 투표가 종료되지 않으면 결과 보여주기 X
-			throw new RestApiException(VoteErrorCode.VOTE_NOT_FINISHED_YET);
-		}
+		/* 데모데이를 위해 제약 조건 해제*/
+		// if (match.getMatchPogVotable()) { //아직 투표가 종료되지 않으면 결과 보여주기 X
+		// 	throw new RestApiException(VoteErrorCode.VOTE_NOT_FINISHED_YET);
+		// }
 
-		if (match.getPogPlayer() != defaultPlayer) { // match table에 pogPlayer값이 존재한다면 원래 있던 값 리턴
-			Player winner = match.getPogPlayer();
-			return PogInfoDto.PogResponse.create(winner.getId(), winner.getName(), winner.getProfileImageUrl(),
-				match.getSeason().getName(), match.getMatchNumber(), match.getMatchDate());
-		}
+		/* 데모데이를 위해 제약 조건 해제*/
+		// if (match.getPogPlayer() != defaultPlayer) { // match table에 pogPlayer값이 존재한다면 원래 있던 값 리턴
+		// 	Player winner = match.getPogPlayer();
+		// 	return PogInfoDto.PogResponse.create(winner.getId(), winner.getName(), winner.getProfileImageUrl(),
+		// 		match.getSeason().getName(), match.getMatchNumber(), match.getMatchDate());
+		// }
 
 		// match table에 pogPlayer값이 존재하지 않는다면 pogPlayer 계산
 		List<MatchPogVote> voteResult = match.getMatchPogVotes();
@@ -85,15 +88,17 @@ public class PogService {
 		Player noPlayer = playerRepository.findByRole(PlayerRole.DEFAULT)
 			.orElseThrow(() -> new RestApiException(PlayerErrorCode.NOT_EXIST_PLAYER));
 
-		if (nowSet.getVotable()) { //아직 투표가 종료되지 않으면 결과 보여주기 X
-			throw new RestApiException(VoteErrorCode.VOTE_NOT_FINISHED_YET);
-		}
+		/* 데모데이를 위해 제약 조건 해제*/
+		// if (nowSet.getVotable()) { //아직 투표가 종료되지 않으면 결과 보여주기 X
+		// 	throw new RestApiException(VoteErrorCode.VOTE_NOT_FINISHED_YET);
+		// }
 
-		if (nowSet.getPogPlayer() != noPlayer) { // set table에 pogPlayer값이 존재한다면 원래 있던 값 리턴
-			Player winner = nowSet.getPogPlayer();
-			return PogInfoDto.PogResponse.create(winner.getId(), winner.getName(), winner.getProfileImageUrl(),
-				match.getSeason().getName(), match.getMatchNumber(), match.getMatchDate());
-		}
+		/* 데모데이를 위해 제약 조건 해제*/
+		// if (nowSet.getPogPlayer() != noPlayer) { // set table에 pogPlayer값이 존재한다면 원래 있던 값 리턴
+		// 	Player winner = nowSet.getPogPlayer();
+		// 	return PogInfoDto.PogResponse.create(winner.getId(), winner.getName(), winner.getProfileImageUrl(),
+		// 		match.getSeason().getName(), match.getMatchNumber(), match.getMatchDate());
+		// }
 		// set table에 pogPlayer값이 존재하지 않는다면 pogPlayer 계산
 		List<SetPogVote> voteResult = nowSet.getSetPogVotes();
 
