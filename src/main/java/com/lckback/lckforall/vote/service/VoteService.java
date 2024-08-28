@@ -131,9 +131,10 @@ public class VoteService {
 		Match match = matchRepository.findById(matchId)
 			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
 		// match pog vote 시간이 아닌 경우
-		if(!match.getMatchPogVotable()){
-			throw new RestApiException(VoteErrorCode.NOT_VOTE_TIME);
-		}
+		/* 데모데이를 위해 제약 조건 해제*/
+		// if(!match.getMatchPogVotable()){
+		// 	throw new RestApiException(VoteErrorCode.NOT_VOTE_TIME);
+		// }
 
 		// 투표를 하지 않았고 투표 시간이 남은 경우
 		if (match.getMatchResult().equals(MatchResult.TEAM1_WIN)) { // team1 win
@@ -174,9 +175,10 @@ public class VoteService {
 			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
 
 		// match pog vote 시간이 아닌경우
-		if(!match.getMatchPogVotable()){
-			throw new RestApiException(VoteErrorCode.NOT_VOTE_TIME);
-		}
+		/* 데모데이를 위해 제약 조건 해제*/
+		// if(!match.getMatchPogVotable()){
+		// 	throw new RestApiException(VoteErrorCode.NOT_VOTE_TIME);
+		// }
 
 		// 승리 팀의 플레이어에게만 투표 가능 (team1 승리 경우)
 		if(match.getMatchResult().equals(MatchResult.TEAM1_WIN)){
@@ -239,9 +241,10 @@ public class VoteService {
 			return response;
 		}
 		// 투표를 시간이 아닌경우
-		if (!set.getVotable()) {
-			throw new RestApiException(VoteErrorCode.NOT_VOTE_TIME);
-		}
+		/* 데모데이를 위해 제약 조건 해제*/
+		// if (!set.getVotable()) {
+		// 	throw new RestApiException(VoteErrorCode.NOT_VOTE_TIME);
+		// }
 		// 투표를 하지 않았고 투표 시간이 남은 경우
 		if (set.getWinnerTeam().equals(match.getTeam1())) { // team1 win
 			SeasonTeam seasonTeam1 = seasonTeamRepository.findBySeasonAndTeam(match.getSeason(), match.getTeam1())
@@ -281,9 +284,9 @@ public class VoteService {
 		Match match = matchRepository.findById(dto.getMatchId())
 			.orElseThrow(() -> new RestApiException(MatchErrorCode.NOT_EXIST_MATCH));
 
-		if(!set.getVotable()){ // 투표 시간이 아닌 경우
-			throw new RestApiException(VoteErrorCode.NOT_VOTE_TIME);
-		}
+		// if(!set.getVotable()){ // 투표 시간이 아닌 경우
+		// 	throw new RestApiException(VoteErrorCode.NOT_VOTE_TIME);
+		// }
 
 		// 승리 팀의 플레이어에게만 투표 가능 (team1 승리 경우)
 		if(set.getWinnerTeam() == match.getTeam1()){
