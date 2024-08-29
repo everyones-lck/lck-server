@@ -17,7 +17,6 @@ import com.lckback.lckforall.user.model.User;
 import com.lckback.lckforall.user.respository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
 @Service
@@ -38,8 +38,6 @@ public class PostService {
     private final PostFileRepository postFileRepository;
     private final UserRepository userRepository;
     private final S3Service s3Service;
-    @Value("${default.image.url}")
-    private String defaultImageUrl;
 
     public PostDto.PostListResponse findPosts(Pageable pageable, String postType) {
         PostType foundPostType = postTypeRepository.findByType(postType)
@@ -50,23 +48,17 @@ public class PostService {
 
         Page<Post> posts = postRepository.findAllByPostType(pageRequest, foundPostType);
         List<PostDto.PostDetail> list = posts.stream().map(post ->
-        {
-            String imageUrl = post.getPostFiles().stream()
-                    .filter(PostFile::getIsImage)
-                    .findFirst()
-                    .map(PostFile::getUrl)
-                    .orElse(defaultImageUrl);
-            return PostDto.PostDetail.builder()
-                    .postId(post.getId())
-                    .postTitle(post.getTitle())
-                    .postCreatedAt(post.getCreatedAt().toLocalDate())
-                    .userNickname(post.getUser().getNickname())
-                    .supportTeamName(post.getUser().getTeam().getTeamName())
-                    .userProfilePicture(post.getUser().getProfileImageUrl())
-                    .thumbnailPicture(imageUrl)
-                    .commentCounts(post.getComments().size())
-                    .build();
-        }).toList();
+                PostDto.PostDetail.builder()
+                        .postId(post.getId())
+                        .postTitle(post.getTitle())
+                        .postCreatedAt(post.getCreatedAt().toLocalDate())
+                        .userNickname(post.getUser().getNickname())
+                        .supportTeamName(post.getUser().getTeam().getTeamName())
+                        .userProfilePicture(post.getUser().getProfileImageUrl())
+                        .thumbnailFileUrl(post.getPostFiles().isEmpty() ? "" : post.getPostFiles().get(0).getUrl())
+                        .commentCounts(post.getComments().size())
+                        .build()
+        ).toList();
 
         return PostDto.PostListResponse.builder()
                 .postDetailList(list)
@@ -139,7 +131,7 @@ public class PostService {
                         comment.getContent(),
                         comment.getCreatedAt(),
                         comment.getId())
-        ).collect(Collectors.toList());
+        ).collect(toList());
 
         return PostDto.PostDetailResponse.builder()
                 .postType(post.getPostType().getType())

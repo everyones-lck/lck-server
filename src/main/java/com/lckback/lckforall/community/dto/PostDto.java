@@ -29,7 +29,7 @@ public class PostDto {
 		private String userNickname;
 		private String supportTeamName;
 		private String userProfilePicture; //게시글 작성자 프로필사진
-		private String thumbnailPicture; //post-file url
+		private String thumbnailFileUrl; //post-file url
 		private Integer commentCounts;
 	}
 
