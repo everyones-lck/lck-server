@@ -28,7 +28,8 @@ public class PostDto {
 		private LocalDate postCreatedAt;
 		private String userNickname;
 		private String supportTeamName;
-		private String postPicture; //파일 url
+		private String userProfilePicture; //게시글 작성자 프로필사진
+		private String thumbnailFileUrl; //post-file url
 		private Integer commentCounts;
 	}
 
