@@ -17,6 +17,7 @@ import com.lckback.lckforall.user.model.User;
 import com.lckback.lckforall.user.respository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,153 +33,164 @@ import java.util.stream.Collectors;
 @Transactional
 public class PostService {
 
-	private final PostRepository postRepository;
-	private final PostTypeRepository postTypeRepository;
-	private final PostFileRepository postFileRepository;
-	private final UserRepository userRepository;
-	private final S3Service s3Service;
+    private final PostRepository postRepository;
+    private final PostTypeRepository postTypeRepository;
+    private final PostFileRepository postFileRepository;
+    private final UserRepository userRepository;
+    private final S3Service s3Service;
+    @Value("${default.image.url}")
+    private String defaultImageUrl;
 
-	public PostDto.PostListResponse findPosts(Pageable pageable, String postType) {
-		PostType foundPostType = postTypeRepository.findByType(postType)
-			.orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
+    public PostDto.PostListResponse findPosts(Pageable pageable, String postType) {
+        PostType foundPostType = postTypeRepository.findByType(postType)
+                .orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
 
-		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
-			Sort.by("createdAt").descending());
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                Sort.by("createdAt").descending());
 
-		Page<Post> posts = postRepository.findAllByPostType(pageRequest, foundPostType);
-		List<PostDto.PostDetail> list = posts.stream().map(post -> PostDto.PostDetail.builder()
-			.postId(post.getId())
-			.postTitle(post.getTitle())
-			.postCreatedAt(post.getCreatedAt().toLocalDate())
-			.userNickname(post.getUser().getNickname())
-			.supportTeamName(post.getUser().getTeam().getTeamName())
-			.postPicture(post.getUser().getProfileImageUrl())
-			.commentCounts(post.getComments().size())
-			.build()).toList();
+        Page<Post> posts = postRepository.findAllByPostType(pageRequest, foundPostType);
+        List<PostDto.PostDetail> list = posts.stream().map(post ->
+        {
+            String imageUrl = post.getPostFiles().stream()
+                    .filter(PostFile::getIsImage)
+                    .findFirst()
+                    .map(PostFile::getUrl)
+                    .orElse(defaultImageUrl);
+            return PostDto.PostDetail.builder()
+                    .postId(post.getId())
+                    .postTitle(post.getTitle())
+                    .postCreatedAt(post.getCreatedAt().toLocalDate())
+                    .userNickname(post.getUser().getNickname())
+                    .supportTeamName(post.getUser().getTeam().getTeamName())
+                    .userProfilePicture(post.getUser().getProfileImageUrl())
+                    .thumbnailPicture(imageUrl)
+                    .commentCounts(post.getComments().size())
+                    .build();
+        }).toList();
 
-		return PostDto.PostListResponse.builder()
-			.postDetailList(list)
-			.isLast(posts.isLast())
-			.build();
-	}
+        return PostDto.PostListResponse.builder()
+                .postDetailList(list)
+                .isLast(posts.isLast())
+                .build();
+    }
 
-	public PostDto.CreatePostResponse createPost(List<MultipartFile> files,
-		PostDto.CreatePostRequest request,
-		String kakaoUserId) {
-		User user = userRepository.findByKakaoUserId(kakaoUserId)
-			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
+    public PostDto.CreatePostResponse createPost(List<MultipartFile> files,
+                                                 PostDto.CreatePostRequest request,
+                                                 String kakaoUserId) {
+        User user = userRepository.findByKakaoUserId(kakaoUserId)
+                .orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
-		PostType postType = postTypeRepository.findByType(request.getPostType())
-			.orElseThrow(() -> new RestApiException(PostErrorCode.POST_TYPE_NOT_FOUND));
+        PostType postType = postTypeRepository.findByType(request.getPostType())
+                .orElseThrow(() -> new RestApiException(PostErrorCode.POST_TYPE_NOT_FOUND));
 
-		Post post = Post.builder()
-			.user(user)
-			.title(request.getPostTitle())
-			.content(request.getPostContent())
-			.postType(postType)
-			.build();
+        Post post = Post.builder()
+                .user(user)
+                .title(request.getPostTitle())
+                .content(request.getPostContent())
+                .postType(postType)
+                .build();
 
-		postRepository.save(post);
+        postRepository.save(post);
 
-		for (MultipartFile file : files) {
-			if (file.isEmpty()) {
-				break;
-			}
-			String fileUrl = s3Service.upload(file); //url이 담겨있음
+        for (MultipartFile file : files) {
+            if (file.isEmpty()) {
+                break;
+            }
+            String fileUrl = s3Service.upload(file); //url이 담겨있음
 
-			PostFile postFile = PostFile.builder()
-				.url(fileUrl)
-				.post(post)
-				.isImage(s3Service.isImage(file))
-				.build();
-			postFileRepository.save(postFile);
-		}
+            PostFile postFile = PostFile.builder()
+                    .url(fileUrl)
+                    .post(post)
+                    .isImage(s3Service.isImage(file))
+                    .build();
+            postFileRepository.save(postFile);
+        }
 
-		return PostDto.CreatePostResponse.builder()
-			.postId(post.getId())
-			.build();
-	}
+        return PostDto.CreatePostResponse.builder()
+                .postId(post.getId())
+                .build();
+    }
 
-	public PostDto.PostTypeListResponse getPostTypes() {
-		List<PostType> postTypes = postTypeRepository.findAll();
-		List<String> postTypeList = postTypes.stream().map(PostType::getType).toList();
-		return PostDto.PostTypeListResponse.builder().postTypeList(postTypeList).build();
-	}
+    public PostDto.PostTypeListResponse getPostTypes() {
+        List<PostType> postTypes = postTypeRepository.findAll();
+        List<String> postTypeList = postTypes.stream().map(PostType::getType).toList();
+        return PostDto.PostTypeListResponse.builder().postTypeList(postTypeList).build();
+    }
 
-	//PostDetailResponse
-	public PostDto.PostDetailResponse getPostDetail(Long postId) {
-		Post post = postRepository.findById(postId).
-			orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
+    //PostDetailResponse
+    public PostDto.PostDetailResponse getPostDetail(Long postId) {
+        Post post = postRepository.findById(postId).
+                orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
 
-		List<PostFile> postFiles = post.getPostFiles();
-		List<PostDto.FileDetail> postFileUrlList = postFiles.stream()
-			.map(postFile -> PostDto.FileDetail.builder()
-				.fileUrl(postFile.getUrl())
-				.isImage(postFile.getIsImage())
-				.build())
-			.toList();
+        List<PostFile> postFiles = post.getPostFiles();
+        List<PostDto.FileDetail> postFileUrlList = postFiles.stream()
+                .map(postFile -> PostDto.FileDetail.builder()
+                        .fileUrl(postFile.getUrl())
+                        .isImage(postFile.getIsImage())
+                        .build())
+                .toList();
 
-		List<Comment> comments = post.getComments();
-		List<CommentDto.CommentDetailDto> commentList = comments.stream().map(
-			comment -> new CommentDto.CommentDetailDto(
-				comment.getUser().getProfileImageUrl(),
-				comment.getUser().getNickname(),
-				comment.getUser().getTeam().getTeamName(),
-				comment.getContent(),
-				comment.getCreatedAt(),
-				comment.getId())
-		).collect(Collectors.toList());
+        List<Comment> comments = post.getComments();
+        List<CommentDto.CommentDetailDto> commentList = comments.stream().map(
+                comment -> new CommentDto.CommentDetailDto(
+                        comment.getUser().getProfileImageUrl(),
+                        comment.getUser().getNickname(),
+                        comment.getUser().getTeam().getTeamName(),
+                        comment.getContent(),
+                        comment.getCreatedAt(),
+                        comment.getId())
+        ).collect(Collectors.toList());
 
-		return PostDto.PostDetailResponse.builder()
-			.postType(post.getPostType().getType())
-			.writerProfileUrl(post.getUser().getProfileImageUrl())
-			.writerNickname(post.getUser().getNickname())
-			.writerTeam(post.getUser().getTeam().getTeamName())
-			.postTitle(post.getTitle())
-			.postCreatedAt(post.getCreatedAt())
-			.content(post.getContent())
-			.fileList(postFileUrlList)
-			.commentList(commentList).build();
-	}
+        return PostDto.PostDetailResponse.builder()
+                .postType(post.getPostType().getType())
+                .writerProfileUrl(post.getUser().getProfileImageUrl())
+                .writerNickname(post.getUser().getNickname())
+                .writerTeam(post.getUser().getTeam().getTeamName())
+                .postTitle(post.getTitle())
+                .postCreatedAt(post.getCreatedAt())
+                .content(post.getContent())
+                .fileList(postFileUrlList)
+                .commentList(commentList).build();
+    }
 
-	public PostDto.modifyPostResponse updatePost(PostDto.PostModifyRequest request,
-		Long postId, String kakaoUserId) {
-		//post 작성자와 kakaoUserId 일치하는지 확인
-		User user = userRepository.findByKakaoUserId(kakaoUserId)
-			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
-		Post post = postRepository.findById(postId)
-			.orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
+    public PostDto.modifyPostResponse updatePost(PostDto.PostModifyRequest request,
+                                                 Long postId, String kakaoUserId) {
+        //post 작성자와 kakaoUserId 일치하는지 확인
+        User user = userRepository.findByKakaoUserId(kakaoUserId)
+                .orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
 
-		validate(user, post);
+        validate(user, post);
 
-		String postTypeName = request.getPostType();
-		PostType postType = postTypeRepository.findByType(postTypeName)
-			.orElseThrow(() -> new RestApiException(PostErrorCode.POST_TYPE_NOT_FOUND));
+        String postTypeName = request.getPostType();
+        PostType postType = postTypeRepository.findByType(postTypeName)
+                .orElseThrow(() -> new RestApiException(PostErrorCode.POST_TYPE_NOT_FOUND));
 
-		post.update(request.getPostTitle(), request.getPostContent(), postType);
-		postRepository.save(post);
+        post.update(request.getPostTitle(), request.getPostContent(), postType);
+        postRepository.save(post);
 
-		return PostDto.modifyPostResponse.builder()
-			.postId(postId)
-			.build();
-	}
+        return PostDto.modifyPostResponse.builder()
+                .postId(postId)
+                .build();
+    }
 
-	public void deletePost(Long postId, String kakaoUserId) {
-		User user = userRepository.findByKakaoUserId(kakaoUserId)
-			.orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
+    public void deletePost(Long postId, String kakaoUserId) {
+        User user = userRepository.findByKakaoUserId(kakaoUserId)
+                .orElseThrow(() -> new RestApiException(UserErrorCode.NOT_EXIST_USER));
 
-		Post post = postRepository.findById(postId)
-			.orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RestApiException(PostErrorCode.POST_NOT_FOUND));
 
-		validate(user, post);
-		postRepository.delete(post);
-	}
+        validate(user, post);
+        postRepository.delete(post);
+    }
 
-	private void validate(User user, Post post) {
-		if (!user.getPosts().contains(post)) {
-			throw new RestApiException(PostErrorCode.POST_NOT_VALIDATE);
-		}
-	}
+    private void validate(User user, Post post) {
+        if (!user.getPosts().contains(post)) {
+            throw new RestApiException(PostErrorCode.POST_NOT_VALIDATE);
+        }
+    }
 }
 
 
