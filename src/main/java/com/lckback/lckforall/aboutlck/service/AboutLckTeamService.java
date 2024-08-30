@@ -57,9 +57,14 @@ public class AboutLckTeamService {
 	public FindTeamWinningHistoryDto.Response findTeamWinningHistory(FindTeamWinningHistoryDto.Parameter param) {
 		Team team = findTeamByTeamId(param.getTeamId());
 
+		// 현재 시즌 가져와서 필터링
+		Season currentSeason = seasonRepository.findByName("2024 Summer")
+			.orElseThrow(() -> new RestApiException(SeasonErrorCode.NOT_EXIST_SEASON));
+
 		PageRequest pageRequest = createPageRequestSortBySeasonName(param.getPageable());
 
-		Page<SeasonTeam> seasonTeams = seasonTeamRepository.findAllByTeamAndRating(team, 1,
+		Page<SeasonTeam> seasonTeams = seasonTeamRepository.findAllByTeamAndRatingAndSeasonIsNot(team, 1,
+			currentSeason,
 			pageRequest);
 
 		return FindTeamWinningHistoryConverter.convertToResponse(seasonTeams);
@@ -68,8 +73,11 @@ public class AboutLckTeamService {
 	public FindTeamRatingHistoryDto.Response findTeamRatingHistory(FindTeamRatingHistoryDto.Parameter param) {
 		Team team = findTeamByTeamId(param.getTeamId());
 
+		Season currentSeason = seasonRepository.findByName("2024 Summer")
+			.orElseThrow(() -> new RestApiException(SeasonErrorCode.NOT_EXIST_SEASON));
+
 		PageRequest pageRequest = createPageRequestSortBySeasonName(param.getPageable());
-		Page<SeasonTeam> seasonTeams = seasonTeamRepository.findAllByTeam(team, pageRequest);
+		Page<SeasonTeam> seasonTeams = seasonTeamRepository.findAllByTeamAndSeasonIsNot(team, currentSeason, pageRequest);
 
 		return FindTeamRatingHistoryConverter.convertToResponse(seasonTeams);
 	}
