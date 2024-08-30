@@ -15,9 +15,11 @@ import com.lckback.lckforall.aboutlck.dto.player.FindPlayerInformationDto;
 import com.lckback.lckforall.aboutlck.dto.player.FindPlayerTeamHistoryDto;
 import com.lckback.lckforall.aboutlck.dto.player.FindPlayerWinningHistoryDto;
 import com.lckback.lckforall.base.api.error.PlayerErrorCode;
+import com.lckback.lckforall.base.api.error.SeasonErrorCode;
 import com.lckback.lckforall.player.repository.SeasonTeamPlayerRepository;
+import com.lckback.lckforall.team.model.Season;
+import com.lckback.lckforall.team.repository.SeasonRepository;
 import com.lckback.lckforall.team.repository.SeasonTeamRepository;
-import com.lckback.lckforall.base.api.error.CommonErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
 import com.lckback.lckforall.player.model.Player;
 import com.lckback.lckforall.player.model.SeasonTeamPlayer;
@@ -32,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 public class AboutLckPlayerService {
 
 	private final PlayerRepository playerRepository;
+	private final SeasonRepository seasonRepository;
 	private final SeasonTeamRepository seasonTeamRepository;
 	private final SeasonTeamPlayerRepository seasonTeamPlayerRepository;
 
@@ -64,12 +67,15 @@ public class AboutLckPlayerService {
 		FindPlayerWinningHistoryDto.Parameter parameter) {
 		Player player = findPlayerByPlayerId(parameter.getPlayerId());
 
+		Season currentSeason = seasonRepository.findByName("2024 Summer")
+			.orElseThrow(() -> new RestApiException(SeasonErrorCode.NOT_EXIST_SEASON));
+
 		List<SeasonTeamPlayer> seasonTeamPlayers = seasonTeamPlayerRepository.findAllByPlayer(player);
 
 		PageRequest pageRequest = createPageRequestSortBySeasonName(parameter.getPageable());
 
 		Page<SeasonTeam> seasonTeams = seasonTeamRepository.findWinningSeasonTeamBySeasonTeamPlayers(
-			seasonTeamPlayers, pageRequest);
+			seasonTeamPlayers, currentSeason, pageRequest);
 
 		return FindPlayerWinningHistoryConverter.toResponse(seasonTeams);
 	}
