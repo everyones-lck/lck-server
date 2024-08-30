@@ -1,5 +1,6 @@
 package com.lckback.lckforall.aboutlck.service;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -102,6 +103,7 @@ public class AboutLckTeamService {
 		List<SeasonTeamPlayer> seasonTeamPlayers = seasonTeamPlayerRepository.findAllBySeasonTeam(seasonTeam)
 			.stream()
 			.filter(seasonTeamPlayer -> seasonTeamPlayer.getPlayer().getRole().equals(param.getPlayerRole()))
+			.sorted(Comparator.comparing(seasonTeamPlayer -> seasonTeamPlayer.getPlayer().getPosition()))
 			.toList();
 
 		return FindTeamPlayerInformationConverter.convertToResponse(seasonTeamPlayers);
