@@ -48,6 +48,7 @@ public class AuthService {
 
 	@Value("${default.image.url}")
 	private String defaultImageUrl;
+
 	// 닉네임 중복 여부 확인 메서드
 	public Boolean isNicknameAvailable(String nickName) {
 		if (userRepository.existsByNickname(nickName)) {
@@ -70,7 +71,6 @@ public class AuthService {
 		else {
 			profileImageUrl = s3Service.upload(profileImage);
 		}
-
 
 		Team team = teamRepository.findById(signupUserData.getTeamId()).orElseThrow(() -> new RestApiException(
 			TeamErrorCode.NOT_EXISTS_TEAM
@@ -132,11 +132,10 @@ public class AuthService {
 
 		jwtUtil.validateRefreshToken(request.getRefreshToken());
 
-		RefreshToken findRefreshToken = refreshTokenRepository.findById(request.getKakaoUserId())
-			.orElseThrow(() -> new RestApiException(TokenErrorCode.INVALID_REFRESH_TOKEN));
+		String storedRefreshToken = tokenService.getRefreshToken(request.getKakaoUserId());
 
-		if (!request.getRefreshToken().equals(findRefreshToken.getRefreshToken())) {
-
+		// RefreshToken이 유효하지 않으면 예외 처리
+		if (!request.getRefreshToken().equals(storedRefreshToken)) {
 			throw new RestApiException(TokenErrorCode.INVALID_REFRESH_TOKEN);
 		}
 
@@ -144,9 +143,17 @@ public class AuthService {
 		String newAccessToken = tokenService.createAccessToken(request.getKakaoUserId(), role);
 		String newRefreshToken = tokenService.createRefreshToken(request.getKakaoUserId(), role);
 
-		RefreshToken savedRefreshToken = new RefreshToken(request.getKakaoUserId(), newRefreshToken);
+		// DB 관련 로직
+		// RefreshToken findRefreshToken = refreshTokenRepository.findById(request.getKakaoUserId())
+		// 	.orElseThrow(() -> new RestApiException(TokenErrorCode.INVALID_REFRESH_TOKEN));
+		//
+		// if (!request.getRefreshToken().equals(findRefreshToken.getRefreshToken())) {
+		//
+		// 	throw new RestApiException(TokenErrorCode.INVALID_REFRESH_TOKEN);
+		// }
+		// RefreshToken savedRefreshToken = new RefreshToken(request.getKakaoUserId(), newRefreshToken);
 
-		refreshTokenRepository.save(savedRefreshToken);
+		// refreshTokenRepository.save(savedRefreshToken);
 
 		setAuthentication(request.getKakaoUserId(), role, newAccessToken);
 
