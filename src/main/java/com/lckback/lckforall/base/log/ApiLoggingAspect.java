@@ -22,8 +22,11 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.lckback.lckforall.base.api.exception.RestApiException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,7 +38,8 @@ public class ApiLoggingAspect {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	// 해당 annotation이 붙은 method에 대해 pointcut 설정
-	@Pointcut("@annotation(org.springframework.web.bind.annotation.GetMapping) || "
+	@Pointcut("execution(* com.lckback.lckforall..*Controller.*(..)) && "
+		+ "@annotation(org.springframework.web.bind.annotation.GetMapping) || "
 		+ "@annotation(org.springframework.web.bind.annotation.PostMapping) || "
 		+ "@annotation(org.springframework.web.bind.annotation.PutMapping) || "
 		+ "@annotation(org.springframework.web.bind.annotation.DeleteMapping) || "
@@ -46,6 +50,7 @@ public class ApiLoggingAspect {
 
 	@Around("controllerLogPointCut()")
 	public Object queryCountLogging(ProceedingJoinPoint joinPoint) throws Throwable {
+		objectMapper.registerModule(new JavaTimeModule());
 		// target class 추출
 		Class<?> clazz = joinPoint.getTarget().getClass();
 
@@ -67,7 +72,8 @@ public class ApiLoggingAspect {
 			ret = joinPoint.proceed();
 		} catch (Exception e) {
 			// Exception 발생 시 로깅처리
-			logger.error("{} : Exception = {}", baseLog, e.getMessage());
+			if (e instanceof RestApiException)
+				logger.error("{} : Exception = {}", baseLog, objectMapper.writeValueAsString(((RestApiException)e).getErrorCode()));
 			throw e;
 		} finally {
 			// 실행 후 리턴값 로깅처리
@@ -92,6 +98,10 @@ public class ApiLoggingAspect {
 
 		// parameter 이름과 값 매핑
 		for (int i = 0; i < parameterNames.length; i++) {
+			if (args[i] instanceof MultipartFile) {
+				params.put(parameterNames[i], ((MultipartFile)args[i]).getOriginalFilename());
+				continue;
+			}
 			params.put(parameterNames[i], args[i]);
 		}
 		return params;
@@ -104,6 +114,9 @@ public class ApiLoggingAspect {
 
 		// baseUrl 추출
 		RequestMapping requestMapping = (RequestMapping)clazz.getAnnotation(RequestMapping.class);
+		if (requestMapping == null) {
+			return null;
+		}
 		String baseUrl = requestMapping.value()[0];
 
 		// baseLogUrl 추출
@@ -127,6 +140,7 @@ public class ApiLoggingAspect {
 		} catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
+		value = value == null || value.length == 0 ? new String[]{""} : value;
 		// 로그 포맷으로 출력 (GET /test/hello)
 		return String.format("%s %s%s", httpMethod, baseUrl, value[0]);
 	}
