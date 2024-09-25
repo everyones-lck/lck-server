@@ -1,5 +1,6 @@
 package com.lckback.lckforall.vote.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -9,8 +10,22 @@ public class SetVoteDto {
 
 	@Getter
 	@AllArgsConstructor
+	public static class SetPogVoteCandidate {
+		private Integer setIndex;
+		private List<SetVoteDto.PlayerInformation> candidates;
+	}
+
+	@Getter
+	@AllArgsConstructor
 	public static class SetPogVoteCandidateResponse {
-		private List<SetVoteDto.PlayerInformation> information;
+		private List<SetPogVoteCandidate> information;
+
+		public void addCandidates(SetPogVoteCandidate candidates){
+			information.add(candidates);
+		}
+		public SetPogVoteCandidateResponse() {
+			information = new ArrayList<SetPogVoteCandidate>();
+		}
 	}
 
 	@Getter
@@ -19,8 +34,6 @@ public class SetVoteDto {
 		private String kakaoUserId;
 
 		private Long matchId;
-
-		private Integer setIndex;
 
 	}
 	@Getter

@@ -79,11 +79,10 @@ public class VoteController {
 	@GetMapping("/set-pog/candidates")
 	public ResponseEntity<ApiResponse<SetVoteDto.SetPogVoteCandidateResponse>> getCandidateSetPogVote(
 		@RequestHeader("Authorization") String token,
-		@RequestParam("match-id") Long matchId,
-		@RequestParam("set-index") Integer setIndex) {
+		@RequestParam("match-id") Long matchId){
 		String kakaoUserId = authService.getKakaoUserId(token);
 		SetVoteDto.SetPogVoteCandidateResponse response = voteService.getSetPogCandidate(
-			new SetVoteDto.VoteCandidateDto(kakaoUserId, matchId, setIndex));
+			new SetVoteDto.VoteCandidateDto(kakaoUserId, matchId));
 		return ResponseEntity.ok().body(ApiResponse.createSuccess(response));
 	}
 
