@@ -53,16 +53,16 @@ public class VoteController {
 			.body(ApiResponse.createSuccessWithNoContent());
 	}
 
-	@Operation(summary = "매치 pog 후보 API", description = "매치 pog 투표 후보 선수를 출력합니다")
-	@GetMapping("/match-pog/candidates")
-	public ResponseEntity<ApiResponse<MatchVoteDto.MatchPogVoteCandidateResponse>> getCandidateMatchPogVote(
-		@RequestHeader("Authorization") String token,
-		@RequestParam("match-id") Long matchId) {
-		String kakaoUserId = authService.getKakaoUserId(token);
-		MatchVoteDto.MatchPogVoteCandidateResponse response = voteService.getMatchPogCandidate(
-			new MatchVoteDto.MatchPredictionCandidateDto(kakaoUserId, matchId));
-		return ResponseEntity.ok().body(ApiResponse.createSuccess(response));
-	}
+	// @Operation(summary = "매치 pog 후보 API", description = "매치 pog 투표 후보 선수를 출력합니다")
+	// @GetMapping("/match-pog/candidates")
+	// public ResponseEntity<ApiResponse<MatchVoteDto.MatchPogVoteCandidate>> getCandidateMatchPogVote(
+	// 	@RequestHeader("Authorization") String token,
+	// 	@RequestParam("match-id") Long matchId) {
+	// 	String kakaoUserId = authService.getKakaoUserId(token);
+	// 	MatchVoteDto.MatchPogVoteCandidate response = voteService.getMatchPogCandidate(
+	// 		new MatchVoteDto.MatchPredictionCandidateDto(kakaoUserId, matchId));
+	// 	return ResponseEntity.ok().body(ApiResponse.createSuccess(response));
+	// }
 
 	@Operation(summary = "매치 pog 선수 투표 API", description = "매치 pog 선수 투표를 시행합니다")
 	@PostMapping("match-pog/making")
@@ -75,13 +75,13 @@ public class VoteController {
 			.body(ApiResponse.createSuccessWithNoContent());
 	}
 
-	@Operation(summary = "세트 pog 후보 API", description = "세트 pog 선수 투표를 시행합니다")
-	@GetMapping("/set-pog/candidates")
-	public ResponseEntity<ApiResponse<SetVoteDto.SetPogVoteCandidateResponse>> getCandidateSetPogVote(
+	@Operation(summary = "pog 후보 API", description = "pog 선수 투표를 시행합니다")
+	@GetMapping("/pog/candidates")
+	public ResponseEntity<ApiResponse<SetVoteDto.PogVoteCandidateResponse>> getCandidateSetPogVote(
 		@RequestHeader("Authorization") String token,
 		@RequestParam("match-id") Long matchId){
 		String kakaoUserId = authService.getKakaoUserId(token);
-		SetVoteDto.SetPogVoteCandidateResponse response = voteService.getSetPogCandidate(
+		SetVoteDto.PogVoteCandidateResponse response = voteService.getSetPogCandidate(
 			new SetVoteDto.VoteCandidateDto(kakaoUserId, matchId));
 		return ResponseEntity.ok().body(ApiResponse.createSuccess(response));
 	}

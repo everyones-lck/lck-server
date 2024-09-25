@@ -12,19 +12,21 @@ public class SetVoteDto {
 	@AllArgsConstructor
 	public static class SetPogVoteCandidate {
 		private Integer setIndex;
-		private List<SetVoteDto.PlayerInformation> candidates;
+		private List<SetVoteDto.PlayerInformation> information;
 	}
 
 	@Getter
 	@AllArgsConstructor
-	public static class SetPogVoteCandidateResponse {
-		private List<SetPogVoteCandidate> information;
+	public static class PogVoteCandidateResponse {
+		private MatchVoteDto.MatchPogVoteCandidate matchPogVoteCandidate;
+		private List<SetPogVoteCandidate> setPogVoteCandidates;
 
 		public void addCandidates(SetPogVoteCandidate candidates){
-			information.add(candidates);
+			setPogVoteCandidates.add(candidates);
 		}
-		public SetPogVoteCandidateResponse() {
-			information = new ArrayList<SetPogVoteCandidate>();
+		public PogVoteCandidateResponse(MatchVoteDto.MatchPogVoteCandidate candidate) {
+			setPogVoteCandidates = new ArrayList<SetPogVoteCandidate>();
+			matchPogVoteCandidate = candidate;
 		}
 	}
 
