@@ -6,6 +6,8 @@ import com.lckback.lckforall.base.api.error.TokenErrorCode;
 import com.lckback.lckforall.base.api.error.UserErrorCode;
 import com.lckback.lckforall.base.api.error.ViewingPartyErrorCode;
 import com.lckback.lckforall.base.api.exception.RestApiException;
+import com.lckback.lckforall.base.auth.jwt.JWTUtil;
+import com.lckback.lckforall.base.auth.jwt.TokenService;
 import com.lckback.lckforall.base.auth.jwt.model.RefreshToken;
 import com.lckback.lckforall.base.auth.jwt.repository.RefreshTokenRepository;
 import com.lckback.lckforall.community.model.Comment;
@@ -67,6 +69,8 @@ public class MyPageService {
 	private final RefreshTokenRepository refreshTokenRepository;
 
 	private final S3Service s3Service;
+
+	private final TokenService tokenService;
 
 	public GetUserProfileDto.Response getUserProfile(String kakaoUserId) {
 
@@ -232,14 +236,20 @@ public class MyPageService {
 
 	public void logout(String kakaoUserId, String refreshToken) {
 
-		RefreshToken findRefreshToken = refreshTokenRepository.findById(kakaoUserId)
-			.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+		// Redis에 저장된 refresh token을 가져옴
+		String storedRefreshToken = tokenService.getRefreshToken(kakaoUserId);
 
-		if (!refreshToken.equals(findRefreshToken.getRefreshToken())) {
+		// 저장된 refresh token이 없거나 일치하지 않는 경우
+		if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {
 			throw new RestApiException(TokenErrorCode.NOT_EXISTS_REFRESH_TOKEN);
 		}
 
-		refreshTokenRepository.delete(findRefreshToken);
+		// refresh token이 유효한지
+		if (!tokenService.validateRefreshToken(kakaoUserId, refreshToken)) {
+			throw new RestApiException(TokenErrorCode.INVALID_REFRESH_TOKEN);
+		}
+
+		tokenService.deleteRefreshToken(kakaoUserId);
 	}
 
 	private List<GetUserPostDto.Information> convertToPostInformation(Page<Post> posts) {

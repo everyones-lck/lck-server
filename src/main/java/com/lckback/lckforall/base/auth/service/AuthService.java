@@ -48,6 +48,7 @@ public class AuthService {
 
 	@Value("${default.image.url}")
 	private String defaultImageUrl;
+
 	// 닉네임 중복 여부 확인 메서드
 	public Boolean isNicknameAvailable(String nickName) {
 		if (userRepository.existsByNickname(nickName)) {
@@ -71,7 +72,6 @@ public class AuthService {
 			profileImageUrl = s3Service.upload(profileImage);
 		}
 
-
 		Team team = teamRepository.findById(signupUserData.getTeamId()).orElseThrow(() -> new RestApiException(
 			TeamErrorCode.NOT_EXISTS_TEAM
 		));
@@ -82,13 +82,6 @@ public class AuthService {
 		String role = user.getRole().name();
 		String accessToken = tokenService.createAccessToken(user.getKakaoUserId(), role);
 		String refreshToken = tokenService.createRefreshToken(user.getKakaoUserId(), role);
-
-		RefreshToken savedRefreshToken = RefreshToken.builder()
-			.kakaoUserId(user.getKakaoUserId())
-			.refreshToken(refreshToken)
-			.build();
-
-		refreshTokenRepository.save(savedRefreshToken);
 
 		setAuthentication(user.getKakaoUserId(), role, accessToken);
 
@@ -110,13 +103,6 @@ public class AuthService {
 		String accessToken = tokenService.createAccessToken(request.getKakaoUserId(), role);
 		String refreshToken = tokenService.createRefreshToken(request.getKakaoUserId(), role);
 
-		RefreshToken savedRefreshToken = RefreshToken.builder()
-			.kakaoUserId(user.getKakaoUserId())
-			.refreshToken(refreshToken)
-			.build();
-
-		refreshTokenRepository.save(savedRefreshToken);
-
 		setAuthentication(request.getKakaoUserId(), role, accessToken);
 
 		long currentTimestamp = System.currentTimeMillis();
@@ -132,21 +118,16 @@ public class AuthService {
 
 		jwtUtil.validateRefreshToken(request.getRefreshToken());
 
-		RefreshToken findRefreshToken = refreshTokenRepository.findById(request.getKakaoUserId())
-			.orElseThrow(() -> new RestApiException(TokenErrorCode.INVALID_REFRESH_TOKEN));
+		String storedRefreshToken = tokenService.getRefreshToken(request.getKakaoUserId());
 
-		if (!request.getRefreshToken().equals(findRefreshToken.getRefreshToken())) {
-
+		// refresh token이 유효하지 않으면 예외 처리
+		if (!request.getRefreshToken().equals(storedRefreshToken)) {
 			throw new RestApiException(TokenErrorCode.INVALID_REFRESH_TOKEN);
 		}
 
 		String role = user.getRole().name();
 		String newAccessToken = tokenService.createAccessToken(request.getKakaoUserId(), role);
 		String newRefreshToken = tokenService.createRefreshToken(request.getKakaoUserId(), role);
-
-		RefreshToken savedRefreshToken = new RefreshToken(request.getKakaoUserId(), newRefreshToken);
-
-		refreshTokenRepository.save(savedRefreshToken);
 
 		setAuthentication(request.getKakaoUserId(), role, newAccessToken);
 
@@ -158,7 +139,6 @@ public class AuthService {
 	}
 
 	// AuthController에서와 마찬가지의 이유로 주석 처리
-
 	// public ResponseEntity<?> testToken(String token) {
 	// 	try {
 	// 		// 토큰에서 Bearer 제거
