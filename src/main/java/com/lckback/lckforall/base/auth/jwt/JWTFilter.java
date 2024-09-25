@@ -33,6 +33,7 @@ public class JWTFilter extends OncePerRequestFilter {
         "/auth/signup",
         "/auth/login",
         "/auth/refresh",
+        "/my-pages/logout",
         "/swagger-ui/",
         "/v3/");
 
