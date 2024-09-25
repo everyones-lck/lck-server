@@ -94,7 +94,7 @@ public class MatchVoteDto {
 
 	@Getter
 	@AllArgsConstructor
-	public static class MatchPogVoteCandidateResponse {
+	public static class MatchPogVoteCandidate {
 		private List<PlayerInformation> information;
 	}
 }
