@@ -35,7 +35,8 @@ public class ApiLoggingAspect {
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	// 해당 annotation이 붙은 method에 대해 pointcut 설정
-	@Pointcut("@annotation(org.springframework.web.bind.annotation.GetMapping) || "
+	@Pointcut("execution(* com.lckback.lckforall..*(..)) && "
+		+ "@annotation(org.springframework.web.bind.annotation.GetMapping) || "
 		+ "@annotation(org.springframework.web.bind.annotation.PostMapping) || "
 		+ "@annotation(org.springframework.web.bind.annotation.PutMapping) || "
 		+ "@annotation(org.springframework.web.bind.annotation.DeleteMapping) || "
