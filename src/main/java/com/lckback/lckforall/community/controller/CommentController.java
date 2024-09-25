@@ -2,8 +2,11 @@ package com.lckback.lckforall.community.controller;
 
 import com.lckback.lckforall.base.api.ApiResponse;
 import com.lckback.lckforall.base.auth.service.AuthService;
-import com.lckback.lckforall.community.dto.CommentDto;
+import com.lckback.lckforall.community.converter.comment.CreateCommentConverter;
+import com.lckback.lckforall.community.converter.comment.DeleteCommentConverter;
+import com.lckback.lckforall.community.dto.comment.CreateCommentDto;
 import com.lckback.lckforall.community.service.CommentService;
+import com.lckback.lckforall.community.dto.comment.DeleteCommentDto;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,9 +32,12 @@ public class CommentController {
 	public ResponseEntity<ApiResponse<Void>> createComment(
 		@Parameter(hidden = true) @RequestHeader("Authorization") String token,
 		@PathVariable Long postId,
-		@RequestBody CommentDto.createCommentRequest request) {
+		@RequestBody CreateCommentDto.Request request) {
 		String kakaoUserId = authService.getKakaoUserId(token);
-		commentService.createComment(postId, request, kakaoUserId);
+
+		CreateCommentDto.Parameter parameter = CreateCommentConverter.convertParameter(request, postId, kakaoUserId);
+
+		commentService.createComment(parameter);
 
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccessWithNoContent());
@@ -44,7 +50,10 @@ public class CommentController {
 		@PathVariable Long commentId
 	) {
 		String kakaoUserId = authService.getKakaoUserId(token);
-		commentService.deleteComment(commentId, kakaoUserId);
+
+		DeleteCommentDto.Parameter parameter = DeleteCommentConverter.convertParameter(kakaoUserId, commentId);
+
+		commentService.deleteComment(parameter);
 
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccessWithNoContent());
