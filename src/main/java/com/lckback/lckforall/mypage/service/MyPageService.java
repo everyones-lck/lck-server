@@ -250,16 +250,6 @@ public class MyPageService {
 		}
 
 		tokenService.deleteRefreshToken(kakaoUserId);
-
-		// // DB 관련 로직
-		// RefreshToken findRefreshToken = refreshTokenRepository.findById(kakaoUserId)
-		// 	.orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-		//
-		// if (!refreshToken.equals(findRefreshToken.getRefreshToken())) {
-		// 	throw new RestApiException(TokenErrorCode.NOT_EXISTS_REFRESH_TOKEN);
-		// }
-		//
-		// refreshTokenRepository.delete(findRefreshToken);
 	}
 
 	private List<GetUserPostDto.Information> convertToPostInformation(Page<Post> posts) {

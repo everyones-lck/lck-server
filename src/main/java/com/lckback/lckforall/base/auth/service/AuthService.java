@@ -83,13 +83,6 @@ public class AuthService {
 		String accessToken = tokenService.createAccessToken(user.getKakaoUserId(), role);
 		String refreshToken = tokenService.createRefreshToken(user.getKakaoUserId(), role);
 
-		RefreshToken savedRefreshToken = RefreshToken.builder()
-			.kakaoUserId(user.getKakaoUserId())
-			.refreshToken(refreshToken)
-			.build();
-
-		refreshTokenRepository.save(savedRefreshToken);
-
 		setAuthentication(user.getKakaoUserId(), role, accessToken);
 
 		long currentTimestamp = System.currentTimeMillis();
@@ -110,13 +103,6 @@ public class AuthService {
 		String accessToken = tokenService.createAccessToken(request.getKakaoUserId(), role);
 		String refreshToken = tokenService.createRefreshToken(request.getKakaoUserId(), role);
 
-		RefreshToken savedRefreshToken = RefreshToken.builder()
-			.kakaoUserId(user.getKakaoUserId())
-			.refreshToken(refreshToken)
-			.build();
-
-		refreshTokenRepository.save(savedRefreshToken);
-
 		setAuthentication(request.getKakaoUserId(), role, accessToken);
 
 		long currentTimestamp = System.currentTimeMillis();
@@ -134,7 +120,7 @@ public class AuthService {
 
 		String storedRefreshToken = tokenService.getRefreshToken(request.getKakaoUserId());
 
-		// RefreshToken이 유효하지 않으면 예외 처리
+		// refresh token이 유효하지 않으면 예외 처리
 		if (!request.getRefreshToken().equals(storedRefreshToken)) {
 			throw new RestApiException(TokenErrorCode.INVALID_REFRESH_TOKEN);
 		}
@@ -142,18 +128,6 @@ public class AuthService {
 		String role = user.getRole().name();
 		String newAccessToken = tokenService.createAccessToken(request.getKakaoUserId(), role);
 		String newRefreshToken = tokenService.createRefreshToken(request.getKakaoUserId(), role);
-
-		// DB 관련 로직
-		// RefreshToken findRefreshToken = refreshTokenRepository.findById(request.getKakaoUserId())
-		// 	.orElseThrow(() -> new RestApiException(TokenErrorCode.INVALID_REFRESH_TOKEN));
-		//
-		// if (!request.getRefreshToken().equals(findRefreshToken.getRefreshToken())) {
-		//
-		// 	throw new RestApiException(TokenErrorCode.INVALID_REFRESH_TOKEN);
-		// }
-		// RefreshToken savedRefreshToken = new RefreshToken(request.getKakaoUserId(), newRefreshToken);
-
-		// refreshTokenRepository.save(savedRefreshToken);
 
 		setAuthentication(request.getKakaoUserId(), role, newAccessToken);
 
@@ -165,7 +139,6 @@ public class AuthService {
 	}
 
 	// AuthController에서와 마찬가지의 이유로 주석 처리
-
 	// public ResponseEntity<?> testToken(String token) {
 	// 	try {
 	// 		// 토큰에서 Bearer 제거
