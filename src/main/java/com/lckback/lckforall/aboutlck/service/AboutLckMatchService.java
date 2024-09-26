@@ -14,8 +14,10 @@ import com.lckback.lckforall.match.model.Match;
 import com.lckback.lckforall.match.repository.MatchRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AboutLckMatchService {
@@ -24,10 +26,11 @@ public class AboutLckMatchService {
 
 	public FindMatchesByDateDto.Response findMatchInformationByDate(FindMatchesByDateDto.Parameter param) {
 		LocalDate searchDate = param.getSearchDate();
-		LocalDateTime start = LocalDateTime.of(searchDate, LocalTime.of(0, 0, 0));
-		LocalDateTime end = searchDate.atTime(23, 59, 59);
+		LocalDateTime start = LocalDateTime.of(searchDate.minusDays(1), LocalTime.of(0, 0, 0));
+		LocalDateTime end = LocalDateTime.of(searchDate.plusDays(1), LocalTime.of(23, 59, 59));
 
-		List<Match> matches = matchRepository.findAll();
+		log.info("start: {}, end: {}", start, end);
+		List<Match> matches = matchRepository.findMatchesByMatchDateBetween(start, end);
 		return AboutMatchConverter.convertToAboutMatchResponse(matches);
 	}
 }
