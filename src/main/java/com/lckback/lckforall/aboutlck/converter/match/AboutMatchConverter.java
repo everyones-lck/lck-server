@@ -1,6 +1,9 @@
 package com.lckback.lckforall.aboutlck.converter.match;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.lckback.lckforall.aboutlck.dto.match.FindMatchesByDateDto;
 import com.lckback.lckforall.base.type.MatchResult;
@@ -10,11 +13,26 @@ import com.lckback.lckforall.team.model.Team;
 public class AboutMatchConverter {
 
 	public static FindMatchesByDateDto.Response convertToAboutMatchResponse(List<Match> matchList) {
-		List<FindMatchesByDateDto.MatchDetail> matchDetailList = convertToMatchDetailList(matchList);
+		Map<LocalDate, List<Match>> localDateListMap = matchList.stream()
+			.collect(Collectors.groupingBy(match -> match.getMatchDate().toLocalDate()));
+
+		List<FindMatchesByDateDto.MatchByDate> matchByDateList = convertToMatchByDateList(localDateListMap);
 		return FindMatchesByDateDto.Response.builder()
-			.matchDetailList(matchDetailList)
-			.listSize(matchDetailList.size())
+			.matchByDateList(matchByDateList)
 			.build();
+	}
+
+	private static List<FindMatchesByDateDto.MatchByDate> convertToMatchByDateList(
+		Map<LocalDate, List<Match>> localDateListMap) {
+		return localDateListMap.entrySet()
+			.stream()
+			.map(entry -> FindMatchesByDateDto.MatchByDate.builder()
+				.matchDetailList(convertToMatchDetailList(entry.getValue()))
+				.matchDate(entry.getKey())
+				.matchDetailSize(entry.getValue().size())
+				.build()
+			)
+			.toList();
 	}
 
 	private static List<FindMatchesByDateDto.MatchDetail> convertToMatchDetailList(List<Match> matchList) {
