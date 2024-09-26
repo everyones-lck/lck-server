@@ -11,15 +11,22 @@ public class FindMatchesByDateDto {
 
 	@Getter
 	@Builder
-	public static class Response {
-		private List<MatchDetail> matchDetailList;
-		private Integer listSize;
+	public static class Parameter {
+		private LocalDate searchDate;
 	}
 
 	@Getter
 	@Builder
-	public static class Parameter {
-		private LocalDate searchDate;
+	public static class Response {
+		private List<MatchByDate> matchByDateList;
+	}
+
+	@Getter
+	@Builder
+	public static class MatchByDate {
+		private List<MatchDetail> matchDetailList;
+		private LocalDate matchDate;
+		private Integer matchDetailSize;
 	}
 
 	@Getter
