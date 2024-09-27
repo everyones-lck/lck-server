@@ -1,12 +1,12 @@
 package com.lckback.lckforall.community.dto.comment;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 public class CreateCommentDto {
 
 	@Getter
-	@Builder
 	public static class Request {
 		private String content;
 	}
