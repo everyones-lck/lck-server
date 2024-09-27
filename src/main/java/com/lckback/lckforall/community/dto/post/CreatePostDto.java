@@ -4,13 +4,13 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 public class CreatePostDto {
 
 	@Getter
-	@Builder
 	public static class Request {
 		private String postType;
 		private String postTitle;

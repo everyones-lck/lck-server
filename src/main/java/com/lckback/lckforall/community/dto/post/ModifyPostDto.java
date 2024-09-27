@@ -1,12 +1,12 @@
 package com.lckback.lckforall.community.dto.post;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 public class ModifyPostDto {
 
 	@Getter
-	@Builder
 	public static class Request {
 		private String postType;
 		private String postTitle;
