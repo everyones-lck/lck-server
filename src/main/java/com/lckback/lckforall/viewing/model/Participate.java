@@ -29,10 +29,6 @@ public class Participate extends BaseEntity {
 	@JoinColumn(name = "USER_ID", nullable = false)
 	private User user;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "chatroom_id")
-	private ChatRoom chatRoom;
-
 	public void setUser(User user) {
 		if(this.user != null){
 			user.getParticipatingViewingParties().remove(this);
@@ -44,7 +40,4 @@ public class Participate extends BaseEntity {
 		this.viewingParty = viewingParty;
 	}
 
-	public void setChatRoom(ChatRoom chatRoom) {
-		this.chatRoom = chatRoom;
-	}
 }

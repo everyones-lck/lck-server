@@ -8,9 +8,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 
 @SpringBootApplication
 @EnableJpaAuditing
+@EnableMongoAuditing
 @Slf4j
 public class LckForAllApplication {
 

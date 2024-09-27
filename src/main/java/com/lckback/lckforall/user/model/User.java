@@ -105,9 +105,6 @@ public class User extends BaseEntity {
 	@OneToMany(mappedBy = "user", orphanRemoval = true)
 	private List<SetPogVote> setPogVotes = new ArrayList<>();
 
-	@OneToMany(mappedBy = "user", orphanRemoval = true)
-	private List<ChatMessage> chatMessages = new ArrayList<>();
-
 	public void updateNickname(String nickname) {
 		this.nickname = nickname;
 	}

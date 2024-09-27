@@ -70,7 +70,7 @@ public class ChatController {
             @Parameter(name = "size", description = "query string(RequestParam) - 몇 개씩 불러올지 개수를 세는 변수 (1 이상 자연수로 설정)"),
     })
     public ApiResponse<ChatDTO.ChatMessageListResponse> getChatMessage(@RequestHeader(name = "Authorization") String accessToken,
-                                                                @PathVariable(name = "room_id") Long roomId,
+                                                                @PathVariable(name = "room_id") String roomId,
                                                                 @RequestParam(name = "page") Integer page,
                                                                 @RequestParam(name = "size") Integer size) {
         String kakaoUserId = authService.getKakaoUserId(accessToken);
