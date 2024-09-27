@@ -27,7 +27,12 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -51,17 +56,15 @@ public class ChatServiceImpl implements ChatService {
 
         User user = userRepository.findByKakaoUserId(kakaoUserId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
         ViewingParty viewingParty = viewingPartyRepository.findById(viewingPartyId).orElseThrow(() -> new RestApiException(ViewingPartyErrorCode.PARTY_NOT_FOUND));
-        Participate participate = participateRepository.findByUserAndViewingParty(user, viewingParty).orElseThrow(() -> new RestApiException(ViewingPartyErrorCode.PARTICIPATE_NOT_FOUND));
-
-        if(participate.getChatRoom() != null){
-            return ChatConverter.toChatRoomResponse(participate.getChatRoom(), true);
+        Optional<ChatRoom> optionalChatRoom = chatRoomRepository.findByUserIdAndViewingPartyId(user.getId(), viewingPartyId);
+        if(optionalChatRoom.isPresent()){
+            return ChatConverter.toChatRoomResponse(optionalChatRoom.get(), viewingParty,true);
         }
-
         ChatRoom chatRoom = ChatConverter.toChatRoom();
-        chatRoom.setViewingParty(viewingParty);
-        participate.setChatRoom(chatRoom);
+        chatRoom.setUserId(user.getId());
+        chatRoom.setViewingPartyId(viewingParty.getId());
         chatRoomRepository.save(chatRoom);
-        return ChatConverter.toChatRoomResponse(chatRoom, false);
+        return ChatConverter.toChatRoomResponse(chatRoom, viewingParty,false);
     }
 
     @Override
@@ -71,16 +74,16 @@ public class ChatServiceImpl implements ChatService {
         User participant = userRepository.findByKakaoUserId(participantKakaoUserId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
         ViewingParty viewingParty = viewingPartyRepository.findById(viewingPartyId).orElseThrow(() -> new RestApiException(ViewingPartyErrorCode.PARTY_NOT_FOUND));
         Participate participate = participateRepository.findByUserAndViewingParty(participant, viewingParty).orElseThrow(() -> new RestApiException(ViewingPartyErrorCode.PARTICIPATE_NOT_FOUND));
-
-        if(participate.getChatRoom() != null){
-            return ChatConverter.toChatRoomResponse(participate.getChatRoom(), true);
+        Optional<ChatRoom> optionalChatRoom = chatRoomRepository.findByUserIdAndViewingPartyId(participant.getId(), viewingPartyId);
+        if(optionalChatRoom.isPresent()){
+            return ChatConverter.toChatRoomResponse(optionalChatRoom.get(), viewingParty, true);
         }
 
         ChatRoom chatRoom = ChatConverter.toChatRoom();
-        chatRoom.setViewingParty(viewingParty);
-        participate.setChatRoom(chatRoom);
+        chatRoom.setUserId(participant.getId());
+        chatRoom.setViewingPartyId(viewingParty.getId());
         chatRoomRepository.save(chatRoom);
-        return ChatConverter.toChatRoomResponse(chatRoom, false);
+        return ChatConverter.toChatRoomResponse(chatRoom, viewingParty, false);
 
     }
 
@@ -96,29 +99,25 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     @Transactional
-    public ChatDTO.ChatMessageListResponse getChatMessage(String kakaoUserId, Long roomId, Integer page, Integer size) {
+    public ChatDTO.ChatMessageListResponse getChatMessage(String kakaoUserId, String roomId, Integer page, Integer size) {
         User receiver;
         User sender = userRepository.findByKakaoUserId(kakaoUserId).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new RestApiException(ChatErrorCode.CHAT_NOT_FOUND));
-        User owner = chatRoom.getViewingParty().getUser();
+        ViewingParty viewingParty = viewingPartyRepository.findById(chatRoom.getViewingPartyId()).orElseThrow(() -> new RestApiException(ViewingPartyErrorCode.PARTY_NOT_FOUND));
+        User owner = viewingParty.getUser();
         if(owner == sender) {
-            Set<User> chatUserSet = chatRoom.getMessages()
-                    .stream()
-                    .map(m -> m.getUser() != owner ? m.getUser() : null)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toSet());
-            receiver = chatUserSet.iterator().next();
+            receiver = userRepository.findById(chatRoom.getUserId()).orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_FOUND));
         }
         else{
             receiver = owner;
         }
-        Page<ChatMessage> messages = chatMessageRepository.findAllByChatRoomOrderByCreatedAtDesc(chatRoom, PageRequest.of(page, size));
+        Page<ChatMessage> messages = chatMessageRepository.findAllByRoomIdOrderByTimeDesc(chatRoom.getId(), PageRequest.of(page, size));
         int totalPage = messages.getTotalPages();
         boolean isLast = false;
         if(page == totalPage - 1){
             isLast = true;
         }
-        return ChatConverter.toChatMessageListResponse(messages, receiver, chatRoom, isLast, totalPage);
+        return ChatConverter.toChatMessageListResponse(messages, receiver, viewingParty, isLast, totalPage);
     }
 
     @Override
@@ -139,8 +138,12 @@ public class ChatServiceImpl implements ChatService {
         User user = userRepository.findByKakaoUserId(kakaoUserId).get();
         ChatRoom chatRoom = chatRoomRepository.findById(chatMessage.getChatRoomId()).get();
         ChatMessage saveMessage = ChatConverter.toChatMessage(chatMessage);
-        saveMessage.setUser(user);
-        saveMessage.setChatRoom(chatRoom);
+        ZonedDateTime seoulTime = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
+        Date date = Date.from(seoulTime.plusHours(9).toInstant());
+        saveMessage.setTime(date);
+        saveMessage.setSenderId(user.getId());
+        saveMessage.setSenderName(user.getNickname());
+        saveMessage.setRoomId(chatRoom.getId());
         chatMessageRepository.save(saveMessage);
     }
 }

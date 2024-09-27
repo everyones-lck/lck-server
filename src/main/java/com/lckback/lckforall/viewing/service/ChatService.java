@@ -10,10 +10,9 @@ public interface ChatService {
 
     ChatDTO.ChatRoomResponse createOwnerChatRoom(String kakaoUserId, Long viewingPartyId, String participantKakaoUserId);
 
-
     public <T> void sendMessage(WebSocketSession session, T message);
 
-    ChatDTO.ChatMessageListResponse getChatMessage(String kakaoUserId, Long roomId, Integer page, Integer size);
+    ChatDTO.ChatMessageListResponse getChatMessage(String kakaoUserId, String roomId, Integer page, Integer size);
 
     User findUserOfChat(ChatDTO.Message chatMessage);
 

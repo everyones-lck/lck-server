@@ -1,45 +1,36 @@
 package com.lckback.lckforall.viewing.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.lckback.lckforall.base.model.BaseEntity;
 import com.lckback.lckforall.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Getter
+import java.time.LocalDateTime;
+import java.util.Date;
+
 @Builder
-@Entity
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ChatMessage extends BaseEntity {
+@Data
+@Document(collection = "chat")
+@EntityListeners(AuditingEntityListener.class)
+public class ChatMessage {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chat_room_id", nullable = false)
-    private ChatRoom chatRoom;
+    private String roomId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Long senderId;
 
-    @Column(nullable = false)
+    private String senderName;
+
     private String content;
 
-    public void setChatRoom(ChatRoom chatRoom) {
-        if(this.chatRoom != null) {
-            chatRoom.getMessages().remove(this);
-        }
-        this.chatRoom = chatRoom;
-        chatRoom.getMessages().add(this);
-    }
-
-    public void setUser(User user) {
-        if(this.user != null) {
-            user.getChatMessages().remove(this);
-        }
-        this.user = user;
-        user.getChatMessages().add(this);
-    }
-
+    private Date time;
 }
