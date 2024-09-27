@@ -3,7 +3,9 @@ package com.lckback.lckforall.viewing.dto;
 import lombok.*;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,20 +25,20 @@ public class ChatDTO {
         }
 
         private Message.MessageType type;
-        private Long chatRoomId;
+        private String chatRoomId;
         private String senderName;
         private String message;
     }
 
     @Getter
     public static class ChatRoomResponse {
-        private Long roomId;
+        private String roomId;
         private String viewingPartyName;
         private Boolean isExist;
         private Set<WebSocketSession> sessions = new HashSet<>();
 
         @Builder
-        public ChatRoomResponse(Long roomId, String viewingPartyName, Boolean isExist) {
+        public ChatRoomResponse(String roomId, String viewingPartyName, Boolean isExist) {
             this.roomId = roomId;
             this.viewingPartyName = viewingPartyName;
             this.isExist = isExist;
@@ -54,6 +56,7 @@ public class ChatDTO {
         String viewingPartyName;
         String receiverName;
         String receiverTeam;
+        String receiverProfileImage;
         List<ChatMessageResponse> chatMessageList;
     }
     @Builder
@@ -62,7 +65,7 @@ public class ChatDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ChatMessageResponse{
-        LocalDateTime createdAt;
+        Date createdAt;
         String senderName;
         String message;
     }

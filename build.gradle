@@ -39,6 +39,10 @@ dependencies {
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+    // mongodb
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.0'
+
     // websocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 

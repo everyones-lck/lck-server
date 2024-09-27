@@ -3,35 +3,27 @@ package com.lckback.lckforall.viewing.model;
 import com.lckback.lckforall.base.model.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
 @Builder
-@Entity
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ChatRoom extends BaseEntity {
+@Data
+@Document(collection = "room")
+public class ChatRoom {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @ManyToOne
-    @JoinColumn(name = "viewing_party_id", nullable = false)
-    private ViewingParty viewingParty;
+    private Long viewingPartyId;
 
-    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
-    private List<ChatMessage> messages = new ArrayList<>();
+    // 해당 뷰잉 파티에 질문하는 사람이 만든 방
+    private Long userId;
 
-    @OneToOne(mappedBy = "chatRoom", cascade = CascadeType.ALL)
-    private Participate participants;
+    private LocalDateTime createdAt;
 
-    public void setViewingParty(ViewingParty viewingParty) {
-        if(this.viewingParty != null) {
-            viewingParty.getChatRooms().remove(this);
-        }
-        this.viewingParty = viewingParty;
-        viewingParty.getChatRooms().add(this);
-    }
+    private LocalDateTime updatedAt;
 }
