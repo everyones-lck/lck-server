@@ -31,6 +31,6 @@ public class AboutLckMatchService {
 
 		log.info("start: {}, end: {}", start, end);
 		List<Match> matches = matchRepository.findMatchesByMatchDateBetween(start, end);
-		return AboutMatchConverter.convertToAboutMatchResponse(matches);
+		return AboutMatchConverter.convertToAboutMatchResponse(matches, param.getSearchDate());
 	}
 }
