@@ -12,27 +12,33 @@ import com.lckback.lckforall.team.model.Team;
 
 public class AboutMatchConverter {
 
-	public static FindMatchesByDateDto.Response convertToAboutMatchResponse(List<Match> matchList) {
+	public static FindMatchesByDateDto.Response convertToAboutMatchResponse(List<Match> matchList, LocalDate searchDate) {
 		Map<LocalDate, List<Match>> localDateListMap = matchList.stream()
 			.collect(Collectors.groupingBy(match -> match.getMatchDate().toLocalDate()));
+		List<LocalDate> searchDateList = List.of(searchDate.minusDays(1), searchDate, searchDate.plusDays(1));
 
-		List<FindMatchesByDateDto.MatchByDate> matchByDateList = convertToMatchByDateList(localDateListMap);
+		List<FindMatchesByDateDto.MatchByDate> matchByDateList = convertToMatchByDateList(localDateListMap, searchDateList);
 		return FindMatchesByDateDto.Response.builder()
 			.matchByDateList(matchByDateList)
 			.build();
 	}
 
 	private static List<FindMatchesByDateDto.MatchByDate> convertToMatchByDateList(
-		Map<LocalDate, List<Match>> localDateListMap) {
-		return localDateListMap.entrySet()
-			.stream()
-			.map(entry -> FindMatchesByDateDto.MatchByDate.builder()
-				.matchDetailList(convertToMatchDetailList(entry.getValue()))
-				.matchDate(entry.getKey())
-				.matchDetailSize(entry.getValue().size())
-				.build()
-			)
-			.toList();
+		Map<LocalDate, List<Match>> localDateListMap, List<LocalDate> searchDateList) {
+		return searchDateList.stream().map(searchDate -> {
+			List<Match> matches = localDateListMap.get(searchDate);
+			if (matches == null) {
+				return FindMatchesByDateDto.MatchByDate.builder()
+					.matchDate(searchDate)
+					.matchDetailList(List.of())
+					.matchDetailSize(0)
+					.build();
+			}
+			return FindMatchesByDateDto.MatchByDate.builder()
+				.matchDate(searchDate)
+				.matchDetailList(convertToMatchDetailList(matches))
+				.build();
+		}).toList();
 	}
 
 	private static List<FindMatchesByDateDto.MatchDetail> convertToMatchDetailList(List<Match> matchList) {
