@@ -26,26 +26,26 @@ public class PogController {
 
 	private final PogService pogService;
 
-	@Operation(summary = "매치 pog 반환 API", description = "해당 매치의 pog를 반환합니다")
-	@PostMapping("/match")
+	@Operation(summary = "매치/세트 pog 결과 반환 API", description = "해당 매치의 pog를 반환합니다")
+	@PostMapping("/result")
 	public ResponseEntity<ApiResponse<PogInfoDto.PogResponse>> getMatchPog( // match의 pog 투표 결과 선정된 player를 반환
 		@RequestHeader("Authorization") String token,
 		@RequestBody PogInfoDto.MatchPogRequest request) {
-		PogInfoDto.PogResponse response = pogService.findMatchPog(request.toDto());
+		PogInfoDto.PogResponse response = pogService.findPog(request.toDto());
 
 		return ResponseEntity.ok()
 			.body(ApiResponse.createSuccess(response));
 	}
 
-	@Operation(summary = "세트 pog 반환 API", description = "해당 세트의 pog를 반환합니다")
-	@PostMapping("/set")
-	public ResponseEntity<ApiResponse<PogInfoDto.PogResponse>> getSetPog(// match의 pog 투표 결과 선정된 player를 반환
-		@RequestHeader("Authorization") String token,
-		@RequestParam("set-index") Integer setIndex,
-		@RequestBody PogInfoDto.MatchPogRequest request) {
-		PogInfoDto.PogResponse response = pogService.findSetPog(request.toDto(), setIndex);
-
-		return ResponseEntity.ok()
-			.body(ApiResponse.createSuccess(response));
-	}
+	// @Operation(summary = "세트 pog 반환 API", description = "해당 세트의 pog를 반환합니다")
+	// @PostMapping("/set")
+	// public ResponseEntity<ApiResponse<PogInfoDto.PogDTO>> getSetPog(// match의 pog 투표 결과 선정된 player를 반환
+	// 	@RequestHeader("Authorization") String token,
+	// 	@RequestParam("set-index") Integer setIndex,
+	// 	@RequestBody PogInfoDto.MatchPogRequest request) {
+	// 	PogInfoDto.PogDTO response = pogService.findSetPog(request.toDto(), setIndex);
+	//
+	// 	return ResponseEntity.ok()
+	// 		.body(ApiResponse.createSuccess(response));
+	// }
 }
