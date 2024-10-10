@@ -12,4 +12,5 @@ public interface ChatRoomRepository extends MongoRepository<ChatRoom, String> {
 
 //    Boolean existsByMessages(List<ChatMessage> chatMessages);
     Optional<ChatRoom> findByUserIdAndViewingPartyId(Long viewingPartyId, Long userId);
+    List<ChatRoom> findAllByViewingPartyId(Long viewingPartyId);
 }
