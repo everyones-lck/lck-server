@@ -9,6 +9,7 @@ import com.lckback.lckforall.viewing.model.ViewingParty;
 import org.springframework.data.domain.Page;
 
 import java.text.DecimalFormat;
+import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -93,8 +94,20 @@ public class ViewingPartyConverter {
                 .build();
     }
 
-    public static ParticipantListDTO.ResponseList toParticipantListResponse(Page<User> users, ViewingParty viewingParty, Boolean isLast, Integer totalPage) {
+    public static ParticipantListDTO.ResponseList toParticipantListResponse(Page<User> users, Page<User> chatUsers, ViewingParty viewingParty, Integer page, Integer size) {
         List<ParticipantListDTO.Response> userList = users.stream().map(ViewingPartyConverter::toParticipantResponse).toList();
+        List<ParticipantListDTO.Response> chatList = chatUsers.stream().map(ViewingPartyConverter::toChatResponse).toList();
+
+        List<ParticipantListDTO.Response> mergedList = new HashSet<ParticipantListDTO.Response>() {{
+            addAll(userList);
+            addAll(chatList);
+        }}.stream().toList();
+
+        int totalPage = mergedList.size()/ (size + 1) + 1;
+        boolean isLast = false;
+        if(page == totalPage -1){
+            isLast = true;
+        }
         return ParticipantListDTO.ResponseList.builder()
                 .isLast(isLast)
                 .totalPage(totalPage)
@@ -102,7 +115,7 @@ public class ViewingPartyConverter {
                 .ownerName(viewingParty.getUser().getNickname())
                 .ownerTeam(viewingParty.getUser().getTeam().getTeamName())
                 .ownerImage(viewingParty.getUser().getProfileImageUrl())
-                .participantList(userList)
+                .participantList(mergedList)
                 .build();
     }
 
@@ -113,6 +126,17 @@ public class ViewingPartyConverter {
                 .name(user.getNickname())
                 .team(user.getTeam().getTeamName())
                 .image(user.getProfileImageUrl())
+                .isParticipating(true)
+                .build();
+    }
+    public static ParticipantListDTO.Response toChatResponse(User user) {
+        return ParticipantListDTO.Response.builder()
+                .kakaoUserId(user.getKakaoUserId())
+                .id(user.getId())
+                .name(user.getNickname())
+                .team(user.getTeam().getTeamName())
+                .image(user.getProfileImageUrl())
+                .isChatting(true)
                 .build();
     }
 

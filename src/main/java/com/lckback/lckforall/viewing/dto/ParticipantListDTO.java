@@ -32,5 +32,7 @@ public class ParticipantListDTO {
         String name;
         String team;
         String image;
+        Boolean isParticipating;
+        Boolean isChatting;
     }
 }
