@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ViewingPartyConverter {
 
@@ -98,11 +99,16 @@ public class ViewingPartyConverter {
         List<ParticipantListDTO.Response> userList = users.stream().map(ViewingPartyConverter::toParticipantResponse).toList();
         List<ParticipantListDTO.Response> chatList = chatUsers.stream().map(ViewingPartyConverter::toChatResponse).toList();
 
-        List<ParticipantListDTO.Response> mergedList = new HashSet<ParticipantListDTO.Response>() {{
-            addAll(userList);
-            addAll(chatList);
-        }}.stream().toList();
-
+        List<ParticipantListDTO.Response> mergedList = Stream.concat(userList.stream(), chatList.stream())
+                .collect(Collectors.toMap(
+                        ParticipantListDTO.Response::getKakaoUserId,
+                        response -> response,
+                        (existing, replacement) -> {
+                            existing.setIsChatting(true);
+                            return existing;
+                        }
+                ))
+                .values().stream().toList();
         int totalPage = mergedList.size()/ (size + 1) + 1;
         boolean isLast = false;
         if(page == totalPage -1){
